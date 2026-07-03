@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>途線 TabiLine — 管理者後台</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:#1A1714;min-height:100vh;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Helvetica Neue',sans-serif;color:#fff;}
+.login-screen{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px;}
+.login-card{background:#2B2620;border-radius:24px;padding:40px 32px;width:100%;max-width:380px;text-align:center;}
+.login-logo{font-size:48px;margin-bottom:16px;}
+.login-title{font-size:22px;font-weight:700;color:#FFC233;margin-bottom:6px;}
+.login-sub{font-size:13px;color:rgba(255,255,255,.4);margin-bottom:32px;}
+.login-field{margin-bottom:14px;text-align:left;}
+.login-field label{display:block;font-size:11px;color:rgba(255,255,255,.5);margin-bottom:5px;font-weight:500;}
+.login-field input{width:100%;padding:11px 14px;border-radius:12px;border:1.5px solid rgba(255,255,255,.1);background:rgba(255,255,255,.06);color:#fff;font-size:14px;}
+.login-field input:focus{outline:none;border-color:#FFC233;}
+.login-btn{width:100%;padding:13px;background:#FFC233;color:#2B2620;border:none;border-radius:14px;font-size:14px;font-weight:700;cursor:pointer;margin-top:8px;}
+.login-btn:hover{background:#FFD166;}
+.login-err{font-size:12px;color:#E24B4A;margin-top:10px;min-height:18px;}
+
+.admin-app{display:none;min-height:100vh;}
+.admin-header{background:#2B2620;padding:16px 24px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,.08);}
+.admin-header-left{display:flex;align-items:center;gap:12px;}
+.admin-logo{font-size:24px;}
+.admin-title-wrap{}
+.admin-app-title{font-size:16px;font-weight:700;color:#FFC233;}
+.admin-app-sub{font-size:11px;color:rgba(255,255,255,.4);}
+.admin-logout{background:rgba(255,255,255,.08);border:none;color:rgba(255,255,255,.6);padding:7px 14px;border-radius:10px;font-size:12px;cursor:pointer;display:flex;align-items:center;gap:5px;}
+.admin-logout:hover{background:rgba(255,255,255,.15);}
+
+.admin-body{max-width:900px;margin:0 auto;padding:28px 20px;}
+.admin-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:28px;}
+.stat-card{background:#2B2620;border-radius:16px;padding:16px 18px;}
+.stat-num{font-size:28px;font-weight:700;color:#FFC233;}
+.stat-label{font-size:12px;color:rgba(255,255,255,.4);margin-top:3px;}
+
+.admin-grid{display:grid;grid-template-columns:1fr 1.4fr;gap:20px;}
+@media(max-width:700px){.admin-grid{grid-template-columns:1fr;}}
+
+.admin-card{background:#2B2620;border-radius:20px;padding:22px 20px;}
+.admin-card-title{font-size:14px;font-weight:700;color:#FFC233;margin-bottom:4px;display:flex;align-items:center;gap:7px;}
+.admin-card-sub{font-size:11px;color:rgba(255,255,255,.4);margin-bottom:18px;}
+.a-field{margin-bottom:12px;}
+.a-field label{display:block;font-size:10px;color:rgba(255,255,255,.45);margin-bottom:4px;font-weight:500;text-transform:uppercase;letter-spacing:.4px;}
+.a-field input,.a-field select{width:100%;padding:9px 13px;border-radius:11px;border:1.5px solid rgba(255,255,255,.1);background:rgba(255,255,255,.06);color:#fff;font-size:13px;}
+.a-field input:focus,.a-field select:focus{outline:none;border-color:#FFC233;}
+.a-field input::placeholder{color:rgba(255,255,255,.25);}
+.a-field select option{background:#2B2620;color:#fff;}
+.a-field-row{display:flex;gap:8px;}
+.a-field-row .a-field{flex:1;}
+.a-submit{width:100%;padding:11px;background:#FFC233;color:#2B2620;border:none;border-radius:13px;font-size:13px;font-weight:700;cursor:pointer;margin-top:4px;display:flex;align-items:center;justify-content:center;gap:6px;}
+.a-submit:hover{background:#FFD166;}
+.a-submit:disabled{opacity:.5;cursor:not-allowed;}
+
+.filter-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;}
+.filter-btn{padding:5px 12px;border-radius:10px;font-size:11px;border:1px solid rgba(255,255,255,.15);background:transparent;color:rgba(255,255,255,.5);cursor:pointer;font-weight:500;}
+.filter-btn.active{background:#FFC233;color:#2B2620;border-color:#FFC233;font-weight:700;}
+
+.spot-list{display:flex;flex-direction:column;gap:7px;max-height:520px;overflow-y:auto;}
+.spot-list::-webkit-scrollbar{width:4px;}
+.spot-list::-webkit-scrollbar-thumb{background:rgba(255,255,255,.15);border-radius:10px;}
+.spot-row{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.05);border-radius:12px;padding:10px 13px;transition:background .15s;}
+.spot-row:hover{background:rgba(255,255,255,.09);}
+.spot-row-icon{font-size:20px;flex-shrink:0;}
+.spot-row-info{flex:1;min-width:0;}
+.spot-row-name{font-size:13px;font-weight:600;color:#fff;}
+.spot-row-meta{font-size:10px;color:rgba(255,255,255,.35);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.spot-row-del{width:26px;height:26px;border-radius:50%;background:rgba(255,255,255,.08);border:none;color:rgba(255,255,255,.4);font-size:11px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.spot-row-del:hover{background:#E24B4A;color:#fff;}
+.empty-list{text-align:center;padding:32px;font-size:13px;color:rgba(255,255,255,.25);}
+
+.toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%);background:#FFC233;color:#2B2620;font-size:12px;font-weight:600;padding:9px 20px;border-radius:20px;opacity:0;transition:all .25s;white-space:nowrap;z-index:999;pointer-events:none;}
+.toast.show{opacity:1;}
+.loading{text-align:center;padding:24px;color:rgba(255,255,255,.3);font-size:13px;}
+</style>
+</head>
+<body>
+
+<!-- 登入畫面 -->
+<div class="login-screen" id="loginScreen">
+  <div class="login-card">
+    <div class="login-logo">✈️</div>
+    <div class="login-title">途線 TabiLine</div>
+    <div class="login-sub">管理者後台 — 請輸入密碼</div>
+    <div class="login-field">
+      <label>管理者密碼</label>
+      <input type="password" id="pwInput" placeholder="輸入密碼" onkeydown="if(event.key==='Enter')doLogin()">
+    </div>
+    <button class="login-btn" onclick="doLogin()">進入後台</button>
+    <div class="login-err" id="loginErr"></div>
+  </div>
+</div>
+
+<!-- 管理者後台 -->
+<div class="admin-app" id="adminApp">
+  <div class="admin-header">
+    <div class="admin-header-left">
+      <div class="admin-logo">✈️</div>
+      <div class="admin-title-wrap">
+        <div class="admin-app-title">途線 TabiLine 後台</div>
+        <div class="admin-app-sub">景點資料庫管理</div>
+      </div>
+    </div>
+    <button class="admin-logout" onclick="doLogout()"><i class="ti ti-logout"></i>登出</button>
+  </div>
+
+  <div class="admin-body">
+    <div class="admin-stats">
+      <div class="stat-card"><div class="stat-num" id="statTotal">—</div><div class="stat-label">景點總數</div></div>
+      <div class="stat-card"><div class="stat-num" id="statCats">—</div><div class="stat-label">分類數</div></div>
+      <div class="stat-card"><div class="stat-num" id="statRegions">—</div><div class="stat-label">地區數</div></div>
+    </div>
+
+    <div class="admin-grid">
+      <!-- 新增景點 -->
+      <div class="admin-card">
+        <div class="admin-card-title"><i class="ti ti-plus"></i>新增景點</div>
+        <div class="admin-card-sub">新增後即時同步到使用者 App</div>
+        <div class="a-field-row">
+          <div class="a-field" style="flex:2"><label>景點名稱</label><input id="aName" placeholder="例：嵐山竹林"/></div>
+          <div class="a-field" style="flex:0.8"><label>Emoji</label><input id="aIcon" placeholder="🏯" maxlength="2"/></div>
+        </div>
+        <div class="a-field-row">
+          <div class="a-field">
+            <label>分類</label>
+            <select id="aCat">
+              <option>文化・歷史</option>
+              <option>美食</option>
+              <option>自然</option>
+              <option>購物</option>
+              <option>交通</option>
+              <option>住宿</option>
+              <option>景點</option>
+            </select>
+          </div>
+          <div class="a-field">
+            <label>地區</label>
+            <input id="aRegion" placeholder="例：京都・日本"/>
+          </div>
+        </div>
+        <div class="a-field"><label>簡介</label><input id="aDesc" placeholder="例：世界遺產・必訪"/></div>
+        <button class="a-submit" id="addBtn" onclick="addSpot()"><i class="ti ti-cloud-upload"></i>新增到資料庫</button>
+      </div>
+
+      <!-- 景點列表 -->
+      <div class="admin-card">
+        <div class="admin-card-title"><i class="ti ti-list"></i>景點列表</div>
+        <div class="admin-card-sub" id="listSub">載入中…</div>
+        <div class="filter-row" id="filterRow"></div>
+        <div class="spot-list" id="spotList"><div class="loading">連接 Firebase 中…</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- Firebase -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
+import { getFirestore, collection, getDocs, addDoc, deleteDoc, doc, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyD1ILm1TbCcbh_QGB-f2Me2hnex0T3x2HI",
+  authDomain: "travelline-planner.firebaseapp.com",
+  projectId: "travelline-planner",
+  storageBucket: "travelline-planner.firebasestorage.app",
+  messagingSenderId: "1041546695612",
+  appId: "1:1041546695612:web:a015af75f274938e62d1b9"
+};
+
+const ADMIN_PASSWORD = "tabiLine2026";
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+let allSpots = [];
+let catFilter = '全部';
+
+// 預設景點資料
+const DEFAULT_SPOTS = [
+  {icon:'🏯',name:'名古屋城',cat:'文化・歷史',region:'名古屋・日本',desc:'國寶天守・本丸御殿'},
+  {icon:'⛩',name:'熱田神宮',cat:'文化・歷史',region:'名古屋・日本',desc:'千年古社・三種神器'},
+  {icon:'🍱',name:'矢場とん 味噌豬排',cat:'美食',region:'名古屋・日本',desc:'名古屋名物・必吃'},
+  {icon:'🏺',name:'Noritake Garden',cat:'文化・歷史',region:'名古屋・日本',desc:'陶瓷文化園區'},
+  {icon:'🙏',name:'大須觀音',cat:'文化・歷史',region:'名古屋・日本',desc:'下町老街起點'},
+  {icon:'🏪',name:'大須商店街',cat:'購物',region:'名古屋・日本',desc:'古著・小吃・電器'},
+  {icon:'🌅',name:'宮川朝市',cat:'美食',region:'高山・日本',desc:'飛驒牛串・朝市'},
+  {icon:'🏘',name:'上三之町老街',cat:'文化・歷史',region:'高山・日本',desc:'江戶時代街道'},
+  {icon:'🥩',name:'飛驒牛燒肉',cat:'美食',region:'高山・日本',desc:'必吃飛驒和牛'},
+  {icon:'🏔',name:'河童橋',cat:'自然',region:'上高地・日本',desc:'穗高連峰全景'},
+  {icon:'🌿',name:'大正池',cat:'自然',region:'上高地・日本',desc:'倒映岳影・絕景'},
+  {icon:'🌲',name:'明神池',cat:'自然',region:'上高地・日本',desc:'神聖步道・輕健行'},
+  {icon:'🗼',name:'東京鐵塔',cat:'景點',region:'東京・日本',desc:'東京地標・夜景必看'},
+  {icon:'⛩',name:'淺草寺',cat:'文化・歷史',region:'東京・日本',desc:'東京最古老寺廟'},
+  {icon:'🛍',name:'原宿竹下通',cat:'購物',region:'東京・日本',desc:'潮流・可愛文化'},
+  {icon:'🌸',name:'上野公園',cat:'自然',region:'東京・日本',desc:'賞櫻名所・博物館'},
+  {icon:'🍣',name:'築地市場',cat:'美食',region:'東京・日本',desc:'新鮮海鮮・早餐'},
+  {icon:'⛩',name:'伏見稻荷大社',cat:'文化・歷史',region:'京都・日本',desc:'千本鳥居・必訪'},
+  {icon:'🏯',name:'金閣寺',cat:'文化・歷史',region:'京都・日本',desc:'世界遺產・金色倒影'},
+  {icon:'🎋',name:'嵐山竹林',cat:'自然',region:'京都・日本',desc:'夢幻竹林步道'},
+  {icon:'🍵',name:'宇治抹茶老街',cat:'美食',region:'京都・日本',desc:'抹茶甜點・平等院'},
+  {icon:'🏯',name:'大阪城',cat:'文化・歷史',region:'大阪・日本',desc:'豐臣秀吉居城'},
+  {icon:'🎡',name:'道頓堀',cat:'美食',region:'大阪・日本',desc:'章魚燒・大阪必吃'},
+  {icon:'🛍',name:'心齋橋',cat:'購物',region:'大阪・日本',desc:'購物天堂・藥妝'},
+  {icon:'🏙',name:'台北 101',cat:'景點',region:'台北・台灣',desc:'台灣地標・觀景台'},
+  {icon:'🌙',name:'饒河街夜市',cat:'美食',region:'台北・台灣',desc:'胡椒餅・夜市文化'},
+  {icon:'⛩',name:'龍山寺',cat:'文化・歷史',region:'台北・台灣',desc:'百年古廟・萬華'},
+  {icon:'🚂',name:'九份老街',cat:'文化・歷史',region:'新北・台灣',desc:'山城茶樓・礦山風情'},
+  {icon:'🏯',name:'景福宮',cat:'文化・歷史',region:'首爾・韓國',desc:'朝鮮王朝正宮'},
+  {icon:'🛍',name:'明洞購物街',cat:'購物',region:'首爾・韓國',desc:'韓妝・街頭小吃'},
+];
+
+// 登入
+window.doLogin = function(){
+  const pw = document.getElementById('pwInput').value;
+  if(pw === ADMIN_PASSWORD){
+    document.getElementById('loginScreen').style.display='none';
+    document.getElementById('adminApp').style.display='block';
+    initDB();
+  } else {
+    document.getElementById('loginErr').textContent='密碼錯誤，請再試一次';
+    document.getElementById('pwInput').value='';
+  }
+};
+
+window.doLogout = function(){
+  document.getElementById('loginScreen').style.display='flex';
+  document.getElementById('adminApp').style.display='none';
+  document.getElementById('pwInput').value='';
+};
+
+// 初始化 DB — 如果是空的就寫入預設資料
+async function initDB(){
+  const snap = await getDocs(collection(db,'spots'));
+  if(snap.empty){
+    showToast('首次使用，寫入預設景點資料…');
+    for(const s of DEFAULT_SPOTS){
+      await addDoc(collection(db,'spots'),{...s, createdAt: serverTimestamp()});
+    }
+    showToast('預設景點已寫入 ✓');
+  }
+  listenSpots();
+}
+
+// 即時監聽
+function listenSpots(){
+  onSnapshot(collection(db,'spots'), snap => {
+    allSpots = snap.docs.map(d=>({id:d.id,...d.data()}));
+    allSpots.sort((a,b)=>a.name.localeCompare(b.name,'zh'));
+    renderStats();
+    renderFilter();
+    renderList();
+  });
+}
+
+function renderStats(){
+  document.getElementById('statTotal').textContent = allSpots.length;
+  document.getElementById('statCats').textContent = new Set(allSpots.map(s=>s.cat)).size;
+  document.getElementById('statRegions').textContent = new Set(allSpots.map(s=>s.region)).size;
+  document.getElementById('listSub').textContent = `共 ${allSpots.length} 個景點，點垃圾桶可刪除`;
+}
+
+function renderFilter(){
+  const cats = ['全部',...new Set(allSpots.map(s=>s.cat))];
+  const row = document.getElementById('filterRow');
+  row.innerHTML='';
+  cats.forEach(cat=>{
+    const btn=document.createElement('button');
+    btn.className='filter-btn'+(cat===catFilter?' active':'');
+    btn.textContent=cat;
+    btn.onclick=()=>{catFilter=cat;renderFilter();renderList();};
+    row.appendChild(btn);
+  });
+}
+
+function renderList(){
+  const list = document.getElementById('spotList');
+  const filtered = catFilter==='全部'?allSpots:allSpots.filter(s=>s.cat===catFilter);
+  if(!filtered.length){list.innerHTML='<div class="empty-list">此分類尚無景點</div>';return;}
+  list.innerHTML='';
+  filtered.forEach(s=>{
+    const row=document.createElement('div');row.className='spot-row';
+    row.innerHTML=`<div class="spot-row-icon">${s.icon||'📍'}</div>
+      <div class="spot-row-info">
+        <div class="spot-row-name">${s.name}</div>
+        <div class="spot-row-meta">${s.cat} · ${s.region}${s.desc?' · '+s.desc:''}</div>
+      </div>
+      <button class="spot-row-del" onclick="deleteSpot('${s.id}','${s.name.replace(/'/g,"\\'")}')"><i class="ti ti-trash"></i></button>`;
+    list.appendChild(row);
+  });
+}
+
+window.addSpot = async function(){
+  const name=document.getElementById('aName').value.trim();
+  const icon=document.getElementById('aIcon').value.trim()||'📍';
+  const cat=document.getElementById('aCat').value;
+  const region=document.getElementById('aRegion').value.trim();
+  const desc=document.getElementById('aDesc').value.trim();
+  if(!name){showToast('請輸入景點名稱');return;}
+  if(!region){showToast('請輸入地區');return;}
+  const btn=document.getElementById('addBtn');
+  btn.disabled=true;btn.textContent='新增中…';
+  try{
+    await addDoc(collection(db,'spots'),{icon,name,cat,region,desc,createdAt:serverTimestamp()});
+    document.getElementById('aName').value='';
+    document.getElementById('aIcon').value='';
+    document.getElementById('aRegion').value='';
+    document.getElementById('aDesc').value='';
+    showToast(`「${name}」已新增 ✓`);
+  }catch(e){showToast('新增失敗：'+e.message);}
+  btn.disabled=false;btn.innerHTML='<i class="ti ti-cloud-upload"></i>新增到資料庫';
+};
+
+window.deleteSpot = async function(id, name){
+  if(!confirm(`確定刪除「${name}」？`))return;
+  try{
+    await deleteDoc(doc(db,'spots',id));
+    showToast(`「${name}」已刪除`);
+  }catch(e){showToast('刪除失敗：'+e.message);}
+};
+
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2200);
+}
+</script>
+</body>
+</html>
