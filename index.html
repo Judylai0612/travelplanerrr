@@ -434,10 +434,32 @@ const App = {
   renderCurrencyPills(){
     const wrap=document.getElementById('currencyPills');wrap.innerHTML='';
     state.enabledCurrencies.forEach(code=>{
-      const btn=document.createElement('button');btn.className='currency-pill'+(code===state.activeCurrency?' active':'');
-      btn.textContent=CURRENCY_DB[code]?CURRENCY_DB[code].symbol+' '+code:code;
+      const isActive=code===state.activeCurrency;
+      const chip=document.createElement('div');
+      chip.style.cssText='display:flex;align-items:center;border-radius:10px;overflow:hidden;';
+      const btn=document.createElement('button');
+      btn.className='currency-pill'+(isActive?' active':'');
+      btn.style.borderRadius=isActive?'10px':'10px 0 0 10px';
+      btn.textContent=(CURRENCY_DB[code]?CURRENCY_DB[code].symbol+' ':'')+code;
       btn.onclick=()=>{state.activeCurrency=code;App.renderCurrencyPills();App.renderBudget();};
-      wrap.appendChild(btn);
+      chip.appendChild(btn);
+      // show X only if not the last one and not base TWD when only one left
+      if(state.enabledCurrencies.length>1){
+        const del=document.createElement('button');
+        del.className='currency-pill'+(isActive?' active':'');
+        del.style.cssText+='border-radius:0 10px 10px 0;padding:4px 7px;border-left:1px solid rgba(0,0,0,.08);font-size:10px;';
+        del.innerHTML='<i class="ti ti-x" style="font-size:9px"></i>';
+        del.onclick=(e)=>{
+          e.stopPropagation();
+          if(state.enabledCurrencies.length<=1){showToast('至少保留一種幣別');return;}
+          state.enabledCurrencies=state.enabledCurrencies.filter(c=>c!==code);
+          if(state.activeCurrency===code)state.activeCurrency=state.enabledCurrencies[0];
+          App.renderCurrencyPills();App.renderBudget();
+          showToast(code+' 已移除');
+        };
+        chip.appendChild(del);
+      }
+      wrap.appendChild(chip);
     });
   },
   openAddCurrency(){
