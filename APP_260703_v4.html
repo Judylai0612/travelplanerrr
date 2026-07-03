@@ -451,19 +451,19 @@ function renderDayRow(){
   const a = document.createElement('div'); a.className='day-add'; a.innerHTML='<i class="ti ti-plus"></i>'; a.onclick=addDay; row.appendChild(a);
   document.getElementById('todayDateLabel').textContent = fmtDay(currentDay);
 }
-function switchDay(i){
+window.switchDay = function(i){
   currentDay=i; renderDayRow(); renderStations();
   const row=document.getElementById('dayRow'); const card=row.children[i];
   if(card) card.scrollIntoView({behavior:'smooth',inline:'start',block:'nearest'});
 }
-function addDay(){
+window.addDay = function(){
   dayCount++; while(allStations.length<dayCount) allStations.push([]);
   currentDay=dayCount-1; renderDayRow(); renderStations();
   showToast('已新增 Day '+dayCount);
   setTimeout(()=>{const r=document.getElementById('dayRow');r.scrollLeft=r.scrollWidth;},50);
   saveTrip();
 }
-function delDay(i){
+window.delDay = function(i){
   if(dayCount<=1){showToast('至少保留一天');return;}
   allStations.splice(i,1); dayCount--;
   if(currentDay>=dayCount) currentDay=dayCount-1;
@@ -471,7 +471,7 @@ function delDay(i){
 }
 
 // ── Stations ──
-function renderStations(){
+window.renderStations = function(){
   const list=document.getElementById('stationList'); list.innerHTML='';
   document.getElementById('todayDateLabel').textContent=fmtDay(currentDay);
   const stations=allStations[currentDay]||[];
@@ -571,10 +571,10 @@ function addTouchDrag(el, idx){
   handle.addEventListener('touchend', onTouchEnd, {passive:true});
   handle.addEventListener('touchcancel', onTouchEnd, {passive:true});
 }
-function delStation(i){allStations[currentDay].splice(i,1);renderStations();saveTrip();showToast('站點已移除');}
+window.delStation = function(i){allStations[currentDay].splice(i,1);renderStations();saveTrip();showToast('站點已移除');}
 
 // ── Budget ──
-async function fetchRate(){
+async window.fetchRate = function(){
   const b=document.getElementById('rateBadge'); b.textContent='更新中…';
   try{const r=await fetch('https://api.exchangerate-api.com/v4/latest/JPY');const d=await r.json();const rate=d.rates&&d.rates.TWD;if(rate){currentRate=rate;b.textContent='1 JPY = '+rate.toFixed(4)+' TWD';}else throw 0;}
   catch(e){currentRate=0.2145;b.textContent='1 JPY ≈ 0.2145（參考）';}
@@ -590,7 +590,7 @@ function calcSplits(){
     return{...m,paid,pp,net,bg:c.bg,color:c.color,sign:net>=0?'+':'-',jpy:Math.abs(net),amtColor:net>=0?'#2E5C4E':'#A33B3B',badge:net>=0?'待收款':'欠款',badgeBg:net>=0?'#C9E4DE':'#FBD4DE',badgeColor:net>=0?'#2E5C4E':'#8B3B52'};
   });
 }
-function renderBudget(){
+window.renderBudget = function(){
   const n=members.length; const tot=expenses.reduce((s,e)=>s+e.jpy,0); const perP=n?Math.round(tot/n):0;
   document.getElementById('totalJpy').textContent='¥'+tot.toLocaleString();
   document.getElementById('perPersonJpy').textContent='¥'+perP.toLocaleString();
@@ -609,8 +609,8 @@ function renderBudget(){
     sl.appendChild(div);
   });
 }
-function delExpense(i){expenses.splice(i,1);renderBudget();saveTrip();showToast('費用已刪除');}
-function delMember(i){if(members.length<=1){showToast('至少保留一位');return;}members.splice(i,1);renderBudget();saveTrip();showToast('已移除成員');}
+window.delExpense = function(i){expenses.splice(i,1);renderBudget();saveTrip();showToast('費用已刪除');}
+window.delMember = function(i){if(members.length<=1){showToast('至少保留一位');return;}members.splice(i,1);renderBudget();saveTrip();showToast('已移除成員');}
 
 window.openAddMember = function(){
   document.getElementById('modalTitle').textContent='新增成員';
@@ -630,7 +630,7 @@ window.submitMember = function(){
   document.getElementById('mMemberName').value=''; showToast(`「${name}」已加入`); saveTrip();
 };
 
-function openDetail(idx){
+window.openDetail = function(idx){
   const splits=calcSplits(); const p=splits[idx]; if(!p) return;
   document.getElementById('detailAvatar').style.cssText=`background:${p.bg};color:${p.color}`;
   document.getElementById('detailAvatar').textContent=mi(p.name);
@@ -653,7 +653,7 @@ function openDetail(idx){
 window.closeDetail = function(){document.getElementById('detailSheet').classList.remove('open');}
 
 // ── Shop ──
-function renderShop(){
+window.renderShop = function(){
   const w=document.getElementById('shopList'); w.innerHTML='';
   const cats=[...new Set(shopItems.map(i=>i.cat))];
   cats.forEach(cat=>{
@@ -694,7 +694,7 @@ window.setMapMode = function(m){
   document.getElementById('mapBtnAll').classList.toggle('active',m==='all');
   renderMap();
 }
-function renderMap(){
+window.renderMap = function(){
   const wrap=document.getElementById('mapContent');
   if(mapMode==='day'){
     const st=allStations[currentDay]||[];
