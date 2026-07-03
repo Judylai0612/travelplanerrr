@@ -16,9 +16,11 @@ body{background:#EDE7DA;display:flex;justify-content:center;min-height:100dvh;fo
 .greet{font-size:13px;color:#A8A296;}.greet b{color:#2B2620;font-weight:600;}
 .icon-btn{width:32px;height:32px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;color:#2B2620;font-size:15px;border:none;cursor:pointer;flex-shrink:0;}
 .hero{margin:6px 18px 10px;border-radius:20px;padding:16px 18px;background:#F6C453;position:relative;overflow:hidden;flex-shrink:0;}
-.hero-title{font-size:24px;font-weight:600;color:#2B2620;line-height:1.25;outline:none;}
-.hero-title:focus{background:rgba(255,255,255,.3);border-radius:8px;}
-.hero-emoji{position:absolute;right:-4px;bottom:-8px;font-size:46px;opacity:.9;transform:rotate(-8deg);}
+.hero-input-row{display:flex;align-items:center;gap:8px;}
+.hero-title{font-size:22px;font-weight:600;color:#2B2620;line-height:1.25;outline:none;flex:1;background:none;border:none;font-family:inherit;}
+.hero-title::placeholder{color:rgba(43,38,32,.45);}
+.hero-confirm{background:#2B2620;color:#fff;border:none;border-radius:12px;padding:7px 13px;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;flex-shrink:0;}
+.hero-emoji{position:absolute;right:-4px;bottom:-8px;font-size:46px;opacity:.9;transform:rotate(-8deg);pointer-events:none;}
 .tab-pills{display:flex;gap:6px;padding:0 18px 10px;overflow-x:auto;scrollbar-width:none;flex-shrink:0;}
 .tab-pills::-webkit-scrollbar{display:none;}
 .pill{flex-shrink:0;padding:7px 15px;border-radius:18px;font-size:13px;font-weight:500;cursor:pointer;background:#fff;color:#7A7468;}
@@ -32,14 +34,14 @@ body{background:#EDE7DA;display:flex;justify-content:center;min-height:100dvh;fo
 .date-field{flex:1;}
 .date-field label{display:block;font-size:9px;color:#A8A296;margin-bottom:3px;font-weight:500;}
 .date-field input{width:100%;font-size:12px;padding:6px 8px;border-radius:9px;border:1.5px solid #ECE5D4;background:#FBF6EA;color:#2B2620;}
-.date-arrow{color:#C9C3B5;font-size:14px;margin-bottom:8px;flex-shrink:0;}
+.date-arrow{color:#C9C3B5;font-size:14px;padding-bottom:7px;flex-shrink:0;}
 .date-result{margin-top:8px;padding-top:8px;border-top:1px solid #F0EBDD;font-size:11px;color:#6B9080;font-weight:600;display:flex;align-items:center;gap:5px;}
 .day-row-outer{overflow:hidden;padding:0 18px 4px;}
 .day-row{display:flex;gap:8px;overflow-x:scroll;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;touch-action:pan-x;scrollbar-width:none;padding-bottom:2px;}
 .day-row::-webkit-scrollbar{display:none;}
-.day-card{flex:0 0 calc((100% - 16px) / 3);border-radius:14px;padding:12px 8px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;position:relative;scroll-snap-align:start;background:#FCE3B8;transition:background .15s;}
+.day-card{flex:0 0 calc((100% - 16px)/3);border-radius:14px;padding:12px 8px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;position:relative;scroll-snap-align:start;background:#FCE3B8;transition:background .15s;}
 .day-num{font-size:14px;font-weight:600;color:#2B2620;}
-.day-del{position:absolute;top:4px;right:4px;width:18px;height:18px;border-radius:50%;background:rgba(0,0,0,.1);display:flex;align-items:center;justify-content:center;font-size:9px;color:#2B2620;cursor:pointer;opacity:0;transition:opacity .15s;}
+.day-del{position:absolute;top:4px;right:4px;width:18px;height:18px;border-radius:50%;background:rgba(0,0,0,.1);display:flex;align-items:center;justify-content:center;font-size:9px;color:#2B2620;cursor:pointer;opacity:0;}
 .day-card:hover .day-del,.day-card:active .day-del{opacity:1;}
 .day-add{flex:0 0 42px;border-radius:14px;background:#fff;border:1.5px dashed #D9D2C2;display:flex;align-items:center;justify-content:center;color:#A8A296;font-size:16px;cursor:pointer;}
 .scroll-area{flex:1 1 auto;overflow-y:auto;-webkit-overflow-scrolling:touch;min-height:0;}
@@ -51,21 +53,22 @@ body{background:#EDE7DA;display:flex;justify-content:center;min-height:100dvh;fo
 .station-card{margin:0 18px 10px;background:#fff;border-radius:18px;padding:13px 15px;display:flex;align-items:flex-start;gap:12px;transition:opacity .15s,transform .15s;}
 .station-card.dragging{opacity:.4;transform:scale(.97);}
 .station-card.drag-over{border-top:3px solid #FFC233;}
-.station-card.touch-active{opacity:.88;transform:scale(1.02);box-shadow:0 8px 24px rgba(0,0,0,.18);}
 .drag-h{color:#D3CDBE;font-size:14px;cursor:grab;flex-shrink:0;padding:2px 4px;min-width:28px;min-height:44px;display:flex;align-items:center;justify-content:center;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;touch-action:none;}
-.s-icon-block{width:40px;height:40px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0;}
 .s-info{flex:1;min-width:0;}
-.s-time{font-size:16px;color:#A8A296;font-weight:500;}
-.s-name{font-size:14px;font-weight:600;color:#2B2620;margin-top:1px;}
-.s-note{font-size:17px;color:#A8A296;margin-top:2px;outline:none;border-radius:6px;padding:1px 3px;margin-left:-3px;}
+.s-time{font-size:12px;color:#A8A296;font-weight:500;}
+.s-name{font-size:16px;font-weight:600;color:#2B2620;margin-top:1px;}
+.s-note{font-size:12px;color:#A8A296;margin-top:3px;outline:none;border-radius:6px;padding:1px 3px;margin-left:-3px;}
 .s-note:focus{background:#FBF6EA;}
 .s-note:empty:before{content:attr(data-ph);opacity:.5;font-style:italic;}
-.s-del{width:28px;height:28px;border-radius:50%;background:#F4EFE4;display:flex;align-items:center;justify-content:center;color:#A8A296;font-size:12px;border:none;cursor:pointer;flex-shrink:0;margin-top:0;padding:0;}
-/* Budget */
-.share-banner{margin:0 18px 10px;background:#E4F0EB;border-radius:14px;padding:10px 14px;display:flex;align-items:center;gap:10px;}
-.share-banner-text{flex:1;font-size:12px;color:#2B2620;font-weight:500;}
-.share-banner-sub{font-size:10px;color:#6B9080;margin-top:2px;}
-.share-copy-btn{background:#6B9080;color:#fff;border:none;border-radius:10px;padding:6px 12px;font-size:11px;font-weight:600;cursor:pointer;white-space:nowrap;}
+.s-del{width:28px;height:28px;border-radius:50%;background:#F4EFE4;display:flex;align-items:center;justify-content:center;color:#A8A296;font-size:12px;border:none;cursor:pointer;flex-shrink:0;padding:0;}
+/* Currency selector */
+.currency-row{display:flex;gap:8px;margin:0 18px 10px;padding:10px 14px;background:#fff;border-radius:14px;align-items:center;}
+.currency-label{font-size:11px;color:#A8A296;flex-shrink:0;}
+.currency-pills{display:flex;gap:6px;flex-wrap:wrap;flex:1;}
+.currency-pill{padding:4px 11px;border-radius:10px;font-size:11px;font-weight:500;cursor:pointer;background:#F4EFE4;color:#6B6555;border:none;}
+.currency-pill.active{background:#2B2620;color:#fff;}
+.add-currency-btn{font-size:11px;color:#6B9080;background:none;border:1.5px dashed #C9E4DE;border-radius:10px;padding:4px 9px;cursor:pointer;}
+/* Rate row */
 .rate-pill-row{display:flex;justify-content:space-between;align-items:center;margin:0 18px 10px;padding:9px 14px;background:#fff;border-radius:14px;}
 .rate-pill-row span{font-size:10px;color:#A8A296;}
 .rate-badge{background:#F4EFE4;color:#6B6555;font-size:10px;padding:3px 9px;border-radius:10px;}
@@ -81,7 +84,7 @@ body{background:#EDE7DA;display:flex;justify-content:center;min-height:100dvh;fo
 .exp-name{font-size:12px;font-weight:600;color:#2B2620;}
 .exp-who{font-size:10px;color:#A8A296;margin-top:1px;}
 .exp-amts{text-align:right;}
-.exp-jpy{font-size:12px;font-weight:600;color:#2B2620;}
+.exp-orig{font-size:12px;font-weight:600;color:#2B2620;}
 .exp-twd{font-size:9px;color:#C97B4A;margin-top:1px;}
 .exp-del{width:28px;height:28px;border-radius:50%;background:#F4EFE4;display:flex;align-items:center;justify-content:center;color:#A8A296;font-size:12px;border:none;cursor:pointer;flex-shrink:0;padding:0;}
 .split-add-btn{display:flex;align-items:center;gap:4px;font-size:10px;color:#2B2620;background:#FFF4E0;border:none;border-radius:12px;padding:4px 10px;cursor:pointer;}
@@ -126,7 +129,6 @@ body{background:#EDE7DA;display:flex;justify-content:center;min-height:100dvh;fo
 .map-num{width:22px;height:22px;border-radius:50%;background:#FFF4E0;color:#2B2620;font-size:10px;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
 .map-name{font-size:12px;font-weight:600;color:#2B2620;}
 .map-time{font-size:10px;color:#A8A296;}
-.map-link{font-size:10px;color:#6B9080;text-decoration:none;margin-top:2px;display:inline-block;}
 /* Nav */
 .bottom-nav{display:flex;align-items:center;justify-content:space-around;padding:8px 14px;margin:6px 14px calc(14px + env(safe-area-inset-bottom));background:#fff;border-radius:22px;flex-shrink:0;}
 .nav-item{display:flex;flex-direction:column;align-items:center;gap:3px;padding:7px 12px;border-radius:16px;cursor:pointer;}
@@ -163,16 +165,23 @@ body{background:#EDE7DA;display:flex;justify-content:center;min-height:100dvh;fo
 .toast.show{opacity:1;}
 .sync-dot{width:7px;height:7px;border-radius:50%;background:#6B9080;display:inline-block;margin-left:6px;animation:pulse 1.5s infinite;}
 @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.3;}}
+/* Share tab */
+.share-section{margin:16px 18px 12px;background:#E4F0EB;border-radius:20px;padding:20px 18px;}
+.share-code-block{margin:0 18px 10px;background:#fff;border-radius:14px;padding:14px;}
+.share-how{margin:0 18px;background:#fff;border-radius:16px;padding:14px 16px;}
 </style>
 </head>
 <body>
 <div class="app" id="appRoot">
   <div class="top-bar">
-    <div class="greet">嗨，<b id="greetName">旅人</b><span id="syncDot" class="sync-dot" style="display:none" title="同步中"></span></div>
-    <div class="icon-btn" onclick="App.openShareInfo()"><i class="ti ti-users" style="font-size:13px"></i></div>
+    <div class="greet">嗨，<b id="greetName">旅人</b><span id="syncDot" class="sync-dot" style="display:none"></span></div>
+    <div class="icon-btn" onclick="App.switchTab('share')"><i class="ti ti-users" style="font-size:13px"></i></div>
   </div>
   <div class="hero">
-    <div class="hero-title" id="heroTitle" contenteditable="true" spellcheck="false">要去哪裡？</div>
+    <div class="hero-input-row">
+      <input class="hero-title" id="heroTitle" placeholder="要去哪裡？" oninput="App.onHeroInput()" onblur="App.saveTrip()">
+      <button class="hero-confirm" onclick="App.confirmDest()">探索景點</button>
+    </div>
     <div class="hero-emoji">⛩</div>
   </div>
   <div class="tab-pills">
@@ -195,46 +204,50 @@ body{background:#EDE7DA;display:flex;justify-content:center;min-height:100dvh;fo
     <div class="day-row-outer"><div class="day-row" id="dayRow"></div></div>
   </div>
   <div class="scroll-area">
+    <!-- 行程 -->
     <div class="content-section active" id="tab-itinerary">
       <div class="section-row"><div class="section-title">今日行程</div><div class="section-date" id="todayDateLabel"></div></div>
       <div id="stationList"></div>
     </div>
+    <!-- 記帳 -->
     <div class="content-section" id="tab-budget">
-
-      <div class="rate-pill-row"><span>JPY／TWD <span class="rate-badge" id="rateBadge">載入中…</span></span><button class="rate-refresh" onclick="App.fetchRate()"><i class="ti ti-refresh" style="font-size:10px"></i> 更新</button></div>
+      <div class="currency-row">
+        <span class="currency-label">幣別</span>
+        <div class="currency-pills" id="currencyPills"></div>
+        <button class="add-currency-btn" onclick="App.openAddCurrency()">＋</button>
+      </div>
+      <div class="rate-pill-row"><span>匯率 <span class="rate-badge" id="rateBadge">載入中…</span></span><button class="rate-refresh" onclick="App.fetchRate()"><i class="ti ti-refresh" style="font-size:10px"></i></button></div>
       <div class="budget-summary">
-        <div class="b-card" style="background:#FBD4DE"><div class="b-label" style="color:#8B3B52">總支出</div><div class="b-amt" id="totalJpy" style="color:#2B2620">¥0</div><div class="b-twd" style="color:#8B3B52" id="totalTwd">—</div></div>
-        <div class="b-card" style="background:#C9E4DE"><div class="b-label" style="color:#2E5C4E">人均費用</div><div class="b-amt" id="perPersonJpy" style="color:#2B2620">¥0</div><div class="b-twd" style="color:#2E5C4E" id="perPersonTwd">—</div></div>
+        <div class="b-card" style="background:#FBD4DE"><div class="b-label" style="color:#8B3B52">總支出</div><div class="b-amt" id="totalOrig" style="color:#2B2620">0</div><div class="b-twd" style="color:#8B3B52" id="totalTwd">—</div></div>
+        <div class="b-card" style="background:#C9E4DE"><div class="b-label" style="color:#2E5C4E">人均費用</div><div class="b-amt" id="perPersonOrig" style="color:#2B2620">0</div><div class="b-twd" style="color:#2E5C4E" id="perPersonTwd">—</div></div>
       </div>
       <div class="section-row"><div class="section-title">費用明細</div></div>
       <div id="expenseList"></div>
       <div class="section-row" style="margin-top:6px"><div class="section-title">分帳狀況</div><button class="split-add-btn" onclick="App.openAddMember()"><i class="ti ti-user-plus" style="font-size:11px"></i>新增成員</button></div>
       <div id="splitList"></div>
     </div>
+    <!-- 必買 -->
     <div class="content-section" id="tab-shop">
       <div class="shop-progress-card"><div class="prog-top"><span>已買 <span id="doneCount">0</span> / <span id="totalCount">0</span> 項</span><span id="progPct">0%</span></div><div class="prog-bar"><div class="prog-fill" id="progFill" style="width:0%"></div></div></div>
       <div id="shopList"></div>
     </div>
+    <!-- 地圖 -->
     <div class="content-section" id="tab-map">
       <div class="map-toggle-row"><button class="map-toggle-btn active" id="mapBtnDay" onclick="App.setMapMode('day')">當天行程</button><button class="map-toggle-btn" id="mapBtnAll" onclick="App.setMapMode('all')">全程總覽</button></div>
       <div id="mapContent"></div>
     </div>
+    <!-- 共享 -->
     <div class="content-section" id="tab-share">
-      <div style="margin:16px 18px 10px;background:#E4F0EB;border-radius:20px;padding:20px 18px;">
-        <div style="font-size:18px;margin-bottom:6px">🔗</div>
+      <div class="share-section">
+        <div style="font-size:20px;margin-bottom:6px">🔗</div>
         <div style="font-size:16px;font-weight:600;color:#2B2620;margin-bottom:4px">共享行程</div>
-        <div style="font-size:12px;color:#6B9080;margin-bottom:16px" id="shareTabSub">產生一個專屬連結，把它傳給同行夥伴，大家打開同一個連結就可以即時同步行程和記帳。</div>
+        <div style="font-size:12px;color:#6B9080;margin-bottom:16px" id="shareTabSub">產生連結讓同行夥伴即時同步行程與記帳</div>
         <button onclick="App.doShare()" style="width:100%;padding:12px;background:#6B9080;color:#fff;border:none;border-radius:14px;font-size:14px;font-weight:600;cursor:pointer;" id="shareTabBtn">產生共享連結</button>
       </div>
-      <div style="margin:0 18px;" id="shareCodeBlock" style="display:none"></div>
-      <div style="margin:12px 18px 0;background:#fff;border-radius:16px;padding:16px 16px;">
+      <div id="shareCodeBlock"></div>
+      <div class="share-how">
         <div style="font-size:12px;font-weight:600;color:#2B2620;margin-bottom:8px">使用說明</div>
-        <div style="font-size:11px;color:#A8A296;line-height:1.7">
-          1. 點「產生共享連結」建立唯一行程代碼<br>
-          2. 複製連結傳給同行夥伴<br>
-          3. 夥伴打開連結即可加入，行程和記帳即時同步<br>
-          4. 必買清單各自獨立管理
-        </div>
+        <div style="font-size:11px;color:#A8A296;line-height:1.8">1. 點「產生共享連結」建立行程代碼<br>2. 複製連結傳給同行夥伴<br>3. 夥伴打開連結即可加入，行程和記帳即時同步<br>4. 必買清單各自獨立管理</div>
       </div>
     </div>
   </div>
@@ -255,12 +268,9 @@ body{background:#EDE7DA;display:flex;justify-content:center;min-height:100dvh;fo
 </div>
 <div class="toast" id="toast"></div>
 
-<!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-
 <script>
-// ── Firebase init ──
 firebase.initializeApp({
   apiKey:"AIzaSyD1ILm1TbCcbh_QGB-f2Me2hnex0T3x2HI",
   authDomain:"travelline-planner.firebaseapp.com",
@@ -271,35 +281,42 @@ firebase.initializeApp({
 });
 const db = firebase.firestore();
 
-// ── App state ──
 const AC=[{bg:'#FBD4DE',color:'#8B3B52'},{bg:'#C9E4DE',color:'#2E5C4E'},{bg:'#FCE3B8',color:'#8A5A2A'},{bg:'#D9D7F2',color:'#4A3F8C'},{bg:'#F4D9C9',color:'#8A4A2A'}];
+
+// Currency configs: code, symbol, name, base rate to TWD
+const CURRENCY_DB = {
+  TWD:{symbol:'NT$',name:'台幣',rate:1},
+  JPY:{symbol:'¥',name:'日圓',rate:0.2145},
+  KRW:{symbol:'₩',name:'韓圜',rate:0.0237},
+  USD:{symbol:'$',name:'美元',rate:32.5},
+  EUR:{symbol:'€',name:'歐元',rate:35.2},
+  GBP:{symbol:'£',name:'英鎊',rate:41.0},
+  HKD:{symbol:'HK$',name:'港幣',rate:4.16},
+  SGD:{symbol:'S$',name:'新幣',rate:24.2},
+  THB:{symbol:'฿',name:'泰銖',rate:0.93},
+  MYR:{symbol:'RM',name:'馬幣',rate:7.2},
+};
+
 let state = {
-  tripId: null,
-  currentTab: 'itinerary',
-  currentDay: 0,
-  mapMode: 'day',
-  dayCount: 0,
-  currentRate: null,
-  tripStartDate: null,
-  members: [{name:'旅人',isMe:true}],
-  allStations: [],
-  expenses: [],
-  shopItems: [],
-  firestoreSpots: [],
-  dragSrc: null,
-  unsubTrip: null,
-  isSaving: false,
+  tripId:null, currentTab:'itinerary', currentDay:0, mapMode:'day',
+  dayCount:0, tripStartDate:null,
+  members:[{name:'旅人',isMe:true}],
+  allStations:[], expenses:[], shopItems:[], firestoreSpots:[],
+  dragSrc:null, unsubTrip:null,
+  activeCurrency:'JPY',
+  enabledCurrencies:['JPY','TWD'],
+  rates:{JPY:0.2145,KRW:0.0237,USD:32.5,EUR:35.2,GBP:41.0,HKD:4.16,SGD:24.2,THB:0.93,MYR:7.2,TWD:1},
 };
 
 function mc(i){return AC[i%AC.length];}
 function mi(n){return n?n.charAt(0).toUpperCase():'';}
-function twd(j){return state.currentRate?'≈ NT$'+Math.round(j*state.currentRate).toLocaleString():'—';}
 function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2000);}
 function genId(){return Math.random().toString(36).substr(2,8).toUpperCase();}
+function fmtAmt(amt,currency){const c=CURRENCY_DB[currency]||CURRENCY_DB.JPY;return c.symbol+Math.round(amt).toLocaleString();}
+function toTWD(amt,currency){return Math.round(amt*(state.rates[currency]||1));}
+function fmtTWD(amt,currency){if(currency==='TWD')return'';return'≈ NT$'+toTWD(amt,currency).toLocaleString();}
 
-// ── App object (all functions exposed to onclick) ──
 const App = {
-  // Tab
   switchTab(tab){
     state.currentTab=tab;
     document.querySelectorAll('.content-section').forEach(s=>s.classList.remove('active'));
@@ -313,20 +330,25 @@ const App = {
     if(tab==='share')App.updateShareTab();
   },
 
+  // Hero & spots
+  onHeroInput(){},
+  confirmDest(){
+    // filter spots by hero input
+    App.openModal('itinerary');
+  },
+
   // Date
   onDateChange(){
-    const sv=document.getElementById('startDate').value;
-    const ev=document.getElementById('endDate').value;
+    const sv=document.getElementById('startDate').value,ev=document.getElementById('endDate').value;
     if(!sv||!ev)return;
-    const s=new Date(sv),e=new Date(ev);
-    const diff=Math.round((e-s)/86400000)+1;
+    const s=new Date(sv),e=new Date(ev),diff=Math.round((e-s)/86400000)+1;
     const r=document.getElementById('dateResult');
     if(diff<1){r.innerHTML='<i class="ti ti-alert-circle"></i> 回程日期需晚於出發日期';return;}
     r.innerHTML=`<i class="ti ti-calendar-check"></i> 共 ${diff} 天 ${diff-1} 夜`;
-    state.tripStartDate=s; state.dayCount=diff;
-    while(state.allStations.length<diff) state.allStations.push([]);
-    if(state.currentDay>=diff) state.currentDay=diff-1;
-    App.renderDayRow(); App.renderStations(); App.saveTrip();
+    state.tripStartDate=s;state.dayCount=diff;
+    while(state.allStations.length<diff)state.allStations.push([]);
+    if(state.currentDay>=diff)state.currentDay=diff-1;
+    App.renderDayRow();App.renderStations();App.saveTrip();
   },
   fmtDay(i){
     if(!state.tripStartDate)return'';
@@ -342,15 +364,14 @@ const App = {
       c.style.background=i===state.currentDay?'#FBD4DE':'#FCE3B8';
       c.dataset.day=i;
       c.innerHTML=`<div class="day-num">Day ${i+1}</div><div class="day-del" onclick="event.stopPropagation();App.delDay(${i})"><i class="ti ti-x"></i></div>`;
-      c.onclick=()=>App.switchDay(i);
-      row.appendChild(c);
+      c.onclick=()=>App.switchDay(i);row.appendChild(c);
     }
     const a=document.createElement('div');a.className='day-add';a.innerHTML='<i class="ti ti-plus"></i>';a.onclick=()=>App.addDay();row.appendChild(a);
     document.getElementById('todayDateLabel').textContent=App.fmtDay(state.currentDay);
   },
   switchDay(i){state.currentDay=i;App.renderDayRow();App.renderStations();const row=document.getElementById('dayRow');row.children[i]&&row.children[i].scrollIntoView({behavior:'smooth',inline:'start',block:'nearest'});},
   addDay(){state.dayCount++;while(state.allStations.length<state.dayCount)state.allStations.push([]);state.currentDay=state.dayCount-1;App.renderDayRow();App.renderStations();showToast('已新增 Day '+state.dayCount);setTimeout(()=>{const r=document.getElementById('dayRow');r.scrollLeft=r.scrollWidth;},50);App.saveTrip();},
-  delDay(i){if(state.dayCount<=1){showToast('至少保留一天');return;}state.allStations.splice(i,1);state.dayCount--;if(state.currentDay>=state.dayCount)state.currentDay=state.dayCount-1;App.renderDayRow();App.renderStations();App.saveTrip();showToast('天數已刪除');},
+  delDay(i){if(state.dayCount<=1){showToast('至少保留一天');return;}state.allStations.splice(i,1);state.dayCount--;if(state.currentDay>=state.dayCount)state.currentDay=state.dayCount-1;App.renderDayRow();App.renderStations();App.saveTrip();showToast('已刪除');},
 
   // Stations
   renderStations(){
@@ -362,18 +383,16 @@ const App = {
       const el=document.createElement('div');el.className='station-card';el.draggable=true;el.dataset.idx=i;
       el.innerHTML=`<div class="drag-h"><i class="ti ti-grip-vertical"></i></div><div class="s-info"><div class="s-time">${s.time||''}</div><div class="s-name">${s.name}</div><div class="s-note" contenteditable="true" spellcheck="false" data-ph="新增備註...">${s.note||''}</div></div><button class="s-del" onclick="App.delStation(${i})"><i class="ti ti-x"></i></button>`;
       el.querySelector('.s-note').addEventListener('blur',function(){state.allStations[state.currentDay][i].note=this.textContent.trim();App.saveTrip();});
-      // Desktop drag
       el.addEventListener('dragstart',()=>{state.dragSrc=i;setTimeout(()=>el.classList.add('dragging'),0);});
       el.addEventListener('dragend',()=>{el.classList.remove('dragging');document.querySelectorAll('.drag-over').forEach(x=>x.classList.remove('drag-over'));});
       el.addEventListener('dragover',e=>{e.preventDefault();el.classList.add('drag-over');});
       el.addEventListener('dragleave',()=>el.classList.remove('drag-over'));
       el.addEventListener('drop',e=>{e.preventDefault();el.classList.remove('drag-over');const t=+el.dataset.idx;if(state.dragSrc===null||state.dragSrc===t)return;const m=state.allStations[state.currentDay].splice(state.dragSrc,1)[0];state.allStations[state.currentDay].splice(t,0,m);state.dragSrc=null;App.renderStations();App.saveTrip();showToast('順序已更新');});
-      // Touch drag
       App.addTouchDrag(el,i);
       list.appendChild(el);
     });
   },
-  addTouchDrag(el,idx){
+  addTouchDrag(el){
     const handle=el.querySelector('.drag-h');
     let timer=null,active=false,clone=null,srcIdx=null,overEl=null,ox=0,oy=0;
     handle.addEventListener('touchstart',e=>{
@@ -382,90 +401,128 @@ const App = {
         active=true;srcIdx=+el.dataset.idx;
         const r=el.getBoundingClientRect();
         clone=el.cloneNode(true);
-        clone.style.cssText=`position:fixed;z-index:999;pointer-events:none;width:${r.width}px;top:${r.top}px;left:${r.left}px;margin:0;border-radius:18px;background:#fff;box-shadow:0 8px 24px rgba(0,0,0,.2);opacity:.9;transform:scale(1.02);transition:none;`;
-        document.body.appendChild(clone);
-        el.classList.add('dragging');
+        clone.style.cssText=`position:fixed;z-index:999;pointer-events:none;width:${r.width}px;top:${r.top}px;left:${r.left}px;margin:0;border-radius:18px;background:#fff;box-shadow:0 8px 24px rgba(0,0,0,.2);opacity:.9;transform:scale(1.02);`;
+        document.body.appendChild(clone);el.classList.add('dragging');
         try{navigator.vibrate&&navigator.vibrate(40);}catch(e){}
       },300);
     },{passive:true});
     handle.addEventListener('touchmove',e=>{
       if(!active){const t=e.touches[0];if(Math.abs(t.clientX-ox)>6||Math.abs(t.clientY-oy)>6)clearTimeout(timer);return;}
       e.preventDefault();
-      const t=e.touches[0];
-      const r=el.getBoundingClientRect();
-      clone.style.top=(r.top+(t.clientY-oy))+'px';
-      clone.style.left=r.left+'px';
-      clone.style.visibility='hidden';
-      const under=document.elementFromPoint(t.clientX,t.clientY);
-      clone.style.visibility='';
+      const t=e.touches[0];const r=el.getBoundingClientRect();
+      clone.style.top=(r.top+(t.clientY-oy))+'px';clone.style.left=r.left+'px';
+      clone.style.visibility='hidden';const under=document.elementFromPoint(t.clientX,t.clientY);clone.style.visibility='';
       const oc=under&&under.closest('.station-card:not(.dragging)');
       if(overEl&&overEl!==oc)overEl.classList.remove('drag-over');
       if(oc){oc.classList.add('drag-over');overEl=oc;}else overEl=null;
     },{passive:false});
     const endFn=()=>{
-      clearTimeout(timer);
-      if(!active){active=false;return;}
-      active=false;
-      if(clone){clone.remove();clone=null;}
-      el.classList.remove('dragging');
+      clearTimeout(timer);if(!active){active=false;return;}active=false;
+      if(clone){clone.remove();clone=null;}el.classList.remove('dragging');
       document.querySelectorAll('.drag-over').forEach(x=>x.classList.remove('drag-over'));
-      if(overEl){
-        const ti=+overEl.dataset.idx;
-        overEl=null;
+      if(overEl){const ti=+overEl.dataset.idx;overEl=null;
         if(srcIdx!==null&&srcIdx!==ti&&!isNaN(ti)){
           const m=state.allStations[state.currentDay].splice(srcIdx,1)[0];
           state.allStations[state.currentDay].splice(ti,0,m);
-          App.renderStations();App.saveTrip();showToast('順序已更新 ✓');
-        }
-      }
+          App.renderStations();App.saveTrip();showToast('順序已更新 ✓');}}
       srcIdx=null;
     };
     handle.addEventListener('touchend',endFn,{passive:true});
     handle.addEventListener('touchcancel',endFn,{passive:true});
   },
-  delStation(i){state.allStations[state.currentDay].splice(i,1);App.renderStations();App.saveTrip();showToast('站點已移除');},
+  delStation(i){state.allStations[state.currentDay].splice(i,1);App.renderStations();App.saveTrip();showToast('已移除');},
+
+  // Currency
+  renderCurrencyPills(){
+    const wrap=document.getElementById('currencyPills');wrap.innerHTML='';
+    state.enabledCurrencies.forEach(code=>{
+      const btn=document.createElement('button');btn.className='currency-pill'+(code===state.activeCurrency?' active':'');
+      btn.textContent=CURRENCY_DB[code]?CURRENCY_DB[code].symbol+' '+code:code;
+      btn.onclick=()=>{state.activeCurrency=code;App.renderCurrencyPills();App.renderBudget();};
+      wrap.appendChild(btn);
+    });
+  },
+  openAddCurrency(){
+    document.getElementById('modalTitle').textContent='新增幣別';
+    const available=Object.keys(CURRENCY_DB).filter(c=>!state.enabledCurrencies.includes(c));
+    const opts=available.map(c=>`<option value="${c}">${CURRENCY_DB[c].symbol} ${c} — ${CURRENCY_DB[c].name}</option>`).join('');
+    document.getElementById('modalBody').innerHTML=`<div class="field"><label>選擇幣別</label><div class="select-wrap"><select id="mCurrCode">${opts}</select></div></div><div class="field"><label>匯率（兌換 1 TWD）</label><input id="mCurrRate" type="number" step="0.0001" placeholder="例：0.2145"/></div><div style="font-size:10px;color:#A8A296;margin-bottom:11px">預設匯率僅供參考，可自行修改</div><button class="modal-submit" onclick="App.submitCurrency()">加入幣別</button>`;
+    // auto fill rate when select changes
+    setTimeout(()=>{
+      const sel=document.getElementById('mCurrCode');
+      if(sel){sel.onchange=()=>{const code=sel.value;const r=document.getElementById('mCurrRate');if(r&&CURRENCY_DB[code])r.value=CURRENCY_DB[code].rate;};sel.dispatchEvent(new Event('change'));}
+    },50);
+    document.getElementById('modalBg').classList.add('open');
+  },
+  submitCurrency(){
+    const code=document.getElementById('mCurrCode').value;
+    const rate=parseFloat(document.getElementById('mCurrRate').value);
+    if(!code||isNaN(rate)){showToast('請填入匯率');return;}
+    state.rates[code]=rate;
+    if(!state.enabledCurrencies.includes(code))state.enabledCurrencies.push(code);
+    state.activeCurrency=code;
+    App.renderCurrencyPills();App.renderBudget();App.closeModal();showToast(code+' 已加入');
+  },
 
   // Budget
   async fetchRate(){
     const b=document.getElementById('rateBadge');b.textContent='更新中…';
-    try{const r=await fetch('https://api.exchangerate-api.com/v4/latest/JPY');const d=await r.json();const rate=d.rates&&d.rates.TWD;if(rate){state.currentRate=rate;b.textContent='1 JPY = '+rate.toFixed(4)+' TWD';}else throw 0;}
-    catch(e){state.currentRate=0.2145;b.textContent='1 JPY ≈ 0.2145（參考）';}
+    try{
+      const r=await fetch('https://api.exchangerate-api.com/v4/latest/TWD');
+      const d=await r.json();
+      if(d.rates){
+        Object.keys(CURRENCY_DB).forEach(c=>{if(d.rates[c])state.rates[c]=1/d.rates[c];});
+        state.rates.TWD=1;
+        const cur=state.activeCurrency;
+        const cinfo=CURRENCY_DB[cur];
+        b.textContent=`1 ${cur} = ${(state.rates[cur]||1).toFixed(4)} TWD`;
+      }
+    }catch(e){b.textContent='無法更新匯率';}
     App.renderBudget();
   },
   calcSplits(){
     const n=state.members.length;if(!n)return[];
-    const tot=state.expenses.filter(e=>e.split==='均攤').reduce((s,e)=>s+e.jpy,0);
+    const cur=state.activeCurrency;
+    const tot=state.expenses.filter(e=>e.split==='均攤'&&e.currency===cur).reduce((s,e)=>s+e.amount,0);
     const pp=Math.round(tot/n);
     return state.members.map((m,i)=>{
-      const paid=state.expenses.filter(e=>e.payer===m.name).reduce((s,e)=>s+e.jpy,0);
+      const paid=state.expenses.filter(e=>e.payer===m.name&&e.currency===cur).reduce((s,e)=>s+e.amount,0);
       const net=paid-pp;const c=mc(i);
       return{...m,paid,pp,net,bg:c.bg,color:c.color,sign:net>=0?'+':'-',jpy:Math.abs(net),amtColor:net>=0?'#2E5C4E':'#A33B3B',badge:net>=0?'待收款':'欠款',badgeBg:net>=0?'#C9E4DE':'#FBD4DE',badgeColor:net>=0?'#2E5C4E':'#8B3B52'};
     });
   },
   renderBudget(){
-    const n=state.members.length;const tot=state.expenses.reduce((s,e)=>s+e.jpy,0);const perP=n?Math.round(tot/n):0;
-    document.getElementById('totalJpy').textContent='¥'+tot.toLocaleString();
-    document.getElementById('perPersonJpy').textContent='¥'+perP.toLocaleString();
-    document.getElementById('totalTwd').textContent=twd(tot);
-    document.getElementById('perPersonTwd').textContent=twd(perP);
+    App.renderCurrencyPills();
+    const cur=state.activeCurrency;
+    const n=state.members.length;
+    const tot=state.expenses.filter(e=>e.currency===cur).reduce((s,e)=>s+e.amount,0);
+    const perP=n?Math.round(tot/n):0;
+    document.getElementById('totalOrig').textContent=fmtAmt(tot,cur);
+    document.getElementById('perPersonOrig').textContent=fmtAmt(perP,cur);
+    document.getElementById('totalTwd').textContent=fmtTWD(tot,cur);
+    document.getElementById('perPersonTwd').textContent=fmtTWD(perP,cur);
+    // rate badge
+    const cinfo=CURRENCY_DB[cur];
+    const r=state.rates[cur]||1;
+    document.getElementById('rateBadge').textContent=cur==='TWD'?'基準幣別':`1 ${cur} = ${r.toFixed(4)} TWD`;
     const el=document.getElementById('expenseList');el.innerHTML='';
     state.expenses.forEach((e,i)=>{
       const div=document.createElement('div');div.className='exp-item';
-      div.innerHTML=`<div class="exp-icon">${e.icon||'🧾'}</div><div class="exp-info"><div class="exp-name">${e.name}</div><div class="exp-who">${e.who} · ${e.split==='均攤'?n+'人均攤':e.split}</div></div><div class="exp-amts"><div class="exp-jpy">¥${e.jpy.toLocaleString()}</div><div class="exp-twd">${twd(e.jpy)}</div></div><button class="exp-del" onclick="App.delExpense(${i})"><i class="ti ti-trash"></i></button>`;
+      div.innerHTML=`<div class="exp-icon">🧾</div><div class="exp-info"><div class="exp-name">${e.name}</div><div class="exp-who">${e.who||''} · ${e.split==='均攤'?n+'人均攤':e.split}</div></div><div class="exp-amts"><div class="exp-orig">${fmtAmt(e.amount,e.currency)}</div><div class="exp-twd">${fmtTWD(e.amount,e.currency)}</div></div><button class="exp-del" onclick="App.delExpense(${i})"><i class="ti ti-trash"></i></button>`;
       el.appendChild(div);
     });
     const splits=App.calcSplits();const sl=document.getElementById('splitList');sl.innerHTML='';
     splits.forEach((p,i)=>{
       const div=document.createElement('div');div.className='split-item';div.onclick=()=>App.openDetail(i);
-      div.innerHTML=`<div class="avatar" style="background:${p.bg};color:${p.color}">${mi(p.name)}</div><div class="split-name">${p.name}${p.isMe?'（你）':''}</div><div style="text-align:right"><div class="split-jpy" style="color:${p.amtColor}">${p.sign}¥${p.jpy.toLocaleString()}</div><div class="split-twd">${twd(p.jpy)}</div></div><span class="split-badge" style="background:${p.badgeBg};color:${p.badgeColor}">${p.badge}</span><button class="split-del" onclick="event.stopPropagation();App.delMember(${i})"><i class="ti ti-x"></i></button>`;
+      div.innerHTML=`<div class="avatar" style="background:${p.bg};color:${p.color}">${mi(p.name)}</div><div class="split-name">${p.name}${p.isMe?'（你）':''}</div><div style="text-align:right"><div class="split-jpy" style="color:${p.amtColor}">${p.sign}${fmtAmt(p.jpy,cur)}</div><div class="split-twd">${fmtTWD(p.jpy,cur)}</div></div><span class="split-badge" style="background:${p.badgeBg};color:${p.badgeColor}">${p.badge}</span><button class="split-del" onclick="event.stopPropagation();App.delMember(${i})"><i class="ti ti-x"></i></button>`;
       sl.appendChild(div);
     });
   },
-  delExpense(i){state.expenses.splice(i,1);App.renderBudget();App.saveTrip();showToast('費用已刪除');},
-  delMember(i){if(state.members.length<=1){showToast('至少保留一位');return;}state.members.splice(i,1);App.renderBudget();App.saveTrip();showToast('已移除成員');},
+  delExpense(i){state.expenses.splice(i,1);App.renderBudget();App.saveTrip();showToast('已刪除');},
+  delMember(i){if(state.members.length<=1){showToast('至少保留一位');return;}state.members.splice(i,1);App.renderBudget();App.saveTrip();showToast('已移除');},
   openAddMember(){
     document.getElementById('modalTitle').textContent='新增成員';
-    document.getElementById('modalBody').innerHTML=`<div class="field"><label>成員名稱</label><input id="mMemberName" placeholder="輸入名字"/></div><div style="font-size:10px;color:#A8A296;margin-bottom:7px;">目前成員</div><div class="member-list" id="curMembers"></div><button class="modal-submit" onclick="App.submitMember()">加入成員</button>`;
+    document.getElementById('modalBody').innerHTML=`<div class="field"><label>成員名稱</label><input id="mMemberName" placeholder="輸入名字"/></div><div style="font-size:10px;color:#A8A296;margin-bottom:7px">目前成員</div><div class="member-list" id="curMembers"></div><button class="modal-submit" onclick="App.submitMember()">加入成員</button>`;
     App.renderCurMembers();document.getElementById('modalBg').classList.add('open');
   },
   renderCurMembers(){
@@ -481,27 +538,28 @@ const App = {
   },
   openDetail(idx){
     const splits=App.calcSplits();const p=splits[idx];if(!p)return;
+    const cur=state.activeCurrency;
     document.getElementById('detailAvatar').style.cssText=`background:${p.bg};color:${p.color}`;
     document.getElementById('detailAvatar').textContent=mi(p.name);
     document.getElementById('detailName').textContent=p.name+(p.isMe?'（你）':'');
     document.getElementById('detailSub').textContent=p.net>=0?'墊付較多，等待收款':'欠款中';
     const body=document.getElementById('detailBody');body.innerHTML='';
     const sc=document.createElement('div');sc.className='settle-card';
-    if(p.net>=0){sc.style.background='#C9E4DE';const d=splits.filter(x=>x.net<0);sc.innerHTML=`<div style="font-size:24px">💰</div><div><div style="font-size:10px;color:#2E5C4E">待收款對象</div><div style="font-size:13px;font-weight:600;color:#2B2620;margin-top:2px">${d.length?d.map(x=>x.name).join('、'):'目前無欠款'}</div><div style="font-size:12px;color:#2E5C4E;margin-top:4px">+¥${p.jpy.toLocaleString()} ${twd(p.jpy)}</div></div>`;}
-    else{sc.style.background='#FBD4DE';const cr=splits.filter(x=>x.net>0);sc.innerHTML=`<div style="font-size:24px">💸</div><div><div style="font-size:10px;color:#8B3B52">應付款對象</div><div style="font-size:13px;font-weight:600;color:#2B2620;margin-top:2px">還給 ${cr.length?cr.map(c=>c.name).join('、'):'對方'}</div><div style="font-size:12px;color:#8B3B52;margin-top:4px">-¥${p.jpy.toLocaleString()} ${twd(p.jpy)}</div></div>`;}
+    if(p.net>=0){sc.style.background='#C9E4DE';const d=splits.filter(x=>x.net<0);sc.innerHTML=`<div style="font-size:24px">💰</div><div><div style="font-size:10px;color:#2E5C4E">待收款對象</div><div style="font-size:13px;font-weight:600;color:#2B2620;margin-top:2px">${d.length?d.map(x=>x.name).join('、'):'目前無欠款'}</div><div style="font-size:12px;color:#2E5C4E;margin-top:4px">+${fmtAmt(p.jpy,cur)} ${fmtTWD(p.jpy,cur)}</div></div>`;}
+    else{sc.style.background='#FBD4DE';const cr=splits.filter(x=>x.net>0);sc.innerHTML=`<div style="font-size:24px">💸</div><div><div style="font-size:10px;color:#8B3B52">應付款對象</div><div style="font-size:13px;font-weight:600;color:#2B2620;margin-top:2px">還給 ${cr.length?cr.map(c=>c.name).join('、'):'對方'}</div><div style="font-size:12px;color:#8B3B52;margin-top:4px">-${fmtAmt(p.jpy,cur)} ${fmtTWD(p.jpy,cur)}</div></div>`;}
     body.appendChild(sc);
     const sec=document.createElement('div');sec.className='detail-sec';sec.textContent='參與費用明細';body.appendChild(sec);
     state.expenses.filter(e=>e.payer===p.name||e.split==='均攤').forEach(e=>{
-      const ip=e.payer===p.name;const sh=Math.round(e.jpy/state.members.length);
+      const ip=e.payer===p.name;const sh=Math.round(e.amount/state.members.length);
       const row=document.createElement('div');row.className='detail-exp-row';
-      row.innerHTML=`<div class="exp-icon">${e.icon||'🧾'}</div><div style="flex:1"><div class="exp-name">${e.name}</div><div class="exp-who">${ip?'由你付款':'參與均攤'}</div></div><div style="text-align:right"><div class="exp-jpy" style="color:${ip?'#2E5C4E':'#2B2620'}">${ip?'+':'-'}¥${(ip?e.jpy:sh).toLocaleString()}</div></div>`;
+      row.innerHTML=`<div class="exp-icon">🧾</div><div style="flex:1"><div class="exp-name">${e.name}</div><div class="exp-who">${ip?'由你付款':'參與均攤'}</div></div><div style="text-align:right"><div class="exp-orig" style="color:${ip?'#2E5C4E':'#2B2620'}">${ip?'+':'-'}${fmtAmt(ip?e.amount:sh,e.currency)}</div></div>`;
       body.appendChild(row);
     });
     document.getElementById('detailSheet').classList.add('open');
   },
   closeDetail(){document.getElementById('detailSheet').classList.remove('open');},
 
-  // Shop (local only)
+  // Shop
   renderShop(){
     const w=document.getElementById('shopList');w.innerHTML='';
     const cats=[...new Set(state.shopItems.map(i=>i.cat))];
@@ -521,10 +579,23 @@ const App = {
   toggleShop(i){state.shopItems[i].checked=!state.shopItems[i].checked;App.renderShop();},
   delShop(i){state.shopItems.splice(i,1);App.renderShop();showToast('已移除');},
 
-  // Map
-  buildMapsUrl(stations){
+  // Map — 支援韓國地圖 (Naver + Google fallback)
+  getMapUrl(name){
+    const dest=document.getElementById('heroTitle').value||'';
+    const isKorea=/(首爾|釜山|韓國|Korea|Seoul|Busan|大邱|仁川|光州)/i.test(dest)||/(首爾|釜山|韓國|Korea|Seoul|Busan)/i.test(name);
+    if(isKorea){return`https://map.naver.com/v5/search/${encodeURIComponent(name)}`;}
+    return`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(name)}`;
+  },
+  buildRouteUrl(stations){
     if(!stations||!stations.length)return null;
+    const dest=document.getElementById('heroTitle').value||'';
+    const isKorea=/(首爾|釜山|韓國|Korea|Seoul|Busan)/i.test(dest);
     const names=stations.map(s=>s.name);
+    if(isKorea){
+      // Naver directions
+      const slt=encodeURIComponent(names[0]);const elt=encodeURIComponent(names[names.length-1]);
+      return`https://map.naver.com/v5/directions/-/-/${slt}/transit?c=15,0,0,0,dh`;
+    }
     if(names.length===1)return'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(names[0]);
     const o=encodeURIComponent(names[0]),d=encodeURIComponent(names[names.length-1]);
     const wp=names.slice(1,-1).map(n=>encodeURIComponent(n)).join('|');
@@ -542,32 +613,54 @@ const App = {
     if(state.mapMode==='day'){
       const st=state.allStations[state.currentDay]||[];
       if(!st.length){wrap.innerHTML='<div style="margin:0 18px;padding:24px;text-align:center;font-size:13px;color:#A8A296;background:#fff;border-radius:18px;">尚無行程站點</div>';return;}
-      wrap.innerHTML=`<a class="map-open-btn" href="${App.buildMapsUrl(st)}" target="_blank"><i class="ti ti-brand-google-maps"></i>在 Google Maps 開啟路線</a>`+st.map((s,i)=>`<div class="map-stop-row"><div class="map-num">${i+1}</div><div style="flex:1"><div class="map-name">${s.icon||'📍'} ${s.name}</div><div class="map-time">${s.time||''}</div></div></div>`).join('');
+      const routeUrl=App.buildRouteUrl(st);
+      wrap.innerHTML=(routeUrl?`<a class="map-open-btn" href="${routeUrl}" target="_blank"><i class="ti ti-brand-google-maps"></i>在地圖開啟路線</a>`:'')
+        +st.map((s,i)=>`<div class="map-stop-row"><div class="map-num">${i+1}</div><div style="flex:1"><div class="map-name">${s.name}</div><div class="map-time">${s.time||''}</div></div><a href="${App.getMapUrl(s.name)}" target="_blank" style="font-size:10px;color:#6B9080;text-decoration:none;flex-shrink:0">開啟</a></div>`).join('');
     }else{
       const flat=state.allStations.flat();
       if(!flat.length){wrap.innerHTML='<div style="margin:0 18px;padding:24px;text-align:center;font-size:13px;color:#A8A296;background:#fff;border-radius:18px;">尚無行程站點</div>';return;}
-      wrap.innerHTML=`<a class="map-open-btn" href="${App.buildMapsUrl(flat)}" target="_blank"><i class="ti ti-brand-google-maps"></i>在 Google Maps 開啟完整路線</a>`+state.allStations.map((day,di)=>day.length?`<div style="margin:0 18px 6px;font-size:10px;font-weight:600;color:#A8A296;">Day ${di+1}</div>`+day.map(s=>`<div class="map-stop-row"><div class="map-num" style="background:#E4F0EB;color:#2E5C4E">${di+1}</div><div style="flex:1"><div class="map-name">${s.icon||'📍'} ${s.name}</div><div class="map-time">${s.time||''}</div></div></div>`).join(''):'').join('');
+      const routeUrl=App.buildRouteUrl(flat);
+      wrap.innerHTML=(routeUrl?`<a class="map-open-btn" href="${routeUrl}" target="_blank"><i class="ti ti-brand-google-maps"></i>在地圖開啟完整路線</a>`:'')+
+        state.allStations.map((day,di)=>day.length?`<div style="margin:0 18px 6px;font-size:10px;font-weight:600;color:#A8A296">Day ${di+1}</div>`+day.map((s,i)=>`<div class="map-stop-row"><div class="map-num" style="background:#E4F0EB;color:#2E5C4E">${di+1}</div><div style="flex:1"><div class="map-name">${s.name}</div><div class="map-time">${s.time||''}</div></div><a href="${App.getMapUrl(s.name)}" target="_blank" style="font-size:10px;color:#6B9080;text-decoration:none;flex-shrink:0">開啟</a></div>`).join(''):'').join('');
     }
   },
 
   // Modal
   buildSpotsOptions(){
-    if(!state.firestoreSpots.length)return'<option value="">— 載入中或尚無景點 —</option>';
-    const cats=[...new Set(state.firestoreSpots.map(s=>s.cat))];
-    let h='<option value="">— 從推薦景點選取 —</option>';
-    cats.forEach(cat=>{h+=`<optgroup label="${cat}">`;state.firestoreSpots.filter(s=>s.cat===cat).forEach(s=>{h+=`<option value="${s.name}">${s.icon||'📍'} ${s.name}${s.desc?'  '+s.desc:''}</option>`;});h+='</optgroup>';});
+    const dest=document.getElementById('heroTitle').value.trim().toLowerCase();
+    let spots=state.firestoreSpots;
+    if(dest){
+      // filter by destination match
+      spots=spots.filter(s=>{
+        const region=(s.region||'').toLowerCase();
+        return region.includes(dest)||dest.includes((s.region||'').split('・')[0].toLowerCase());
+      });
+    }
+    if(!spots.length&&dest)return`<option value="">「${document.getElementById('heroTitle').value}」暫無推薦景點，可手動輸入</option>`;
+    if(!spots.length)return'<option value="">— 先在上方輸入目的地 —</option>';
+    const cats=[...new Set(spots.map(s=>s.cat))];
+    let h=`<option value="">— 推薦景點（${spots.length}個）—</option>`;
+    cats.forEach(cat=>{
+      h+=`<optgroup label="${cat}">`;
+      spots.filter(s=>s.cat===cat).forEach(s=>{h+=`<option value="${s.name}">${s.icon||'📍'} ${s.name}${s.desc?'  '+s.desc:''}</option>`;});
+      h+='</optgroup>';
+    });
     return h;
   },
   fillSpot(){const sel=document.getElementById('spotSelect');if(sel&&sel.value)document.getElementById('mName').value=sel.value;},
-  openModal(){
+  fmtTimeInput(el){let v=el.value.replace(/[^0-9]/g,'');if(v.length>=3)v=v.slice(0,2)+':'+v.slice(2,4);el.value=v;},
+  openModal(forceTab){
+    const tab=forceTab||state.currentTab;
     const title=document.getElementById('modalTitle'),body=document.getElementById('modalBody');
-    if(state.currentTab==='itinerary'){
+    if(tab==='itinerary'){
+      const spotsOpts=App.buildSpotsOptions();
       title.textContent='新增行程景點';
-      body.innerHTML=`<div class="field"><label>推薦景點</label><div class="select-wrap"><select id="spotSelect" onchange="App.fillSpot()">${App.buildSpotsOptions()}</select></div></div><div class="divider"><span>或手動輸入</span></div><div class="field-row"><div class="field"><label>時間</label><input id="mTime" placeholder="09:00" maxlength="5" oninput="App.fmtTime(this)"/></div><div class="field" style="flex:2"><label>景點名稱</label><input id="mName" placeholder="自行輸入名稱"/></div></div><div class="field"><label>備註</label><input id="mNote" placeholder="可留空"/></div><button class="modal-submit" onclick="App.submitStation()">加入 Day ${state.currentDay+1}</button>`;
-    }else if(state.currentTab==='budget'){
+      body.innerHTML=`<div class="field"><label>推薦景點</label><div class="select-wrap"><select id="spotSelect" onchange="App.fillSpot()">${spotsOpts}</select></div></div><div class="divider"><span>或手動輸入</span></div><div class="field-row"><div class="field"><label>時間</label><input id="mTime" placeholder="09:00" oninput="App.fmtTimeInput(this)" maxlength="5"/></div><div class="field" style="flex:2"><label>景點名稱</label><input id="mName" placeholder="輸入名稱"/></div></div><div class="field"><label>備註</label><input id="mNote" placeholder="可留空"/></div><button class="modal-submit" onclick="App.submitStation()">加入 Day ${state.currentDay+1}</button>`;
+    }else if(tab==='budget'){
       const opts=state.members.map(m=>`<option>${m.name}</option>`).join('');
+      const curOpts=state.enabledCurrencies.map(c=>`<option value="${c}"${c===state.activeCurrency?' selected':''}>${CURRENCY_DB[c]?CURRENCY_DB[c].symbol+' '+c:c}</option>`).join('');
       title.textContent='新增費用';
-      body.innerHTML=`<div class="field"><label>項目名稱</label><input id="mExpName" placeholder="例：晚餐、門票"/></div><div class="field-row"><div class="field"><label>金額（¥）</label><input id="mExpAmt" type="number" placeholder="0"/></div><div class="field"><label>付款人</label><div class="select-wrap"><select id="mExpPayer">${opts}</select></div></div></div><div class="field"><label>分帳方式</label><div class="select-wrap"><select id="mExpSplit"><option value="均攤">${state.members.length}人均攤</option><option value="各自">各自付款</option></select></div></div><button class="modal-submit" onclick="App.submitExpense()">新增費用</button>`;
+      body.innerHTML=`<div class="field"><label>項目名稱</label><input id="mExpName" placeholder="例：晚餐、門票"/></div><div class="field-row"><div class="field"><label>幣別</label><div class="select-wrap"><select id="mExpCur">${curOpts}</select></div></div><div class="field" style="flex:2"><label>金額</label><input id="mExpAmt" type="number" placeholder="0"/></div></div><div class="field-row"><div class="field"><label>付款人</label><div class="select-wrap"><select id="mExpPayer">${opts}</select></div></div><div class="field"><label>分帳方式</label><div class="select-wrap"><select id="mExpSplit"><option value="均攤">${state.members.length}人均攤</option><option value="各自">各自付款</option></select></div></div></div><button class="modal-submit" onclick="App.submitExpense()">新增費用</button>`;
     }else{
       title.textContent='新增必買項目';
       body.innerHTML=`<div class="field"><label>品項名稱</label><input id="mShopName" placeholder="例：抹茶巧克力"/></div><div class="field"><label>分類</label><div class="select-wrap"><select id="mShopCat"><option>食品伴手禮</option><option>生活雜貨</option><option>藥妝</option><option>其他</option></select></div></div><div class="field"><label>購買地點</label><input id="mShopLoc" placeholder="可留空"/></div><button class="modal-submit" onclick="App.submitShop()">加入清單</button>`;
@@ -575,11 +668,6 @@ const App = {
     document.getElementById('modalBg').classList.add('open');
   },
   closeModal(){document.getElementById('modalBg').classList.remove('open');},
-  fmtTime(input){
-    let v=input.value.replace(/[^0-9]/g,'');
-    if(v.length>=3) v=v.slice(0,2)+':'+v.slice(2,4);
-    input.value=v;
-  },
   closeModalBg(e){if(e.target===document.getElementById('modalBg'))App.closeModal();},
   submitStation(){
     const time=document.getElementById('mTime').value.trim()||'待定';
@@ -590,100 +678,87 @@ const App = {
   },
   submitExpense(){
     const name=document.getElementById('mExpName').value.trim();
-    const amt=document.getElementById('mExpAmt').value;
+    const amt=parseFloat(document.getElementById('mExpAmt').value);
     const payer=document.getElementById('mExpPayer').value;
     const split=document.getElementById('mExpSplit').value;
-    if(!name||!amt)return;
-    state.expenses.push({icon:'🧾',name,who:payer+' 付款',split,jpy:parseInt(amt),payer});
+    const currency=document.getElementById('mExpCur').value;
+    if(!name||isNaN(amt))return;
+    state.expenses.push({name,who:payer+' 付款',split,amount:amt,currency,payer});
     App.renderBudget();App.closeModal();App.saveTrip();showToast('已新增');
   },
   submitShop(){
     const name=document.getElementById('mShopName').value.trim();if(!name)return;
     const cat=document.getElementById('mShopCat').value;
     const loc=document.getElementById('mShopLoc').value.trim()||'';
-    state.shopItems.push({cat,name,loc,checked:false});App.renderShop();App.closeModal();showToast('已加入清單');
+    state.shopItems.push({cat,name,loc,checked:false});App.renderShop();App.closeModal();showToast('已加入');
   },
 
-  // Firebase sync
+  // Firebase
   async saveTrip(){
     if(!state.tripId)return;
     document.getElementById('syncDot').style.display='inline-block';
     try{
       await db.collection('trips').doc(state.tripId).set({
-        members:state.members,
-        expenses:state.expenses,
-        allStations:state.allStations,
-        dayCount:state.dayCount,
+        members:state.members,expenses:state.expenses,allStations:state.allStations,
+        dayCount:state.dayCount,enabledCurrencies:state.enabledCurrencies,activeCurrency:state.activeCurrency,
         startDate:document.getElementById('startDate').value||'',
         endDate:document.getElementById('endDate').value||'',
-        heroTitle:document.getElementById('heroTitle').textContent||'',
+        heroTitle:document.getElementById('heroTitle').value||'',
         updatedAt:firebase.firestore.FieldValue.serverTimestamp()
       },{merge:true});
     }catch(e){console.warn('Save failed',e);}
     setTimeout(()=>document.getElementById('syncDot').style.display='none',800);
   },
-  loadTripData(data,skipRender){
+  loadTripData(data){
     if(data.members)state.members=data.members;
     if(data.expenses)state.expenses=data.expenses;
     if(data.allStations)state.allStations=data.allStations;
     if(data.dayCount)state.dayCount=data.dayCount;
-    if(data.heroTitle&&data.heroTitle!=='要去哪裡？')document.getElementById('heroTitle').textContent=data.heroTitle;
+    if(data.enabledCurrencies)state.enabledCurrencies=data.enabledCurrencies;
+    if(data.activeCurrency)state.activeCurrency=data.activeCurrency;
+    if(data.heroTitle)document.getElementById('heroTitle').value=data.heroTitle;
     if(data.startDate){
       document.getElementById('startDate').value=data.startDate;
       document.getElementById('endDate').value=data.endDate||'';
-      if(data.startDate){
-        state.tripStartDate=new Date(data.startDate);
-        const diff=state.dayCount||1;
-        const r=document.getElementById('dateResult');
-        r.innerHTML=`<i class="ti ti-calendar-check"></i> 共 ${diff} 天 ${diff-1} 夜`;
-      }
+      state.tripStartDate=new Date(data.startDate);
+      const diff=state.dayCount||1;
+      document.getElementById('dateResult').innerHTML=`<i class="ti ti-calendar-check"></i> 共 ${diff} 天 ${diff-1} 夜`;
     }
-    if(!skipRender){App.renderDayRow();App.renderStations();App.renderBudget();App.renderShop();}
+    App.renderDayRow();App.renderStations();App.renderBudget();App.renderShop();
   },
   listenTrip(){
     if(!state.tripId)return;
     if(state.unsubTrip)state.unsubTrip();
-    state.unsubTrip=db.collection('trips').doc(state.tripId).onSnapshot(snap=>{
-      if(snap.exists)App.loadTripData(snap.data());
-    });
+    state.unsubTrip=db.collection('trips').doc(state.tripId).onSnapshot(snap=>{if(snap.exists)App.loadTripData(snap.data());});
   },
   async doShare(){
     if(!state.tripId){
-      state.tripId=genId();
-      await App.saveTrip();
-      App.listenTrip();
-      const newUrl=window.location.origin+window.location.pathname+'?trip='+state.tripId;
-      window.history.replaceState({},'',newUrl);
+      state.tripId=genId();await App.saveTrip();App.listenTrip();
+      window.history.replaceState({},'',window.location.pathname+'?trip='+state.tripId);
     }
     const link=window.location.origin+window.location.pathname+'?trip='+state.tripId;
-    try{await navigator.clipboard.writeText(link);showToast('連結已複製！傳給同行夥伴 🎉');}
+    try{await navigator.clipboard.writeText(link);showToast('連結已複製！🎉');}
     catch(e){prompt('複製連結：',link);}
     App.updateShareTab();
   },
-  updateShareBtn(){},
   updateShareTab(){
     const btn=document.getElementById('shareTabBtn');
     const sub=document.getElementById('shareTabSub');
     const block=document.getElementById('shareCodeBlock');
+    if(!btn)return;
     if(state.tripId){
-      btn.textContent='複製連結';
-      sub.textContent='行程代碼：'+state.tripId+'　傳給同行夥伴，打開即可同步';
+      btn.textContent='複製共享連結';
+      sub.textContent='行程代碼：'+state.tripId+'　傳給同行夥伴即可加入';
       const link=window.location.origin+window.location.pathname+'?trip='+state.tripId;
-      block.innerHTML=`<div style="background:#fff;border-radius:14px;padding:12px 14px;margin-top:10px"><div style="font-size:10px;color:#A8A296;margin-bottom:6px;font-weight:500">共享連結</div><div style="font-size:11px;color:#2B2620;word-break:break-all;margin-bottom:10px">${link}</div><button onclick="App.doShare()" style="width:100%;padding:9px;background:#2B2620;color:#fff;border:none;border-radius:11px;font-size:12px;font-weight:600;cursor:pointer;">再次複製連結</button></div>`;
-    } else {
+      block.innerHTML=`<div class="share-code-block"><div style="font-size:10px;color:#A8A296;margin-bottom:6px;font-weight:500">共享連結</div><div style="font-size:11px;color:#2B2620;word-break:break-all;margin-bottom:10px;line-height:1.5">${link}</div><button onclick="App.doShare()" style="width:100%;padding:9px;background:#2B2620;color:#fff;border:none;border-radius:11px;font-size:12px;font-weight:600;cursor:pointer">再次複製連結</button></div>`;
+    }else{
       btn.textContent='產生共享連結';
-      sub.textContent='產生一個專屬連結，把它傳給同行夥伴，大家打開同一個連結就可以即時同步行程和記帳。';
+      sub.textContent='產生連結讓同行夥伴即時同步行程與記帳';
       block.innerHTML='';
     }
   },
-  fmtTimeInput(el){
-    let v=el.value.replace(/[^0-9]/g,'');
-    if(v.length>=3) v=v.slice(0,2)+':'+v.slice(2,4);
-    el.value=v;
-  },
-  openShareInfo(){App.switchTab('share');},
 
-  // Spots
+  // Spots from Firestore
   loadSpots(){
     db.collection('spots').onSnapshot(snap=>{
       state.firestoreSpots=snap.docs.map(d=>({id:d.id,...d.data()}));
@@ -691,35 +766,19 @@ const App = {
     });
   },
 
-  // Init
   async init(){
-    App.loadSpots();
-    App.fetchRate();
-    App.renderBudget();
-    App.renderShop();
-    // Check trip from URL
+    App.loadSpots();App.fetchRate();App.renderBudget();App.renderShop();App.renderDayRow();App.renderStations();
     const params=new URLSearchParams(window.location.search);
     const tid=params.get('trip');
     if(tid){
       state.tripId=tid;
-      try{
-        const snap=await db.collection('trips').doc(tid).get();
-        if(snap.exists){App.loadTripData(snap.data(),true);}
-        App.listenTrip();
-        showToast('已加入共享行程 '+tid);
-      }catch(e){state.tripId=null;}
+      try{const snap=await db.collection('trips').doc(tid).get();if(snap.exists)App.loadTripData(snap.data());App.listenTrip();showToast('已加入共享行程 '+tid);}
+      catch(e){state.tripId=null;}
     }
-    App.renderDayRow();
-    App.renderStations();
-    App.renderBudget();
-    App.renderShop();
-
-    // Hero title sync on blur
     document.getElementById('heroTitle').addEventListener('blur',()=>App.saveTrip());
   }
 };
 
-// Start
 App.init();
 </script>
 </body>
