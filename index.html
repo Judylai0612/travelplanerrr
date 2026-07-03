@@ -16,10 +16,8 @@ body{background:#EDE7DA;display:flex;justify-content:center;min-height:100dvh;fo
 .greet{font-size:13px;color:#A8A296;}.greet b{color:#2B2620;font-weight:600;}
 .icon-btn{width:32px;height:32px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;color:#2B2620;font-size:15px;border:none;cursor:pointer;flex-shrink:0;}
 .hero{margin:6px 18px 10px;border-radius:20px;padding:16px 18px;background:#F6C453;position:relative;overflow:hidden;flex-shrink:0;}
-.hero-input-row{display:flex;align-items:center;gap:8px;}
-.hero-title{font-size:22px;font-weight:600;color:#2B2620;line-height:1.25;outline:none;flex:1;background:none;border:none;font-family:inherit;}
+.hero-title{font-size:22px;font-weight:600;color:#2B2620;line-height:1.25;outline:none;width:100%;background:none;border:none;font-family:inherit;display:block;}
 .hero-title::placeholder{color:rgba(43,38,32,.45);}
-.hero-confirm{background:#2B2620;color:#fff;border:none;border-radius:12px;padding:7px 13px;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;flex-shrink:0;}
 .hero-emoji{position:absolute;right:-4px;bottom:-8px;font-size:46px;opacity:.9;transform:rotate(-8deg);pointer-events:none;}
 .tab-pills{display:flex;gap:6px;padding:0 18px 10px;overflow-x:auto;scrollbar-width:none;flex-shrink:0;}
 .tab-pills::-webkit-scrollbar{display:none;}
@@ -178,11 +176,11 @@ body{background:#EDE7DA;display:flex;justify-content:center;min-height:100dvh;fo
     <div class="icon-btn" onclick="App.switchTab('share')"><i class="ti ti-users" style="font-size:13px"></i></div>
   </div>
   <div class="hero">
-    <div class="hero-input-row">
-      <input class="hero-title" id="heroTitle" placeholder="要去哪裡？" oninput="App.onHeroInput()" onblur="App.saveTrip()">
-      <button class="hero-confirm" onclick="App.confirmDest()">探索景點</button>
-    </div>
+    <input class="hero-title" id="heroTitle" placeholder="要去哪裡？" oninput="App.onHeroInput()" onblur="App.saveTrip()">
     <div class="hero-emoji">⛩</div>
+  </div>
+  <div style="padding:0 18px 10px;flex-shrink:0;">
+    <button onclick="App.confirmDest()" style="width:100%;padding:9px;background:#2B2620;color:#fff;border:none;border-radius:13px;font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;"><i class="ti ti-sparkles" style="font-size:14px"></i>探索景點推薦</button>
   </div>
   <div class="tab-pills">
     <div class="pill active" data-tab="itinerary" onclick="App.switchTab('itinerary')">行程</div>
