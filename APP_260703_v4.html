@@ -28,11 +28,11 @@ body{background:#EDE7DA;display:flex;justify-content:center;min-height:100dvh;fo
 .section-date{font-size:13px;color:#A8A296;font-weight:500;}
 .day-row-wrap{flex-shrink:0;}
 .date-picker-card{margin:0 18px 10px;background:#fff;border-radius:14px;padding:10px 12px;}
-.date-row{display:flex;align-items:center;gap:8px;}
+.date-row{display:flex;align-items:flex-end;gap:8px;}
 .date-field{flex:1;}
 .date-field label{display:block;font-size:9px;color:#A8A296;margin-bottom:3px;font-weight:500;}
 .date-field input{width:100%;font-size:12px;padding:6px 8px;border-radius:9px;border:1.5px solid #ECE5D4;background:#FBF6EA;color:#2B2620;}
-.date-arrow{color:#C9C3B5;font-size:14px;margin-top:12px;}
+.date-arrow{color:#C9C3B5;font-size:14px;margin-bottom:8px;flex-shrink:0;}
 .date-result{margin-top:8px;padding-top:8px;border-top:1px solid #F0EBDD;font-size:11px;color:#6B9080;font-weight:600;display:flex;align-items:center;gap:5px;}
 .day-row-outer{overflow:hidden;padding:0 18px 4px;}
 .day-row{display:flex;gap:8px;overflow-x:scroll;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;touch-action:pan-x;scrollbar-width:none;padding-bottom:2px;}
@@ -55,9 +55,9 @@ body{background:#EDE7DA;display:flex;justify-content:center;min-height:100dvh;fo
 .drag-h{color:#D3CDBE;font-size:14px;cursor:grab;flex-shrink:0;padding:2px 4px;min-width:28px;min-height:44px;display:flex;align-items:center;justify-content:center;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;touch-action:none;}
 .s-icon-block{width:40px;height:40px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0;}
 .s-info{flex:1;min-width:0;}
-.s-time{font-size:10px;color:#A8A296;font-weight:500;}
+.s-time{font-size:16px;color:#A8A296;font-weight:500;}
 .s-name{font-size:14px;font-weight:600;color:#2B2620;margin-top:1px;}
-.s-note{font-size:11px;color:#A8A296;margin-top:2px;outline:none;border-radius:6px;padding:1px 3px;margin-left:-3px;}
+.s-note{font-size:17px;color:#A8A296;margin-top:2px;outline:none;border-radius:6px;padding:1px 3px;margin-left:-3px;}
 .s-note:focus{background:#FBF6EA;}
 .s-note:empty:before{content:attr(data-ph);opacity:.5;font-style:italic;}
 .s-del{width:28px;height:28px;border-radius:50%;background:#F4EFE4;display:flex;align-items:center;justify-content:center;color:#A8A296;font-size:12px;border:none;cursor:pointer;flex-shrink:0;margin-top:0;padding:0;}
@@ -180,6 +180,7 @@ body{background:#EDE7DA;display:flex;justify-content:center;min-height:100dvh;fo
     <div class="pill" data-tab="budget" onclick="App.switchTab('budget')">記帳</div>
     <div class="pill" data-tab="shop" onclick="App.switchTab('shop')">必買</div>
     <div class="pill" data-tab="map" onclick="App.switchTab('map')">地圖</div>
+    <div class="pill" data-tab="share" onclick="App.switchTab('share')">共享</div>
   </div>
   <div id="dayRowWrap" class="day-row-wrap">
     <div class="section-row"><div class="section-title">選擇天數</div></div>
@@ -199,10 +200,7 @@ body{background:#EDE7DA;display:flex;justify-content:center;min-height:100dvh;fo
       <div id="stationList"></div>
     </div>
     <div class="content-section" id="tab-budget">
-      <div class="share-banner" id="shareBanner" style="display:none">
-        <div><div class="share-banner-text">🔗 共享行程</div><div class="share-banner-sub" id="shareSub">產生連結讓同行夥伴即時同步</div></div>
-        <button class="share-copy-btn" id="shareBtn" onclick="App.doShare()">產生連結</button>
-      </div>
+
       <div class="rate-pill-row"><span>JPY／TWD <span class="rate-badge" id="rateBadge">載入中…</span></span><button class="rate-refresh" onclick="App.fetchRate()"><i class="ti ti-refresh" style="font-size:10px"></i> 更新</button></div>
       <div class="budget-summary">
         <div class="b-card" style="background:#FBD4DE"><div class="b-label" style="color:#8B3B52">總支出</div><div class="b-amt" id="totalJpy" style="color:#2B2620">¥0</div><div class="b-twd" style="color:#8B3B52" id="totalTwd">—</div></div>
@@ -220,6 +218,24 @@ body{background:#EDE7DA;display:flex;justify-content:center;min-height:100dvh;fo
     <div class="content-section" id="tab-map">
       <div class="map-toggle-row"><button class="map-toggle-btn active" id="mapBtnDay" onclick="App.setMapMode('day')">當天行程</button><button class="map-toggle-btn" id="mapBtnAll" onclick="App.setMapMode('all')">全程總覽</button></div>
       <div id="mapContent"></div>
+    </div>
+    <div class="content-section" id="tab-share">
+      <div style="margin:16px 18px 10px;background:#E4F0EB;border-radius:20px;padding:20px 18px;">
+        <div style="font-size:18px;margin-bottom:6px">🔗</div>
+        <div style="font-size:16px;font-weight:600;color:#2B2620;margin-bottom:4px">共享行程</div>
+        <div style="font-size:12px;color:#6B9080;margin-bottom:16px" id="shareTabSub">產生一個專屬連結，把它傳給同行夥伴，大家打開同一個連結就可以即時同步行程和記帳。</div>
+        <button onclick="App.doShare()" style="width:100%;padding:12px;background:#6B9080;color:#fff;border:none;border-radius:14px;font-size:14px;font-weight:600;cursor:pointer;" id="shareTabBtn">產生共享連結</button>
+      </div>
+      <div style="margin:0 18px;" id="shareCodeBlock" style="display:none"></div>
+      <div style="margin:12px 18px 0;background:#fff;border-radius:16px;padding:16px 16px;">
+        <div style="font-size:12px;font-weight:600;color:#2B2620;margin-bottom:8px">使用說明</div>
+        <div style="font-size:11px;color:#A8A296;line-height:1.7">
+          1. 點「產生共享連結」建立唯一行程代碼<br>
+          2. 複製連結傳給同行夥伴<br>
+          3. 夥伴打開連結即可加入，行程和記帳即時同步<br>
+          4. 必買清單各自獨立管理
+        </div>
+      </div>
     </div>
   </div>
   <div class="bottom-nav">
@@ -294,7 +310,7 @@ const App = {
     const ni=document.getElementById('nav-'+tab);if(ni)ni.classList.add('active');
     document.getElementById('dayRowWrap').style.display=tab==='itinerary'?'block':'none';
     if(tab==='map')App.renderMap();
-    if(tab==='budget'){document.getElementById('shareBanner').style.display='flex';App.updateShareBtn();}
+    if(tab==='share')App.updateShareTab();
   },
 
   // Date
@@ -344,7 +360,7 @@ const App = {
     if(!stations.length){list.innerHTML='<div style="margin:0 18px;padding:24px;text-align:center;font-size:13px;color:#A8A296;background:#fff;border-radius:18px;">尚無行程，點下方 ＋ 新增</div>';return;}
     stations.forEach((s,i)=>{
       const el=document.createElement('div');el.className='station-card';el.draggable=true;el.dataset.idx=i;
-      el.innerHTML=`<div class="drag-h"><i class="ti ti-grip-vertical"></i></div><div class="s-icon-block" style="background:${s.bg}">${s.icon||'📍'}</div><div class="s-info"><div class="s-time">${s.time||''}</div><div class="s-name">${s.name}</div><div class="s-note" contenteditable="true" spellcheck="false" data-ph="新增備註...">${s.note||''}</div></div><button class="s-del" onclick="App.delStation(${i})"><i class="ti ti-x"></i></button>`;
+      el.innerHTML=`<div class="drag-h"><i class="ti ti-grip-vertical"></i></div><div class="s-info"><div class="s-time">${s.time||''}</div><div class="s-name">${s.name}</div><div class="s-note" contenteditable="true" spellcheck="false" data-ph="新增備註...">${s.note||''}</div></div><button class="s-del" onclick="App.delStation(${i})"><i class="ti ti-x"></i></button>`;
       el.querySelector('.s-note').addEventListener('blur',function(){state.allStations[state.currentDay][i].note=this.textContent.trim();App.saveTrip();});
       // Desktop drag
       el.addEventListener('dragstart',()=>{state.dragSrc=i;setTimeout(()=>el.classList.add('dragging'),0);});
@@ -547,7 +563,7 @@ const App = {
     const title=document.getElementById('modalTitle'),body=document.getElementById('modalBody');
     if(state.currentTab==='itinerary'){
       title.textContent='新增行程景點';
-      body.innerHTML=`<div class="field"><label>推薦景點</label><div class="select-wrap"><select id="spotSelect" onchange="App.fillSpot()">${App.buildSpotsOptions()}</select></div></div><div class="divider"><span>或手動輸入</span></div><div class="field-row"><div class="field"><label>時間</label><input id="mTime" placeholder="09:00"/></div><div class="field" style="flex:2"><label>景點名稱</label><input id="mName" placeholder="自行輸入名稱"/></div></div><div class="field"><label>備註</label><input id="mNote" placeholder="可留空"/></div><button class="modal-submit" onclick="App.submitStation()">加入 Day ${state.currentDay+1}</button>`;
+      body.innerHTML=`<div class="field"><label>推薦景點</label><div class="select-wrap"><select id="spotSelect" onchange="App.fillSpot()">${App.buildSpotsOptions()}</select></div></div><div class="divider"><span>或手動輸入</span></div><div class="field-row"><div class="field"><label>時間</label><input id="mTime" placeholder="09:00" maxlength="5" oninput="App.fmtTime(this)"/></div><div class="field" style="flex:2"><label>景點名稱</label><input id="mName" placeholder="自行輸入名稱"/></div></div><div class="field"><label>備註</label><input id="mNote" placeholder="可留空"/></div><button class="modal-submit" onclick="App.submitStation()">加入 Day ${state.currentDay+1}</button>`;
     }else if(state.currentTab==='budget'){
       const opts=state.members.map(m=>`<option>${m.name}</option>`).join('');
       title.textContent='新增費用';
@@ -559,12 +575,17 @@ const App = {
     document.getElementById('modalBg').classList.add('open');
   },
   closeModal(){document.getElementById('modalBg').classList.remove('open');},
+  fmtTime(input){
+    let v=input.value.replace(/[^0-9]/g,'');
+    if(v.length>=3) v=v.slice(0,2)+':'+v.slice(2,4);
+    input.value=v;
+  },
   closeModalBg(e){if(e.target===document.getElementById('modalBg'))App.closeModal();},
   submitStation(){
     const time=document.getElementById('mTime').value.trim()||'待定';
     const name=document.getElementById('mName').value.trim();if(!name)return;
     const note=document.getElementById('mNote').value.trim()||'';
-    state.allStations[state.currentDay].push({time,name,note,icon:'📍',bg:'#D9D7F2'});
+    state.allStations[state.currentDay].push({time,name,note});
     App.renderStations();App.closeModal();App.saveTrip();showToast('已加入');
   },
   submitExpense(){
@@ -637,17 +658,30 @@ const App = {
     const link=window.location.origin+window.location.pathname+'?trip='+state.tripId;
     try{await navigator.clipboard.writeText(link);showToast('連結已複製！傳給同行夥伴 🎉');}
     catch(e){prompt('複製連結：',link);}
-    App.updateShareBtn();
+    App.updateShareTab();
   },
-  updateShareBtn(){
-    const btn=document.getElementById('shareBtn'),sub=document.getElementById('shareSub');
-    if(state.tripId){btn.textContent='複製連結';sub.textContent='行程代碼：'+state.tripId+'・同行夥伴打開即可同步';}
-    else{btn.textContent='產生連結';sub.textContent='產生連結讓同行夥伴即時同步';}
+  updateShareBtn(){},
+  updateShareTab(){
+    const btn=document.getElementById('shareTabBtn');
+    const sub=document.getElementById('shareTabSub');
+    const block=document.getElementById('shareCodeBlock');
+    if(state.tripId){
+      btn.textContent='複製連結';
+      sub.textContent='行程代碼：'+state.tripId+'　傳給同行夥伴，打開即可同步';
+      const link=window.location.origin+window.location.pathname+'?trip='+state.tripId;
+      block.innerHTML=`<div style="background:#fff;border-radius:14px;padding:12px 14px;margin-top:10px"><div style="font-size:10px;color:#A8A296;margin-bottom:6px;font-weight:500">共享連結</div><div style="font-size:11px;color:#2B2620;word-break:break-all;margin-bottom:10px">${link}</div><button onclick="App.doShare()" style="width:100%;padding:9px;background:#2B2620;color:#fff;border:none;border-radius:11px;font-size:12px;font-weight:600;cursor:pointer;">再次複製連結</button></div>`;
+    } else {
+      btn.textContent='產生共享連結';
+      sub.textContent='產生一個專屬連結，把它傳給同行夥伴，大家打開同一個連結就可以即時同步行程和記帳。';
+      block.innerHTML='';
+    }
   },
-  openShareInfo(){
-    if(state.tripId){App.switchTab('budget');setTimeout(()=>App.doShare(),100);}
-    else{App.switchTab('budget');}
+  fmtTimeInput(el){
+    let v=el.value.replace(/[^0-9]/g,'');
+    if(v.length>=3) v=v.slice(0,2)+':'+v.slice(2,4);
+    el.value=v;
   },
+  openShareInfo(){App.switchTab('share');},
 
   // Spots
   loadSpots(){
@@ -679,8 +713,7 @@ const App = {
     App.renderStations();
     App.renderBudget();
     App.renderShop();
-    document.getElementById('shareBanner').style.display='flex';
-    App.updateShareBtn();
+
     // Hero title sync on blur
     document.getElementById('heroTitle').addEventListener('blur',()=>App.saveTrip());
   }
