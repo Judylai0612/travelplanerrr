@@ -48,7 +48,7 @@ body{background:#EDE7DA;display:flex;justify-content:center;min-height:100dvh;fo
 .date-row{display:flex;align-items:flex-end;gap:8px;}
 .date-field{flex:1;}
 .date-field label{display:block;font-size:9px;color:#A8A296;margin-bottom:3px;font-weight:500;}
-.date-field input{width:100%;font-size:12px;padding:6px 8px;border-radius:9px;border:1.5px solid #ECE5D4;background:#FBF6EA;color:#2B2620;}
+.date-field input{width:100%;font-size:11px;padding:5px 6px;border-radius:9px;border:1.5px solid #ECE5D4;background:#FBF6EA;color:#2B2620;min-width:0;}
 .date-arrow{color:#C9C3B5;font-size:14px;padding-bottom:7px;flex-shrink:0;}
 .date-result{margin-top:8px;padding-top:8px;border-top:1px solid #F0EBDD;font-size:11px;color:#6B9080;font-weight:600;display:flex;align-items:center;gap:5px;}
 .day-row-outer{overflow:hidden;padding:0 18px 4px;}
@@ -86,17 +86,17 @@ body{background:#EDE7DA;display:flex;justify-content:center;min-height:100dvh;fo
 .exp-item{margin:0 18px 8px;background:#fff;border-radius:14px;padding:10px 14px;display:flex;align-items:center;gap:10px;}
 .exp-icon{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;background:#F4EFE4;flex-shrink:0;}
 .exp-info{flex:1;min-width:0;}
-.exp-name{font-size:12px;font-weight:600;color:#2B2620;}
-.exp-who{font-size:10px;color:#A8A296;margin-top:1px;}
+.exp-name{font-size:15px;font-weight:600;color:#2B2620;}
+.exp-who{font-size:13px;color:#A8A296;margin-top:1px;}
 .exp-amts{text-align:right;}
-.exp-orig{font-size:12px;font-weight:600;color:#2B2620;}
+.exp-orig{font-size:15px;font-weight:600;color:#2B2620;}
 .exp-twd{font-size:9px;color:#C97B4A;margin-top:1px;}
 .exp-del{width:28px;height:28px;border-radius:50%;background:#F4EFE4;display:flex;align-items:center;justify-content:center;color:#A8A296;font-size:12px;border:none;cursor:pointer;flex-shrink:0;padding:0;}
 .split-add-btn{display:flex;align-items:center;gap:4px;font-size:10px;color:#2B2620;background:#FFF4E0;border:none;border-radius:12px;padding:4px 10px;cursor:pointer;}
 .split-item{margin:0 18px 8px;background:#fff;border-radius:14px;padding:10px 14px;display:flex;align-items:center;gap:9px;cursor:pointer;}
 .avatar{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;flex-shrink:0;}
-.split-name{font-size:12px;font-weight:600;color:#2B2620;flex:1;}
-.split-jpy{font-size:11px;font-weight:600;}
+.split-name{font-size:15px;font-weight:600;color:#2B2620;flex:1;}
+.split-jpy{font-size:14px;font-weight:600;}
 .split-twd{font-size:9px;color:#A8A296;}
 .split-badge{font-size:9px;padding:3px 8px;border-radius:10px;margin-left:4px;white-space:nowrap;}
 .split-del{width:24px;height:24px;border-radius:50%;background:#F4EFE4;display:flex;align-items:center;justify-content:center;color:#A8A296;font-size:10px;border:none;cursor:pointer;padding:0;}
@@ -136,11 +136,11 @@ body{background:#EDE7DA;display:flex;justify-content:center;min-height:100dvh;fo
 .map-time{font-size:10px;color:#A8A296;}
 /* Nav */
 .bottom-nav{display:flex;align-items:center;justify-content:space-around;padding:8px 14px;margin:6px 14px calc(14px + env(safe-area-inset-bottom));background:#fff;border-radius:22px;flex-shrink:0;}
-.nav-item{display:flex;flex-direction:column;align-items:center;gap:3px;padding:7px 12px;border-radius:16px;cursor:pointer;}
+.nav-item{display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 14px;border-radius:18px;cursor:pointer;}
 .nav-item.active{background:#4A453C;}
-.nav-item i{font-size:18px;color:#A8A296;}
+.nav-item i{font-size:22px;color:#A8A296;}
 .nav-item.active i,.nav-item.active span{color:#fff;}
-.nav-item span{font-size:12px;color:#A8A296;font-weight:500;}
+.nav-item span{font-size:13px;color:#A8A296;font-weight:500;}
 .add-fab{width:54px;height:54px;border-radius:54px;background:#FFC233;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 4px 10px rgba(255,194,51,.4);flex-shrink:0;padding:0;border:none;}
 .add-fab i{font-size:24px;color:#2B2620;}
 /* Modal */
@@ -205,22 +205,17 @@ body{background:#EDE7DA;display:flex;justify-content:center;min-height:100dvh;fo
 
   <div class="top-bar">
     <div class="greet">嗨，<b id="greetName">旅人</b><span id="syncDot" class="sync-dot" style="display:none"></span></div>
-    <div class="icon-btn" onclick="App.switchTab('share')"><i class="ti ti-users" style="font-size:13px"></i></div>
+    <button onclick="App.deleteTrip()" style="background:none;border:none;color:#C9C3B5;font-size:11px;cursor:pointer;display:flex;align-items:center;gap:3px;flex-shrink:0;padding:4px 6px;border-radius:8px;" title="刪除此行程"><i class="ti ti-trash" style="font-size:14px"></i>刪除行程</button>
   </div>
   <div class="hero">
     <div class="hero-title" id="heroTitle" contenteditable="true" spellcheck="false">旅行</div>
     <div class="hero-emoji">⛩</div>
   </div>
-  <div class="explore-btn-wrap">
-    <button class="explore-btn" onclick="App.openModal('itinerary')"><i class="ti ti-sparkles" style="font-size:14px"></i>探索景點推薦</button>
+  <div id="exploreWrap" style="display:flex;gap:8px;padding:0 18px 10px;flex-shrink:0;">
+    <button style="flex:1;min-width:0;padding:9px 12px;background:#2B2620;color:#fff;border:none;border-radius:13px;font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px;white-space:nowrap;" onclick="App.openModal('itinerary')"><i class="ti ti-sparkles" style="font-size:13px;flex-shrink:0"></i>探索景點</button>
+    <button style="flex:0 0 80px;padding:9px 12px;background:#6B9080;color:#fff;border:none;border-radius:13px;font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px;white-space:nowrap;" onclick="App.switchTab('share')"><i class="ti ti-users" style="font-size:13px;flex-shrink:0"></i>共享</button>
   </div>
-  <div class="tab-pills">
-    <div class="pill active" data-tab="itinerary" onclick="App.switchTab('itinerary')">行程</div>
-    <div class="pill" data-tab="budget" onclick="App.switchTab('budget')">記帳</div>
-    <div class="pill" data-tab="shop" onclick="App.switchTab('shop')">必買</div>
-    <div class="pill" data-tab="map" onclick="App.switchTab('map')">地圖</div>
-    <div class="pill" data-tab="share" onclick="App.switchTab('share')">共享</div>
-  </div>
+
   <div id="dayRowWrap" class="day-row-wrap">
     <div class="section-row"><div class="section-title">選擇天數</div></div>
     <div class="date-picker-card">
@@ -240,8 +235,12 @@ body{background:#EDE7DA;display:flex;justify-content:center;min-height:100dvh;fo
     </div>
     <div class="content-section" id="tab-budget">
       <div class="budget-summary">
-        <div class="b-card" style="background:#FBD4DE"><div class="b-label" style="color:#8B3B52">總支出</div><div class="b-amt" id="totalOrig" style="color:#2B2620">0</div><div class="b-twd" style="color:#8B3B52" id="totalTwd">—</div></div>
-        <div class="b-card" style="background:#C9E4DE"><div class="b-label" style="color:#2E5C4E">人均費用</div><div class="b-amt" id="perPersonOrig" style="color:#2B2620">0</div><div class="b-twd" style="color:#2E5C4E" id="perPersonTwd">—</div></div>
+        <div class="b-card" style="background:#FBD4DE"><div class="b-label" style="color:#8B3B52">總支出（台幣）</div><div class="b-amt" id="totalOrig" style="color:#2B2620">0</div><div class="b-twd" style="color:#8B3B52" id="totalTwd">—</div></div>
+        <div class="b-card" style="background:#C9E4DE"><div class="b-label" style="color:#2E5C4E">人均費用（台幣）</div><div class="b-amt" id="perPersonOrig" style="color:#2B2620">0</div><div class="b-twd" style="color:#2E5C4E" id="perPersonTwd">—</div></div>
+      </div>
+      <div style="margin:0 18px 10px;background:#fff;border-radius:14px;padding:10px 14px;display:flex;justify-content:space-between;align-items:center;">
+        <span style="font-size:12px;color:#A8A296">日幣合計</span>
+        <span style="font-size:15px;font-weight:600;color:#2B2620" id="totalJpy">¥0</span>
       </div>
       <div class="section-row"><div class="section-title">費用明細</div></div>
       <div id="expenseList"></div>
@@ -325,7 +324,7 @@ const LS_KEY = 'tabiLine_data';
 let state = {
   tripId:null, currentTab:'itinerary', currentDay:0, mapMode:'day',
   dayCount:0, tripStartDate:null,
-  userName:'旅人', destination:'',
+  userName:'旅人', destination:'', userId:null,
   members:[], allStations:[], expenses:[], shopItems:[],
   firestoreSpots:[], dragSrc:null, unsubTrip:null,
   rates:{...Object.fromEntries(Object.entries(CURRENCY_DB).map(([k,v])=>[k,v.rate]))},
@@ -341,12 +340,23 @@ function toTWD(amt,cur){return Math.round(amt*(state.rates[cur]||1));}
 function fmtTWD(amt,cur){if(cur==='TWD')return'';return'≈ NT$'+toTWD(amt,cur).toLocaleString();}
 
 // ── LocalStorage save/load ──
+function getOrCreateUserId(){
+  // Persistent unique ID stored in localStorage, never changes
+  let uid=null;
+  try{uid=localStorage.getItem('tabiLine_uid');}catch(e){}
+  if(!uid){
+    uid='u_'+Math.random().toString(36).substr(2,9)+'_'+Date.now().toString(36);
+    try{localStorage.setItem('tabiLine_uid',uid);}catch(e){}
+  }
+  return uid;
+}
 function saveLocal(){
   const data={
     userName:state.userName, destination:state.destination,
     members:state.members, expenses:state.expenses,
     allStations:state.allStations, dayCount:state.dayCount,
-    shopItems:state.shopItems,
+    shopItems:state.shopItems, tripId:state.tripId||null,
+    userId:state.userId||null,
     startDate:document.getElementById('startDate').value||'',
     endDate:document.getElementById('endDate').value||'',
     heroTitle:document.getElementById('heroTitle').textContent||'',
@@ -381,12 +391,11 @@ const App = {
   switchTab(tab){
     state.currentTab=tab;
     document.querySelectorAll('.content-section').forEach(s=>s.classList.remove('active'));
-    document.querySelectorAll('.pill').forEach(p=>p.classList.remove('active'));
     document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
     document.getElementById('tab-'+tab).classList.add('active');
-    const p=document.querySelector(`.pill[data-tab="${tab}"]`);if(p)p.classList.add('active');
     const ni=document.getElementById('nav-'+tab);if(ni)ni.classList.add('active');
     document.getElementById('dayRowWrap').style.display=tab==='itinerary'?'block':'none';
+    const ew=document.getElementById('exploreWrap');if(ew)ew.style.display=tab==='itinerary'?'flex':'none';
     if(tab==='map')App.renderMap();
     if(tab==='share')App.updateShareTab();
   },
@@ -583,35 +592,41 @@ const App = {
   },
   calcSplits(){
     const n=state.members.length;if(!n)return[];
-    // convert all to TWD for fair split
     const tot=state.expenses.filter(e=>e.split==='均攤').reduce((s,e)=>s+toTWD(e.amount,e.currency),0);
     const pp=Math.round(tot/n);
     return state.members.map((m,i)=>{
-      const paid=state.expenses.filter(e=>e.payer===m.name).reduce((s,e)=>s+toTWD(e.amount,e.currency),0);
+      // Match by uid if available, fallback to name for backward compat
+      const paid=state.expenses.filter(e=>(m.uid&&e.payerUid===m.uid)||(e.payer===m.name&&!e.payerUid)).reduce((s,e)=>s+toTWD(e.amount,e.currency),0);
       const net=paid-pp;const c=mc(i);
       return{...m,paid,pp,net,bg:c.bg,color:c.color,sign:net>=0?'+':'-',amt:Math.abs(net),amtColor:net>=0?'#2E5C4E':'#A33B3B',badge:net>=0?'待收款':'欠款',badgeBg:net>=0?'#C9E4DE':'#FBD4DE',badgeColor:net>=0?'#2E5C4E':'#8B3B52'};
     });
   },
   renderBudget(){
     const n=state.members.length;
-    // show totals in TWD
     const tot=state.expenses.reduce((s,e)=>s+toTWD(e.amount,e.currency),0);
     const perP=n?Math.round(tot/n):0;
     document.getElementById('totalOrig').textContent='NT$'+tot.toLocaleString();
     document.getElementById('perPersonOrig').textContent='NT$'+perP.toLocaleString();
     document.getElementById('totalTwd').textContent=state.expenses.length?'（台幣換算合計）':'';
     document.getElementById('perPersonTwd').textContent='';
+    // JPY total
+    const jpyEl=document.getElementById('totalJpy');
+    if(jpyEl){const jpyTot=state.expenses.reduce((s,e)=>{const rate=state.rates['JPY']||0.2145;const twdAmt=toTWD(e.amount,e.currency);return s+Math.round(twdAmt/rate);},0);jpyEl.textContent='¥'+jpyTot.toLocaleString();}
     const el=document.getElementById('expenseList');el.innerHTML='';
     state.expenses.forEach((e,i)=>{
       const div=document.createElement('div');div.className='exp-item';
-      div.innerHTML=`<div class="exp-icon">🧾</div><div class="exp-info"><div class="exp-name">${e.name}</div><div class="exp-who">${e.who||''} · ${e.split==='均攤'?n+'人均攤':e.split}</div></div><div class="exp-amts"><div class="exp-orig">${fmtAmt(e.amount,e.currency)}</div><div class="exp-twd">${fmtTWD(e.amount,e.currency)}</div></div><button class="exp-del" onclick="App.delExpense(${i})"><i class="ti ti-trash"></i></button>`;
+      // Resolve payer display name by uid if available
+      let payerDisplay=e.who||'';
+      if(e.payerUid){const pm=state.members.find(m=>m.uid===e.payerUid);if(pm)payerDisplay=pm.name+' 付款';}
+      div.innerHTML=`<div class="exp-icon">🧾</div><div class="exp-info"><div class="exp-name">${e.name}</div><div class="exp-who">${payerDisplay} · ${e.split==='均攤'?n+'人均攤':e.split}</div></div><div class="exp-amts"><div class="exp-orig">${fmtAmt(e.amount,e.currency)}</div><div class="exp-twd">${fmtTWD(e.amount,e.currency)}</div></div><button class="exp-del" onclick="App.delExpense(${i})"><i class="ti ti-trash"></i></button>`;
       el.appendChild(div);
     });
     const splits=App.calcSplits();const sl=document.getElementById('splitList');sl.innerHTML='';
     if(!splits.length){sl.innerHTML='<div style="margin:0 18px;padding:18px;text-align:center;font-size:13px;color:#A8A296;background:#fff;border-radius:14px;">請先新增成員</div>';return;}
     splits.forEach((p,i)=>{
       const div=document.createElement('div');div.className='split-item';div.onclick=()=>App.openDetail(i);
-      div.innerHTML=`<div class="avatar" style="background:${p.bg};color:${p.color}">${mi(p.name)}</div><div class="split-name">${p.name}${p.isMe?'（你）':''}</div><div style="text-align:right"><div class="split-jpy" style="color:${p.amtColor}">${p.sign}NT$${p.amt.toLocaleString()}</div></div><span class="split-badge" style="background:${p.badgeBg};color:${p.badgeColor}">${p.badge}</span><button class="split-del" onclick="event.stopPropagation();App.delMember(${i})"><i class="ti ti-x"></i></button>`;
+      const isMeCheck=p.uid?p.uid===state.userId:p.isMe;
+      div.innerHTML=`<div class="avatar" style="background:${p.bg};color:${p.color}">${mi(p.name)}</div><div class="split-name">${p.name}${isMeCheck?'（你）':''}</div><div style="text-align:right"><div class="split-jpy" style="color:${p.amtColor}">${p.sign}NT$${p.amt.toLocaleString()}</div></div><span class="split-badge" style="background:${p.badgeBg};color:${p.badgeColor}">${p.badge}</span><button class="split-del" onclick="event.stopPropagation();App.delMember(${i})"><i class="ti ti-x"></i></button>`;
       sl.appendChild(div);
     });
   },
@@ -624,7 +639,7 @@ const App = {
   },
   renderCurMembers(){
     const w=document.getElementById('curMembers');if(!w)return;w.innerHTML='';
-    state.members.forEach((m,i)=>{const c=mc(i);const ch=document.createElement('div');ch.className='member-chip';ch.innerHTML=`<div class="av" style="background:${c.bg};color:${c.color}">${mi(m.name)}</div>${m.name}${m.isMe?' (你)':''}<button class="rm" onclick="App.removeMemberInline(${i})"><i class="ti ti-x"></i></button>`;w.appendChild(ch);});
+    state.members.forEach((m,i)=>{const c=mc(i);const isMe=m.uid?m.uid===state.userId:m.isMe;const ch=document.createElement('div');ch.className='member-chip';ch.innerHTML=`<div class="av" style="background:${c.bg};color:${c.color}">${mi(m.name)}</div>${m.name}${isMe?' (你)':''}<button class="rm" onclick="App.removeMemberInline(${i})"><i class="ti ti-x"></i></button>`;w.appendChild(ch);});
   },
   removeMemberInline(i){if(state.members.length<=1){showToast('至少保留一位');return;}state.members.splice(i,1);App.renderBudget();App.renderCurMembers();App.saveAll();},
   submitMember(){
@@ -759,7 +774,10 @@ const App = {
     const split=document.getElementById('mExpSplit').value;
     const currency=document.getElementById('mExpCur').value;
     if(!name||isNaN(amt))return;
-    state.expenses.push({name,who:payer?payer+' 付款':'',split,amount:amt,currency,payer});
+    // Find payer uid from members list
+    const payerMember=state.members.find(m=>m.name===payer);
+    const payerUid=payerMember?payerMember.uid||null:null;
+    state.expenses.push({name,who:payer?payer+' 付款':'',split,amount:amt,currency,payer,payerUid});
     App.renderBudget();App.closeModal();App.saveAll();showToast('已新增');
   },
   submitShop(){
@@ -807,54 +825,87 @@ const App = {
     });
   },
 
+  // ── Delete trip ──
+  deleteTrip(){
+    if(!confirm('確定刪除此行程？所有資料將清除，回到首頁。'))return;
+    // Clear localStorage
+    try{localStorage.removeItem(LS_KEY);}catch(e){}
+    // Unsubscribe firebase listener
+    if(state.unsubTrip){state.unsubTrip();state.unsubTrip=null;}
+    // Clear URL params
+    window.history.replaceState({},'',window.location.pathname);
+    // Reload page to show onboarding
+    window.location.reload();
+  },
+
   // ── Init ──
   async init(){
     App.loadSpots();App.fetchRates();
 
-    // Check URL for trip
     const params=new URLSearchParams(window.location.search);
     const tid=params.get('trip');
 
     if(tid){
-      // Joining shared trip — show onboarding to get name only
+      // ── JOIN MODE: came in via shared link ──
       state.tripId=tid;
-      document.getElementById('obDest').parentElement.style.display='none'; // hide dest field
-      document.querySelector('.onboard-title').textContent='加入共享行程';
-      document.querySelector('.onboard-sub').textContent='輸入你的名字，加入同行夥伴的旅行計畫';
-      document.querySelector('.onboard-btn').textContent='加入行程 →';
-      // Override startTrip for join mode
-      const origStart=App.startTrip;
-      App.startTrip=async function(skip){
-        const name=skip?'旅人':document.getElementById('obName').value.trim()||'旅人';
-        state.userName=name;
-        document.getElementById('greetName').textContent=name;
-        document.getElementById('onboard').style.display='none';
-        // Load trip from Firebase
-        try{
-          const snap=await db.collection('trips').doc(tid).get();
-          if(snap.exists){
-            App.loadTripData(snap.data());
-            // Add self to members if not already there
-            if(!state.members.find(m=>m.name===name)){
-              state.members.push({name,isMe:true});
-            } else {
-              // Mark as isMe
-              state.members=state.members.map(m=>({...m,isMe:m.name===name}));
-            }
-            await App.saveFirebase();
+      // First, try to load the trip data from Firebase immediately
+      let tripData=null;
+      try{
+        showToast('載入共享行程中…');
+        const snap=await db.collection('trips').doc(tid).get();
+        if(snap.exists) tripData=snap.data();
+      }catch(e){console.warn('Failed to load trip',e);}
+
+      if(tripData){
+        // Show join onboarding - name only
+        document.getElementById('obDest').closest('.onboard-field').style.display='none';
+        document.querySelector('.onboard-title').textContent='加入共享行程';
+        document.querySelector('.onboard-sub').textContent=(tripData.heroTitle||'旅行')+'・輸入你的名字加入';
+        document.querySelector('.onboard-btn').textContent='加入行程 →';
+
+        App.startTrip=async function(skip){
+          const name=skip?'旅人':(document.getElementById('obName').value.trim()||'旅人');
+          state.userName=name;
+          document.getElementById('greetName').textContent=name;
+          document.getElementById('onboard').style.display='none';
+
+          // Load all trip data
+          App.loadTripData(tripData);
+
+          // Add self to members list using userId (not name) to avoid duplicate name clash
+          const myUid=getOrCreateUserId();
+          state.userId=myUid;
+          const alreadyById=state.members.find(m=>m.uid===myUid);
+          if(alreadyById){
+            // Already in trip (returning user) — update isMe flag and display name
+            state.members=state.members.map(m=>({...m,isMe:m.uid===myUid,name:m.uid===myUid?name:m.name}));
+          } else {
+            // New member — add with unique uid
+            state.members=state.members.map(m=>({...m,isMe:false}));
+            state.members.push({name,isMe:true,uid:myUid});
           }
+
+          // Save back to Firebase so others see new member
+          await App.saveFirebase();
+
+          // Now start listening for real-time updates
           App.listenTrip();
-          showToast('已加入行程 ✓');
-        }catch(e){showToast('無法載入行程');}
-        App.renderBudget();App.renderShop();
-        App.startTrip=origStart;
-      };
+          showToast('已加入共享行程 ✓');
+          App.renderBudget();App.renderShop();
+          App.renderDayRow();App.renderStations();
+        };
+      } else {
+        // Trip not found
+        showToast('找不到此行程，請確認連結');
+        window.history.replaceState({},'',window.location.pathname);
+      }
     } else {
-      // Check localStorage for existing session
+      // ── NORMAL MODE: no shared link ──
       const local=loadLocal();
-      if(local){
-        // Has existing data — skip onboarding
+      if(local&&local.userName){
+        // Has existing local data — skip onboarding
         state.userName=local.userName||'旅人';
+        state.userId=local.userId||getOrCreateUserId();
         state.destination=local.destination||'';
         state.members=local.members||[];
         state.expenses=local.expenses||[];
@@ -870,6 +921,12 @@ const App = {
           document.getElementById('dateResult').innerHTML=`<i class="ti ti-calendar-check"></i> 共 ${state.dayCount} 天 ${state.dayCount-1} 夜`;
         }
         document.getElementById('onboard').style.display='none';
+      }
+      // If local has a tripId, resume Firebase sync
+      if(local&&local.tripId){
+        state.tripId=local.tripId;
+        window.history.replaceState({},'',window.location.pathname+'?trip='+local.tripId);
+        App.listenTrip();
       }
     }
 
