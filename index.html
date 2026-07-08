@@ -144,9 +144,9 @@ body{background:#EDE7DA;display:flex;justify-content:center;min-height:100dvh;fo
 .add-fab{width:54px;height:54px;border-radius:54px;background:#FFC233;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 4px 10px rgba(255,194,51,.4);flex-shrink:0;padding:0;border:none;}
 .add-fab i{font-size:24px;color:#2B2620;}
 /* Modal */
-.modal-bg{display:none;position:fixed;inset:0;background:rgba(43,38,32,.45);align-items:flex-end;justify-content:center;z-index:200;}
+.modal-bg{display:none;position:absolute;inset:0;background:rgba(43,38,32,.45);align-items:flex-end;justify-content:center;z-index:200;border-radius:inherit;}
 .modal-bg.open{display:flex;}
-.modal{background:#FFF9F0;border-radius:24px 24px 0 0;padding:20px 18px calc(24px + env(safe-area-inset-bottom));width:100%;max-width:420px;transform:translateY(100%);transition:transform .3s cubic-bezier(.32,.72,0,1);}
+.modal{background:#FFF9F0;border-radius:24px 24px 0 0;padding:20px 18px 24px;width:100%;transform:translateY(100%);transition:transform .3s cubic-bezier(.32,.72,0,1);max-height:85%;overflow-y:auto;}
 .modal-bg.open .modal{transform:translateY(0);}
 .modal-title{font-size:15px;font-weight:600;color:#2B2620;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center;}
 .modal-close{width:28px;height:28px;border-radius:50%;background:#fff;border:none;color:#2B2620;font-size:14px;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;padding:0;}
@@ -177,7 +177,7 @@ body{background:#EDE7DA;display:flex;justify-content:center;min-height:100dvh;fo
 .share-section{margin:16px 18px 12px;background:#E4F0EB;border-radius:20px;padding:20px 18px;}
 .share-code-block{margin:0 18px 10px;background:#fff;border-radius:14px;padding:14px;}
 .share-how{margin:0 18px;background:#fff;border-radius:16px;padding:14px 16px;}
-.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#2B2620;color:#fff;font-size:11px;padding:7px 16px;border-radius:18px;opacity:0;transition:all .25s;white-space:nowrap;z-index:400;pointer-events:none;}
+.toast{position:absolute;bottom:80px;left:50%;transform:translateX(-50%);background:#2B2620;color:#fff;font-size:11px;padding:7px 16px;border-radius:18px;opacity:0;transition:all .25s;white-space:nowrap;z-index:400;pointer-events:none;}
 .toast.show{opacity:1;}
 .sync-dot{width:7px;height:7px;border-radius:50%;background:#6B9080;display:inline-block;margin-left:6px;animation:pulse 1.5s infinite;}
 @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.3;}}
@@ -283,8 +283,8 @@ body{background:#EDE7DA;display:flex;justify-content:center;min-height:100dvh;fo
   <div class="modal-bg" id="modalBg" onclick="App.closeModalBg(event)">
     <div class="modal"><div class="modal-title"><span id="modalTitle"></span><button class="modal-close" onclick="App.closeModal()"><i class="ti ti-x"></i></button></div><div id="modalBody"></div></div>
   </div>
-</div>
 <div class="toast" id="toast"></div>
+</div>
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
@@ -728,14 +728,47 @@ const App = {
 
   // ── Modal ──
   buildSpotsOptions(){
-    const dest=(document.getElementById('heroTitle').textContent||'').trim().toLowerCase();
+    const heroText=(document.getElementById('heroTitle').textContent||'').trim();
+    // Remove trailing 旅行/旅遊/trip etc to get pure destination
+    const dest=heroText.replace(/(旅行|旅遊|trip|travel|之旅)$/i,'').trim().toLowerCase();
     let spots=state.firestoreSpots;
-    if(dest&&dest!=='旅行'){spots=spots.filter(s=>{const r=(s.region||'').toLowerCase();return r.includes(dest)||dest.includes(r.split('・')[0]);});}
-    if(!spots.length)spots=state.firestoreSpots;
-    if(!spots.length)return'<option value="">— 尚無推薦景點，可手動輸入 —</option>';
-    const cats=[...new Set(spots.map(s=>s.cat))];
-    let h=`<option value="">— 推薦景點（${spots.length}個）—</option>`;
-    cats.forEach(cat=>{h+=`<optgroup label="${cat}">`;spots.filter(s=>s.cat===cat).forEach(s=>{h+=`<option value="${s.name}">${s.icon||'📍'} ${s.name}${s.desc?'  '+s.desc:''}</option>`;});h+='</optgroup>';});
+    let filtered=[];
+
+    if(dest&&dest.length>0){
+      // Try to match region or cat field
+      filtered=spots.filter(s=>{
+        const region=(s.region||'').toLowerCase();
+        const cat=(s.cat||s.region||s.name||''). toLowerCase();
+        const city=region.split('・')[0]; // e.g. "東京" from "東京・日本"
+        return(
+          city.includes(dest)||
+          dest.includes(city)||
+          region.includes(dest)||
+          dest.includes(region.split('・')[0])||
+          cat.includes(dest)||
+          dest.includes(cat)
+        );
+      });
+    }
+
+    // If no match found, show nothing with helpful message
+    if(!filtered.length&&dest.length>0){
+      return `<option value="">— 找不到「${heroText}」的景點，請手動輸入或至後台新增 —</option>`;
+    }
+    // If no destination entered, show all
+    if(!filtered.length) filtered=spots;
+    if(!filtered.length) return'<option value="">— 尚無推薦景點，可手動輸入 —</option>';
+
+    // Group by region
+    const regions=[...new Set(filtered.map(s=>s.region||s.cat||'其他'))];
+    let h=`<option value="">— 推薦景點（${filtered.length}個）—</option>`;
+    regions.forEach(reg=>{
+      const inReg=filtered.filter(s=>(s.region||s.cat||'其他')===reg);
+      if(!inReg.length)return;
+      h+=`<optgroup label="${reg}">`;
+      inReg.forEach(s=>{h+=`<option value="${s.name}">${s.name}${s.desc?'　'+s.desc:''}</option>`;});
+      h+='</optgroup>';
+    });
     return h;
   },
   fmtTimeInput(el){let v=el.value.replace(/[^0-9]/g,'');if(v.length>=3)v=v.slice(0,2)+':'+v.slice(2,4);el.value=v;},
