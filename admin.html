@@ -7,79 +7,94 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
-body{background:#1A1714;min-height:100vh;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:#fff;}
+body{background:#F2F2F7;min-height:100vh;font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','Helvetica Neue',sans-serif;color:#1C1C1E;}
+
+/* Login */
 .login-screen{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px;}
-.login-card{background:#2B2620;border-radius:24px;padding:40px 32px;width:100%;max-width:380px;text-align:center;}
-.login-logo{font-size:48px;margin-bottom:16px;}
-.login-title{font-size:22px;font-weight:700;color:#FFC233;margin-bottom:6px;}
-.login-sub{font-size:13px;color:rgba(255,255,255,.4);margin-bottom:32px;}
+.login-card{background:#fff;border-radius:18px;padding:40px 32px;width:100%;max-width:360px;text-align:center;box-shadow:0 2px 12px rgba(0,0,0,.08);}
+.login-logo{font-size:44px;margin-bottom:16px;}
+.login-title{font-size:22px;font-weight:700;color:#1C1C1E;margin-bottom:4px;}
+.login-sub{font-size:14px;color:#8E8E93;margin-bottom:32px;}
 .login-field{margin-bottom:14px;text-align:left;}
-.login-field label{display:block;font-size:11px;color:rgba(255,255,255,.5);margin-bottom:5px;font-weight:500;}
-.login-field input{width:100%;padding:11px 14px;border-radius:12px;border:1.5px solid rgba(255,255,255,.1);background:rgba(255,255,255,.06);color:#fff;font-size:14px;}
-.login-field input:focus{outline:none;border-color:#FFC233;}
-.login-btn{width:100%;padding:13px;background:#FFC233;color:#2B2620;border:none;border-radius:14px;font-size:14px;font-weight:700;cursor:pointer;margin-top:8px;}
-.login-err{font-size:12px;color:#E24B4A;margin-top:10px;min-height:18px;}
+.login-field label{display:block;font-size:12px;color:#8E8E93;margin-bottom:5px;font-weight:500;}
+.login-field input{width:100%;padding:11px 14px;border-radius:10px;border:1px solid #D1D1D6;background:#F9F9F9;color:#1C1C1E;font-size:15px;}
+.login-field input:focus{outline:none;border-color:#007AFF;background:#fff;}
+.login-btn{width:100%;padding:13px;background:#007AFF;color:#fff;border:none;border-radius:12px;font-size:16px;font-weight:600;cursor:pointer;margin-top:8px;}
+.login-btn:active{background:#0062CC;}
+.login-err{font-size:13px;color:#FF3B30;margin-top:10px;min-height:18px;}
+
+/* Admin app */
 .admin-app{display:none;min-height:100vh;}
-.admin-header{background:#2B2620;padding:16px 24px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,.08);}
-.admin-logo{font-size:24px;}
-.admin-app-title{font-size:16px;font-weight:700;color:#FFC233;}
-.admin-app-sub{font-size:11px;color:rgba(255,255,255,.4);}
-.admin-logout{background:rgba(255,255,255,.08);border:none;color:rgba(255,255,255,.6);padding:7px 14px;border-radius:10px;font-size:12px;cursor:pointer;display:flex;align-items:center;gap:5px;}
-.admin-body{max-width:960px;margin:0 auto;padding:28px 20px;}
-.admin-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:28px;}
-.stat-card{background:#2B2620;border-radius:16px;padding:16px 18px;}
-.stat-num{font-size:28px;font-weight:700;color:#FFC233;}
-.stat-label{font-size:12px;color:rgba(255,255,255,.4);margin-top:3px;}
-.admin-grid{display:grid;grid-template-columns:1fr 1.5fr;gap:20px;}
+.admin-header{background:#fff;padding:14px 24px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #E5E5EA;}
+.admin-header-left{display:flex;align-items:center;gap:12px;}
+.admin-logo{font-size:22px;}
+.admin-app-title{font-size:17px;font-weight:600;color:#1C1C1E;}
+.admin-app-sub{font-size:12px;color:#8E8E93;margin-top:1px;}
+.admin-logout{background:#F2F2F7;border:none;color:#3C3C43;padding:7px 14px;border-radius:8px;font-size:13px;cursor:pointer;font-weight:500;display:flex;align-items:center;gap:5px;}
+.admin-logout:hover{background:#E5E5EA;}
+
+.admin-body{max-width:980px;margin:0 auto;padding:24px 20px;}
+
+/* Stats */
+.admin-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:24px;}
+.stat-card{background:#fff;border-radius:14px;padding:16px 18px;border:1px solid #E5E5EA;}
+.stat-num{font-size:28px;font-weight:700;color:#007AFF;}
+.stat-label{font-size:12px;color:#8E8E93;margin-top:3px;}
+
+/* Grid */
+.admin-grid{display:grid;grid-template-columns:1fr 1.5fr;gap:16px;}
 @media(max-width:700px){.admin-grid{grid-template-columns:1fr;}}
-.admin-card{background:#2B2620;border-radius:20px;padding:22px 20px;}
-.admin-card-title{font-size:14px;font-weight:700;color:#FFC233;margin-bottom:4px;display:flex;align-items:center;gap:7px;}
-.admin-card-sub{font-size:11px;color:rgba(255,255,255,.4);margin-bottom:18px;}
-.a-field{margin-bottom:11px;}
-.a-field label{display:block;font-size:10px;color:rgba(255,255,255,.45);margin-bottom:4px;font-weight:500;text-transform:uppercase;letter-spacing:.4px;}
-.a-field input,.a-field select,.a-field textarea{width:100%;padding:9px 13px;border-radius:11px;border:1.5px solid rgba(255,255,255,.1);background:rgba(255,255,255,.06);color:#fff;font-size:13px;font-family:inherit;}
-.a-field textarea{resize:vertical;min-height:60px;}
-.a-field input:focus,.a-field select:focus,.a-field textarea:focus{outline:none;border-color:#FFC233;}
-.a-field input::placeholder,.a-field textarea::placeholder{color:rgba(255,255,255,.25);}
-.a-field select option{background:#2B2620;color:#fff;}
+.admin-card{background:#fff;border-radius:16px;padding:20px;border:1px solid #E5E5EA;}
+.admin-card-title{font-size:15px;font-weight:600;color:#1C1C1E;margin-bottom:3px;display:flex;align-items:center;gap:7px;}
+.admin-card-sub{font-size:12px;color:#8E8E93;margin-bottom:18px;}
+
+/* Form */
+.a-field{margin-bottom:12px;}
+.a-field label{display:block;font-size:12px;color:#8E8E93;margin-bottom:4px;font-weight:500;}
+.a-field input,.a-field select{width:100%;padding:9px 12px;border-radius:9px;border:1px solid #D1D1D6;background:#F9F9F9;color:#1C1C1E;font-size:14px;font-family:inherit;}
+.a-field input:focus,.a-field select:focus{outline:none;border-color:#007AFF;background:#fff;}
+.a-field input::placeholder{color:#C7C7CC;}
 .a-field-row{display:flex;gap:8px;}
 .a-field-row .a-field{flex:1;}
-.a-hint{font-size:10px;color:rgba(255,255,255,.3);margin-top:4px;line-height:1.5;}
-.a-hint b{color:#FFC233;}
+.a-hint{font-size:11px;color:#8E8E93;margin-top:4px;line-height:1.5;}
+.a-hint b{color:#007AFF;}
 .region-examples{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px;}
-.region-tag{font-size:10px;background:rgba(255,194,51,.12);color:#FFC233;border:1px solid rgba(255,194,51,.25);padding:2px 8px;border-radius:8px;cursor:pointer;}
-.a-submit{width:100%;padding:11px;background:#FFC233;color:#2B2620;border:none;border-radius:13px;font-size:13px;font-weight:700;cursor:pointer;margin-top:6px;display:flex;align-items:center;justify-content:center;gap:6px;}
-.a-submit:disabled{opacity:.5;cursor:not-allowed;}
-.filter-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;}
-.filter-btn{padding:5px 12px;border-radius:10px;font-size:11px;border:1px solid rgba(255,255,255,.15);background:transparent;color:rgba(255,255,255,.5);cursor:pointer;font-weight:500;}
-.filter-btn.active{background:#FFC233;color:#2B2620;border-color:#FFC233;font-weight:700;}
-.search-bar{width:100%;padding:8px 12px;border-radius:11px;border:1.5px solid rgba(255,255,255,.1);background:rgba(255,255,255,.06);color:#fff;font-size:13px;margin-bottom:12px;}
-.search-bar:focus{outline:none;border-color:#FFC233;}
-.search-bar::placeholder{color:rgba(255,255,255,.25);}
-.spot-list{display:flex;flex-direction:column;gap:7px;max-height:560px;overflow-y:auto;}
-.spot-list::-webkit-scrollbar{width:4px;}
-.spot-list::-webkit-scrollbar-thumb{background:rgba(255,255,255,.15);border-radius:10px;}
-.spot-row{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.05);border-radius:12px;padding:10px 13px;transition:background .15s;}
-.spot-row:hover{background:rgba(255,255,255,.09);}
-.spot-row-icon{font-size:20px;flex-shrink:0;}
-.spot-row-info{flex:1;min-width:0;}
-.spot-row-name{font-size:13px;font-weight:600;color:#fff;}
-.spot-row-meta{font-size:10px;color:rgba(255,255,255,.35);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.spot-row-region{font-size:10px;color:#FFC233;margin-top:2px;}
-.spot-row-actions{display:flex;gap:6px;flex-shrink:0;}
-.spot-row-del,.spot-row-edit{width:28px;height:28px;border-radius:50%;border:none;font-size:11px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
-.spot-row-del{background:rgba(255,255,255,.08);color:rgba(255,255,255,.4);}
-.spot-row-del:hover{background:#E24B4A;color:#fff;}
-.spot-row-edit{background:rgba(255,194,51,.12);color:#FFC233;}
-.spot-row-edit:hover{background:#FFC233;color:#2B2620;}
-.empty-list{text-align:center;padding:32px;font-size:13px;color:rgba(255,255,255,.25);}
-.toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%);background:#FFC233;color:#2B2620;font-size:12px;font-weight:600;padding:9px 20px;border-radius:20px;opacity:0;transition:all .25s;white-space:nowrap;z-index:999;pointer-events:none;}
-.toast.show{opacity:1;}
-.bulk-import{margin-top:14px;padding-top:14px;border-top:1px solid rgba(255,255,255,.08);}
-.bulk-title{font-size:11px;color:rgba(255,255,255,.4);margin-bottom:8px;font-weight:500;}
+.region-tag{font-size:11px;background:#F2F2F7;color:#007AFF;border:1px solid #D1D1D6;padding:3px 9px;border-radius:7px;cursor:pointer;font-weight:500;}
+.region-tag:hover{background:#E5F0FF;}
+.a-submit{width:100%;padding:11px;background:#007AFF;color:#fff;border:none;border-radius:11px;font-size:14px;font-weight:600;cursor:pointer;margin-top:4px;}
+.a-submit:hover{background:#0062CC;}
+.a-submit:disabled{opacity:.4;cursor:not-allowed;}
+
+/* Bulk import */
+.bulk-import{margin-top:16px;padding-top:16px;border-top:1px solid #E5E5EA;}
+.bulk-title{font-size:12px;color:#8E8E93;margin-bottom:8px;font-weight:500;}
 .bulk-presets{display:flex;flex-wrap:wrap;gap:6px;}
-.bulk-preset-btn{font-size:11px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.6);padding:5px 11px;border-radius:10px;cursor:pointer;}
-.bulk-preset-btn:hover{background:rgba(255,194,51,.15);border-color:#FFC233;color:#FFC233;}
+.bulk-preset-btn{font-size:12px;background:#F2F2F7;border:1px solid #D1D1D6;color:#3C3C43;padding:5px 12px;border-radius:8px;cursor:pointer;font-weight:500;}
+.bulk-preset-btn:hover{background:#E5F0FF;border-color:#007AFF;color:#007AFF;}
+
+/* List */
+.search-bar{width:100%;padding:8px 12px;border-radius:9px;border:1px solid #D1D1D6;background:#F9F9F9;color:#1C1C1E;font-size:14px;margin-bottom:12px;font-family:inherit;}
+.search-bar:focus{outline:none;border-color:#007AFF;background:#fff;}
+.search-bar::placeholder{color:#C7C7CC;}
+.filter-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;}
+.filter-btn{padding:5px 12px;border-radius:8px;font-size:12px;border:1px solid #D1D1D6;background:#F2F2F7;color:#3C3C43;cursor:pointer;font-weight:500;}
+.filter-btn.active{background:#007AFF;color:#fff;border-color:#007AFF;}
+.spot-list{display:flex;flex-direction:column;gap:6px;max-height:540px;overflow-y:auto;}
+.spot-list::-webkit-scrollbar{width:4px;}
+.spot-list::-webkit-scrollbar-thumb{background:#D1D1D6;border-radius:10px;}
+.spot-row{display:flex;align-items:center;gap:10px;background:#F9F9F9;border-radius:10px;padding:10px 13px;border:1px solid #E5E5EA;}
+.spot-row:hover{background:#F2F2F7;}
+.spot-row-info{flex:1;min-width:0;}
+.spot-row-name{font-size:14px;font-weight:600;color:#1C1C1E;}
+.spot-row-region{font-size:11px;color:#007AFF;margin-top:2px;font-weight:500;}
+.spot-row-meta{font-size:11px;color:#8E8E93;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.spot-row-del{width:28px;height:28px;border-radius:7px;background:#FFE5E5;border:none;color:#FF3B30;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.spot-row-del:hover{background:#FF3B30;color:#fff;}
+.empty-list{text-align:center;padding:32px;font-size:13px;color:#8E8E93;}
+.list-sub{font-size:12px;color:#8E8E93;margin-bottom:10px;}
+
+.toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%);background:#1C1C1E;color:#fff;font-size:13px;font-weight:500;padding:10px 20px;border-radius:20px;opacity:0;transition:all .25s;white-space:nowrap;z-index:999;pointer-events:none;}
+.toast.show{opacity:1;}
 </style>
 </head>
 <body>
@@ -87,22 +102,25 @@ body{background:#1A1714;min-height:100vh;font-family:-apple-system,BlinkMacSyste
 <div class="login-screen" id="loginScreen">
   <div class="login-card">
     <div class="login-logo">✈️</div>
-    <div class="login-title">途線 TabiLine</div>
-    <div class="login-sub">管理者後台 — 請輸入密碼</div>
+    <div class="login-title">TabiLine 後台</div>
+    <div class="login-sub">請輸入管理者密碼</div>
     <div class="login-field">
-      <label>管理者密碼</label>
+      <label>密碼</label>
       <input type="password" id="pwInput" placeholder="輸入密碼" onkeydown="if(event.key==='Enter')doLogin()">
     </div>
-    <button class="login-btn" onclick="doLogin()">進入後台</button>
+    <button class="login-btn" onclick="doLogin()">登入</button>
     <div class="login-err" id="loginErr"></div>
   </div>
 </div>
 
 <div class="admin-app" id="adminApp">
   <div class="admin-header">
-    <div style="display:flex;align-items:center;gap:12px">
+    <div class="admin-header-left">
       <div class="admin-logo">✈️</div>
-      <div><div class="admin-app-title">途線 TabiLine 後台</div><div class="admin-app-sub">景點資料庫管理</div></div>
+      <div>
+        <div class="admin-app-title">TabiLine 後台</div>
+        <div class="admin-app-sub">景點資料庫管理</div>
+      </div>
     </div>
     <button class="admin-logout" onclick="doLogout()"><i class="ti ti-logout"></i>登出</button>
   </div>
@@ -110,65 +128,89 @@ body{background:#1A1714;min-height:100vh;font-family:-apple-system,BlinkMacSyste
   <div class="admin-body">
     <div class="admin-stats">
       <div class="stat-card"><div class="stat-num" id="statTotal">—</div><div class="stat-label">景點總數</div></div>
-      <div class="stat-card"><div class="stat-num" id="statCats">—</div><div class="stat-label">分類數</div></div>
-      <div class="stat-card"><div class="stat-num" id="statRegions">—</div><div class="stat-label">地區數</div></div>
+      <div class="stat-card"><div class="stat-num" id="statCats">—</div><div class="stat-label">地區數</div></div>
+      <div class="stat-card"><div class="stat-num" id="statRegions">—</div><div class="stat-label">國家數</div></div>
     </div>
 
     <div class="admin-grid">
-      <!-- 新增景點 -->
       <div class="admin-card">
-        <div class="admin-card-title"><i class="ti ti-plus"></i>新增景點</div>
-        <div class="admin-card-sub">新增後即時同步到使用者 App 的推薦選單</div>
+        <div class="admin-card-title"><i class="ti ti-plus" style="color:#007AFF"></i>新增景點</div>
+        <div class="admin-card-sub">新增後即時同步到使用者 App</div>
+
         <div class="a-field-row">
-          <div class="a-field" style="flex:2"><label>景點名稱</label><input id="aName" placeholder="例：嵐山竹林"/></div>
-          <div class="a-field" style="flex:0.7"><label>Emoji</label><input id="aIcon" placeholder="🏯" maxlength="2"/></div>
+          <div class="a-field" style="flex:2">
+            <label>景點名稱</label>
+            <input id="aName" placeholder="例：嵐山竹林"/>
+          </div>
+          <div class="a-field" style="flex:0.8">
+            <label>Emoji（選填）</label>
+            <input id="aIcon" placeholder="留空即可" maxlength="2"/>
+          </div>
         </div>
+
         <div class="a-field">
-          <label>分類</label>
-          <select id="aCat">
-            <option>文化・歷史</option>
-            <option>美食</option>
-            <option>自然</option>
-            <option>購物</option>
-            <option>景點</option>
-            <option>交通</option>
-            <option>住宿</option>
-          </select>
-        </div>
-        <div class="a-field">
-          <label>地區（格式：城市・國家）</label>
+          <label>所在地區（城市・國家 格式）</label>
           <input id="aRegion" placeholder="例：京都・日本"/>
-          <div class="a-hint">⚠️ 格式很重要！使用者輸入「<b>京都</b>」時，App 會比對地區欄位來過濾景點。請統一用「城市・國家」格式。</div>
+          <div class="a-hint">格式必須是「<b>城市・國家</b>」，使用者輸入「京都」時 App 才能正確篩選。</div>
           <div class="region-examples" id="regionExamples"></div>
         </div>
-        <div class="a-field"><label>簡介（顯示在選單旁）</label><input id="aDesc" placeholder="例：世界遺產・必訪"/></div>
-        <button class="a-submit" id="addBtn" onclick="addSpot()"><i class="ti ti-cloud-upload"></i>新增到資料庫</button>
 
-        <!-- 批量匯入預設景點 -->
+        <div class="a-field">
+          <label>分類（用地方名稱）</label>
+          <select id="aCat">
+            <option>東京</option>
+            <option>京都</option>
+            <option>大阪</option>
+            <option>名古屋</option>
+            <option>高山</option>
+            <option>上高地</option>
+            <option>北海道</option>
+            <option>沖繩</option>
+            <option>台北</option>
+            <option>台中</option>
+            <option>台南</option>
+            <option>高雄</option>
+            <option>首爾</option>
+            <option>釜山</option>
+            <option>曼谷</option>
+            <option>清邁</option>
+            <option>巴黎</option>
+            <option>倫敦</option>
+            <option>紐約</option>
+            <option>其他</option>
+          </select>
+        </div>
+
+        <div class="a-field">
+          <label>簡介（顯示在 App 選單旁）</label>
+          <input id="aDesc" placeholder="例：世界遺產・必訪"/>
+        </div>
+
+        <button class="a-submit" id="addBtn" onclick="addSpot()">新增到資料庫</button>
+
         <div class="bulk-import">
-          <div class="bulk-title">批量匯入預設景點組</div>
+          <div class="bulk-title">批量匯入預設景點</div>
           <div class="bulk-presets">
-            <button class="bulk-preset-btn" onclick="importPreset('tokyo')">🗼 東京</button>
-            <button class="bulk-preset-btn" onclick="importPreset('kyoto')">⛩ 京都</button>
-            <button class="bulk-preset-btn" onclick="importPreset('osaka')">🍜 大阪</button>
-            <button class="bulk-preset-btn" onclick="importPreset('nagoya')">🏯 名古屋</button>
-            <button class="bulk-preset-btn" onclick="importPreset('takayama')">🌅 高山</button>
-            <button class="bulk-preset-btn" onclick="importPreset('kamikochi')">🏔 上高地</button>
-            <button class="bulk-preset-btn" onclick="importPreset('taipei')">🏙 台北</button>
-            <button class="bulk-preset-btn" onclick="importPreset('seoul')">🏯 首爾</button>
-            <button class="bulk-preset-btn" onclick="importPreset('bangkok')">🛕 曼谷</button>
-            <button class="bulk-preset-btn" onclick="importPreset('paris')">🗼 巴黎</button>
+            <button class="bulk-preset-btn" onclick="importPreset('tokyo')">東京</button>
+            <button class="bulk-preset-btn" onclick="importPreset('kyoto')">京都</button>
+            <button class="bulk-preset-btn" onclick="importPreset('osaka')">大阪</button>
+            <button class="bulk-preset-btn" onclick="importPreset('nagoya')">名古屋</button>
+            <button class="bulk-preset-btn" onclick="importPreset('takayama')">高山</button>
+            <button class="bulk-preset-btn" onclick="importPreset('kamikochi')">上高地</button>
+            <button class="bulk-preset-btn" onclick="importPreset('taipei')">台北</button>
+            <button class="bulk-preset-btn" onclick="importPreset('seoul')">首爾</button>
+            <button class="bulk-preset-btn" onclick="importPreset('bangkok')">曼谷</button>
+            <button class="bulk-preset-btn" onclick="importPreset('paris')">巴黎</button>
           </div>
         </div>
       </div>
 
-      <!-- 景點列表 -->
       <div class="admin-card">
-        <div class="admin-card-title"><i class="ti ti-list"></i>景點列表</div>
-        <div class="admin-card-sub" id="listSub">載入中…</div>
-        <input class="search-bar" id="searchBar" placeholder="🔍 搜尋景點名稱或地區…" oninput="renderList()">
+        <div class="admin-card-title"><i class="ti ti-list" style="color:#007AFF"></i>景點列表</div>
+        <div class="list-sub" id="listSub">載入中…</div>
+        <input class="search-bar" id="searchBar" placeholder="搜尋景點名稱或地區…" oninput="renderList()">
         <div class="filter-row" id="filterRow"></div>
-        <div class="spot-list" id="spotList"><div class="empty-list">連接 Firebase 中…</div></div>
+        <div class="spot-list" id="spotList"><div class="empty-list">連接中…</div></div>
       </div>
     </div>
   </div>
@@ -192,91 +234,97 @@ const ADMIN_PASSWORD = "tabiLine2026";
 
 let allSpots = [], catFilter = '全部';
 
-// 預設景點資料庫
+const REGION_QUICK = [
+  '東京・日本','京都・日本','大阪・日本','名古屋・日本','高山・日本',
+  '上高地・日本','北海道・日本','沖繩・日本',
+  '台北・台灣','台中・台灣','台南・台灣','高雄・台灣',
+  '首爾・韓國','釜山・韓國',
+  '曼谷・泰國','清邁・泰國',
+  '巴黎・法國','倫敦・英國','紐約・美國','新加坡・新加坡',
+];
+
+// Preset spots — no emoji, cat = city name
 const PRESET_SPOTS = {
   nagoya:[
-    {icon:'🏯',name:'名古屋城',cat:'文化・歷史',region:'名古屋・日本',desc:'國寶天守・本丸御殿'},
-    {icon:'⛩',name:'熱田神宮',cat:'文化・歷史',region:'名古屋・日本',desc:'千年古社・三種神器'},
-    {icon:'🍱',name:'矢場とん 味噌豬排',cat:'美食',region:'名古屋・日本',desc:'名古屋名物・必吃'},
-    {icon:'🏺',name:'Noritake Garden',cat:'文化・歷史',region:'名古屋・日本',desc:'陶瓷文化園區'},
-    {icon:'🙏',name:'大須觀音',cat:'文化・歷史',region:'名古屋・日本',desc:'下町老街起點'},
-    {icon:'🏪',name:'大須商店街',cat:'購物',region:'名古屋・日本',desc:'古著・小吃・電器'},
+    {name:'名古屋城',cat:'名古屋',region:'名古屋・日本',desc:'國寶天守・本丸御殿'},
+    {name:'熱田神宮',cat:'名古屋',region:'名古屋・日本',desc:'千年古社・三種神器'},
+    {name:'矢場とん 味噌豬排',cat:'名古屋',region:'名古屋・日本',desc:'名古屋名物・必吃'},
+    {name:'Noritake Garden',cat:'名古屋',region:'名古屋・日本',desc:'陶瓷文化園區'},
+    {name:'大須觀音',cat:'名古屋',region:'名古屋・日本',desc:'下町老街起點'},
+    {name:'大須商店街',cat:'名古屋',region:'名古屋・日本',desc:'古著・小吃・電器'},
   ],
   takayama:[
-    {icon:'🌅',name:'宮川朝市',cat:'美食',region:'高山・日本',desc:'飛驒牛串・朝市'},
-    {icon:'🏘',name:'上三之町老街',cat:'文化・歷史',region:'高山・日本',desc:'江戶時代街道'},
-    {icon:'🥩',name:'飛驒牛燒肉',cat:'美食',region:'高山・日本',desc:'必吃飛驒和牛'},
-    {icon:'🍶',name:'二木酒造',cat:'文化・歷史',region:'高山・日本',desc:'傳統清酒釀造'},
-    {icon:'🛍',name:'飛驒手工藝品店',cat:'購物',region:'高山・日本',desc:'さるぼぼ・木工藝品'},
-    {icon:'🏯',name:'高山陣屋',cat:'文化・歷史',region:'高山・日本',desc:'江戶幕府代官所'},
+    {name:'宮川朝市',cat:'高山',region:'高山・日本',desc:'飛驒牛串・朝市'},
+    {name:'上三之町老街',cat:'高山',region:'高山・日本',desc:'江戶時代街道'},
+    {name:'飛驒牛燒肉',cat:'高山',region:'高山・日本',desc:'必吃飛驒和牛'},
+    {name:'二木酒造',cat:'高山',region:'高山・日本',desc:'傳統清酒釀造'},
+    {name:'飛驒手工藝品店',cat:'高山',region:'高山・日本',desc:'木工藝品・手工飾品'},
+    {name:'高山陣屋',cat:'高山',region:'高山・日本',desc:'江戶幕府代官所'},
   ],
   kamikochi:[
-    {icon:'🏔',name:'河童橋',cat:'自然',region:'上高地・日本',desc:'穗高連峰全景'},
-    {icon:'🌿',name:'大正池',cat:'自然',region:'上高地・日本',desc:'倒映岳影・絕景'},
-    {icon:'🌲',name:'明神池',cat:'自然',region:'上高地・日本',desc:'神聖步道・輕健行'},
-    {icon:'🦆',name:'梓川散步道',cat:'自然',region:'上高地・日本',desc:'1.5h 輕鬆健行'},
+    {name:'河童橋',cat:'上高地',region:'上高地・日本',desc:'穗高連峰全景'},
+    {name:'大正池',cat:'上高地',region:'上高地・日本',desc:'倒映岳影・絕景'},
+    {name:'明神池',cat:'上高地',region:'上高地・日本',desc:'神聖步道・輕健行'},
+    {name:'梓川散步道',cat:'上高地',region:'上高地・日本',desc:'1.5h 輕鬆健行'},
   ],
   tokyo:[
-    {icon:'🗼',name:'東京鐵塔',cat:'景點',region:'東京・日本',desc:'東京地標・夜景必看'},
-    {icon:'⛩',name:'淺草寺',cat:'文化・歷史',region:'東京・日本',desc:'東京最古老寺廟'},
-    {icon:'🛍',name:'原宿竹下通',cat:'購物',region:'東京・日本',desc:'潮流・可愛文化'},
-    {icon:'🌸',name:'上野公園',cat:'自然',region:'東京・日本',desc:'賞櫻名所・博物館'},
-    {icon:'🍣',name:'築地市場',cat:'美食',region:'東京・日本',desc:'新鮮海鮮・早餐'},
-    {icon:'🎡',name:'台場',cat:'景點',region:'東京・日本',desc:'彩虹橋・夜景'},
-    {icon:'🏙',name:'澀谷十字路口',cat:'景點',region:'東京・日本',desc:'全球最繁忙路口'},
-    {icon:'🌳',name:'新宿御苑',cat:'自然',region:'東京・日本',desc:'都市綠洲・賞花'},
+    {name:'東京鐵塔',cat:'東京',region:'東京・日本',desc:'東京地標・夜景必看'},
+    {name:'淺草寺',cat:'東京',region:'東京・日本',desc:'東京最古老寺廟'},
+    {name:'原宿竹下通',cat:'東京',region:'東京・日本',desc:'潮流・可愛文化'},
+    {name:'上野公園',cat:'東京',region:'東京・日本',desc:'賞櫻名所・博物館'},
+    {name:'築地市場',cat:'東京',region:'東京・日本',desc:'新鮮海鮮・早餐'},
+    {name:'台場',cat:'東京',region:'東京・日本',desc:'彩虹橋・夜景'},
+    {name:'澀谷十字路口',cat:'東京',region:'東京・日本',desc:'全球最繁忙路口'},
+    {name:'新宿御苑',cat:'東京',region:'東京・日本',desc:'都市綠洲・賞花'},
   ],
   kyoto:[
-    {icon:'⛩',name:'伏見稻荷大社',cat:'文化・歷史',region:'京都・日本',desc:'千本鳥居・必訪'},
-    {icon:'🏯',name:'金閣寺',cat:'文化・歷史',region:'京都・日本',desc:'世界遺產・金色倒影'},
-    {icon:'🎋',name:'嵐山竹林',cat:'自然',region:'京都・日本',desc:'夢幻竹林步道'},
-    {icon:'🍵',name:'宇治抹茶老街',cat:'美食',region:'京都・日本',desc:'抹茶甜點・平等院'},
-    {icon:'🏛',name:'清水寺',cat:'文化・歷史',region:'京都・日本',desc:'世界遺產・木舞台'},
-    {icon:'🌸',name:'哲學之道',cat:'自然',region:'京都・日本',desc:'賞櫻名道・散步'},
-    {icon:'🎎',name:'祇園',cat:'文化・歷史',region:'京都・日本',desc:'藝妓文化・花見小路'},
+    {name:'伏見稻荷大社',cat:'京都',region:'京都・日本',desc:'千本鳥居・必訪'},
+    {name:'金閣寺',cat:'京都',region:'京都・日本',desc:'世界遺產・金色倒影'},
+    {name:'嵐山竹林',cat:'京都',region:'京都・日本',desc:'夢幻竹林步道'},
+    {name:'宇治抹茶老街',cat:'京都',region:'京都・日本',desc:'抹茶甜點・平等院'},
+    {name:'清水寺',cat:'京都',region:'京都・日本',desc:'世界遺產・木舞台'},
+    {name:'哲學之道',cat:'京都',region:'京都・日本',desc:'賞櫻名道・散步'},
+    {name:'祇園',cat:'京都',region:'京都・日本',desc:'藝妓文化・花見小路'},
   ],
   osaka:[
-    {icon:'🏯',name:'大阪城',cat:'文化・歷史',region:'大阪・日本',desc:'豐臣秀吉居城'},
-    {icon:'🎡',name:'道頓堀',cat:'美食',region:'大阪・日本',desc:'章魚燒・大阪必吃'},
-    {icon:'🛍',name:'心齋橋',cat:'購物',region:'大阪・日本',desc:'購物天堂・藥妝'},
-    {icon:'🎢',name:'環球影城',cat:'景點',region:'大阪・日本',desc:'哈利波特・任天堂世界'},
-    {icon:'🦀',name:'黑門市場',cat:'美食',region:'大阪・日本',desc:'海鮮・生鮮市場'},
+    {name:'大阪城',cat:'大阪',region:'大阪・日本',desc:'豐臣秀吉居城'},
+    {name:'道頓堀',cat:'大阪',region:'大阪・日本',desc:'章魚燒・大阪必吃'},
+    {name:'心齋橋',cat:'大阪',region:'大阪・日本',desc:'購物天堂・藥妝'},
+    {name:'環球影城',cat:'大阪',region:'大阪・日本',desc:'哈利波特・任天堂世界'},
+    {name:'黑門市場',cat:'大阪',region:'大阪・日本',desc:'海鮮・生鮮市場'},
   ],
   taipei:[
-    {icon:'🏙',name:'台北 101',cat:'景點',region:'台北・台灣',desc:'台灣地標・觀景台'},
-    {icon:'🌙',name:'饒河街夜市',cat:'美食',region:'台北・台灣',desc:'胡椒餅・夜市文化'},
-    {icon:'⛩',name:'龍山寺',cat:'文化・歷史',region:'台北・台灣',desc:'百年古廟・萬華'},
-    {icon:'🚂',name:'九份老街',cat:'文化・歷史',region:'新北・台灣',desc:'山城茶樓・礦山風情'},
-    {icon:'🌿',name:'陽明山國家公園',cat:'自然',region:'台北・台灣',desc:'火山地形・賞花'},
-    {icon:'🎨',name:'松山文創園區',cat:'景點',region:'台北・台灣',desc:'文青必訪・展覽空間'},
+    {name:'台北 101',cat:'台北',region:'台北・台灣',desc:'台灣地標・觀景台'},
+    {name:'饒河街夜市',cat:'台北',region:'台北・台灣',desc:'胡椒餅・夜市文化'},
+    {name:'龍山寺',cat:'台北',region:'台北・台灣',desc:'百年古廟・萬華'},
+    {name:'九份老街',cat:'台北',region:'新北・台灣',desc:'山城茶樓・礦山風情'},
+    {name:'陽明山國家公園',cat:'台北',region:'台北・台灣',desc:'火山地形・賞花'},
+    {name:'松山文創園區',cat:'台北',region:'台北・台灣',desc:'文青必訪・展覽空間'},
   ],
   seoul:[
-    {icon:'🏯',name:'景福宮',cat:'文化・歷史',region:'首爾・韓國',desc:'朝鮮王朝正宮'},
-    {icon:'🛍',name:'明洞購物街',cat:'購物',region:'首爾・韓國',desc:'韓妝・街頭小吃'},
-    {icon:'🌉',name:'南山首爾塔',cat:'景點',region:'首爾・韓國',desc:'首爾夜景・戀人聖地'},
-    {icon:'🍖',name:'弘大',cat:'購物',region:'首爾・韓國',desc:'年輕文化・夜生活'},
-    {icon:'🏘',name:'北村韓屋村',cat:'文化・歷史',region:'首爾・韓國',desc:'傳統韓屋聚落'},
-    {icon:'🎡',name:'樂天世界',cat:'景點',region:'首爾・韓國',desc:'室內主題樂園'},
-    {icon:'🥘',name:'廣藏市場',cat:'美食',region:'首爾・韓國',desc:'韓式傳統市場・綠豆煎餅'},
+    {name:'景福宮',cat:'首爾',region:'首爾・韓國',desc:'朝鮮王朝正宮'},
+    {name:'明洞購物街',cat:'首爾',region:'首爾・韓國',desc:'韓妝・街頭小吃'},
+    {name:'南山首爾塔',cat:'首爾',region:'首爾・韓國',desc:'首爾夜景・戀人聖地'},
+    {name:'弘大',cat:'首爾',region:'首爾・韓國',desc:'年輕文化・夜生活'},
+    {name:'北村韓屋村',cat:'首爾',region:'首爾・韓國',desc:'傳統韓屋聚落'},
+    {name:'樂天世界',cat:'首爾',region:'首爾・韓國',desc:'室內主題樂園'},
+    {name:'廣藏市場',cat:'首爾',region:'首爾・韓國',desc:'韓式傳統市場・綠豆煎餅'},
   ],
   bangkok:[
-    {icon:'🛕',name:'臥佛寺',cat:'文化・歷史',region:'曼谷・泰國',desc:'巨型臥佛・必訪'},
-    {icon:'👑',name:'大皇宮',cat:'文化・歷史',region:'曼谷・泰國',desc:'泰國王室宮殿'},
-    {icon:'🛍',name:'恰圖恰週末市集',cat:'購物',region:'曼谷・泰國',desc:'全球最大週末市場'},
-    {icon:'🌃',name:'考山路',cat:'景點',region:'曼谷・泰國',desc:'背包客聖地・夜市'},
-    {icon:'🍜',name:'唐人街',cat:'美食',region:'曼谷・泰國',desc:'海鮮燒烤・街頭美食'},
+    {name:'臥佛寺',cat:'曼谷',region:'曼谷・泰國',desc:'巨型臥佛・必訪'},
+    {name:'大皇宮',cat:'曼谷',region:'曼谷・泰國',desc:'泰國王室宮殿'},
+    {name:'恰圖恰週末市集',cat:'曼谷',region:'曼谷・泰國',desc:'全球最大週末市場'},
+    {name:'考山路',cat:'曼谷',region:'曼谷・泰國',desc:'背包客聖地・夜市'},
+    {name:'唐人街',cat:'曼谷',region:'曼谷・泰國',desc:'海鮮燒烤・街頭美食'},
   ],
   paris:[
-    {icon:'🗼',name:'艾菲爾鐵塔',cat:'景點',region:'巴黎・法國',desc:'法國地標・夜景'},
-    {icon:'🏛',name:'羅浮宮',cat:'文化・歷史',region:'巴黎・法國',desc:'世界最大博物館'},
-    {icon:'⛪',name:'聖母院',cat:'文化・歷史',region:'巴黎・法國',desc:'哥德式建築・歷史'},
-    {icon:'🥐',name:'蒙馬特',cat:'景點',region:'巴黎・法國',desc:'藝術家聚落・夜景'},
-    {icon:'🛍',name:'香榭麗舍大道',cat:'購物',region:'巴黎・法國',desc:'奢侈品・名店林立'},
+    {name:'艾菲爾鐵塔',cat:'巴黎',region:'巴黎・法國',desc:'法國地標・夜景'},
+    {name:'羅浮宮',cat:'巴黎',region:'巴黎・法國',desc:'世界最大博物館'},
+    {name:'聖母院',cat:'巴黎',region:'巴黎・法國',desc:'哥德式建築・歷史'},
+    {name:'蒙馬特',cat:'巴黎',region:'巴黎・法國',desc:'藝術家聚落・夜景'},
+    {name:'香榭麗舍大道',cat:'巴黎',region:'巴黎・法國',desc:'奢侈品・名店林立'},
   ],
 };
-
-// 常用地區快速標籤
-const REGION_QUICK = ['名古屋・日本','高山・日本','上高地・日本','東京・日本','京都・日本','大阪・日本','台北・台灣','首爾・韓國','曼谷・泰國','巴黎・法國'];
 
 function doLogin(){
   const pw=document.getElementById('pwInput').value;
@@ -285,7 +333,7 @@ function doLogin(){
     document.getElementById('adminApp').style.display='block';
     initAdmin();
   }else{
-    document.getElementById('loginErr').textContent='密碼錯誤，請再試一次';
+    document.getElementById('loginErr').textContent='密碼錯誤';
     document.getElementById('pwInput').value='';
   }
 }
@@ -296,14 +344,18 @@ function doLogout(){
 }
 
 function initAdmin(){
-  // Render region quick tags
   const wrap=document.getElementById('regionExamples');
   REGION_QUICK.forEach(r=>{
     const btn=document.createElement('button');btn.className='region-tag';btn.textContent=r;
-    btn.onclick=()=>document.getElementById('aRegion').value=r;
+    btn.onclick=()=>{
+      document.getElementById('aRegion').value=r;
+      // Auto-set cat to city part
+      const city=r.split('・')[0];
+      const sel=document.getElementById('aCat');
+      for(let i=0;i<sel.options.length;i++){if(sel.options[i].value===city){sel.selectedIndex=i;break;}}
+    };
     wrap.appendChild(btn);
   });
-  // Listen spots
   db.collection('spots').onSnapshot(snap=>{
     allSpots=snap.docs.map(d=>({id:d.id,...d.data()}));
     allSpots.sort((a,b)=>(a.region||'').localeCompare(b.region||'','zh')||(a.name||'').localeCompare(b.name||'','zh'));
@@ -313,13 +365,14 @@ function initAdmin(){
 
 function renderStats(){
   document.getElementById('statTotal').textContent=allSpots.length;
-  document.getElementById('statCats').textContent=new Set(allSpots.map(s=>s.cat)).size;
-  document.getElementById('statRegions').textContent=new Set(allSpots.map(s=>s.region)).size;
+  document.getElementById('statCats').textContent=new Set(allSpots.map(s=>s.region)).size;
+  const countries=new Set(allSpots.map(s=>(s.region||'').split('・')[1]||'').filter(Boolean));
+  document.getElementById('statRegions').textContent=countries.size;
   document.getElementById('listSub').textContent=`共 ${allSpots.length} 個景點`;
 }
 
 function renderFilter(){
-  const cats=['全部',...new Set(allSpots.map(s=>s.cat))];
+  const cats=['全部',...new Set(allSpots.map(s=>s.cat||s.region||'').filter(Boolean))];
   const row=document.getElementById('filterRow');row.innerHTML='';
   cats.forEach(cat=>{
     const btn=document.createElement('button');btn.className='filter-btn'+(cat===catFilter?' active':'');
@@ -330,41 +383,42 @@ function renderFilter(){
 function renderList(){
   const list=document.getElementById('spotList');
   const q=(document.getElementById('searchBar').value||'').toLowerCase();
-  let filtered=catFilter==='全部'?allSpots:allSpots.filter(s=>s.cat===catFilter);
+  let filtered=catFilter==='全部'?allSpots:allSpots.filter(s=>(s.cat||s.region||'')===(catFilter));
   if(q)filtered=filtered.filter(s=>(s.name||'').toLowerCase().includes(q)||(s.region||'').toLowerCase().includes(q));
   if(!filtered.length){list.innerHTML='<div class="empty-list">找不到符合的景點</div>';return;}
   list.innerHTML='';
   filtered.forEach(s=>{
     const row=document.createElement('div');row.className='spot-row';
-    row.innerHTML=`<div class="spot-row-icon">${s.icon||'📍'}</div>
-      <div class="spot-row-info">
-        <div class="spot-row-name">${s.name}</div>
-        <div class="spot-row-region">${s.region||'—'}</div>
-        <div class="spot-row-meta">${s.cat}${s.desc?' · '+s.desc:''}</div>
-      </div>
-      <div class="spot-row-actions">
-        <button class="spot-row-del" onclick="deleteSpot('${s.id}','${(s.name||'').replace(/'/g,"\\'")}')"><i class="ti ti-trash"></i></button>
-      </div>`;
+    row.innerHTML=`<div class="spot-row-info">
+      <div class="spot-row-name">${s.name}</div>
+      <div class="spot-row-region">${s.region||''}</div>
+      <div class="spot-row-meta">${s.cat||''}${s.desc?' · '+s.desc:''}</div>
+    </div>
+    <button class="spot-row-del" onclick="deleteSpot('${s.id}','${(s.name||'').replace(/'/g,"\\'")}')"><i class="ti ti-trash"></i></button>`;
     list.appendChild(row);
   });
 }
 
 async function addSpot(){
   const name=document.getElementById('aName').value.trim();
-  const icon=document.getElementById('aIcon').value.trim()||'📍';
+  const icon=document.getElementById('aIcon').value.trim()||'';
   const cat=document.getElementById('aCat').value;
   const region=document.getElementById('aRegion').value.trim();
   const desc=document.getElementById('aDesc').value.trim();
   if(!name){showToast('請輸入景點名稱');return;}
-  if(!region){showToast('請輸入地區（格式：城市・國家）');return;}
-  if(!region.includes('・')){showToast('⚠️ 地區格式應為「城市・國家」，例如：京都・日本');return;}
-  const btn=document.getElementById('addBtn');btn.disabled=true;
+  if(!region){showToast('請輸入地區');return;}
+  if(!region.includes('・')){showToast('地區格式應為「城市・國家」');return;}
+  const btn=document.getElementById('addBtn');btn.disabled=true;btn.textContent='新增中…';
   try{
-    await db.collection('spots').add({icon,name,cat,region,desc,createdAt:firebase.firestore.FieldValue.serverTimestamp()});
-    document.getElementById('aName').value='';document.getElementById('aIcon').value='';document.getElementById('aDesc').value='';
-    showToast(`「${name}」已新增 ✓`);
+    const data={name,cat,region,desc,createdAt:firebase.firestore.FieldValue.serverTimestamp()};
+    if(icon)data.icon=icon;
+    await db.collection('spots').add(data);
+    document.getElementById('aName').value='';
+    document.getElementById('aIcon').value='';
+    document.getElementById('aDesc').value='';
+    showToast(`「${name}」已新增`);
   }catch(e){showToast('新增失敗：'+e.message);}
-  btn.disabled=false;
+  btn.disabled=false;btn.textContent='新增到資料庫';
 }
 
 async function deleteSpot(id,name){
@@ -374,17 +428,17 @@ async function deleteSpot(id,name){
 }
 
 async function importPreset(key){
-  const spots=PRESET_SPOTS[key];if(!spots){showToast('找不到預設資料');return;}
+  const spots=PRESET_SPOTS[key];if(!spots)return;
   const existing=new Set(allSpots.map(s=>s.name));
   const toAdd=spots.filter(s=>!existing.has(s.name));
   if(!toAdd.length){showToast('此組景點已全部存在');return;}
-  if(!confirm(`匯入 ${toAdd.length} 個景點（已存在的會跳過）？`))return;
+  if(!confirm(`匯入 ${toAdd.length} 個景點？`))return;
   let count=0;
   for(const s of toAdd){
     try{await db.collection('spots').add({...s,createdAt:firebase.firestore.FieldValue.serverTimestamp()});count++;}
-    catch(e){console.warn(e);}
+    catch(e){}
   }
-  showToast(`✓ 已匯入 ${count} 個景點`);
+  showToast(`已匯入 ${count} 個景點`);
 }
 
 function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
