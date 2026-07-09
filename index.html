@@ -235,13 +235,10 @@ body{background:#EDE7DA;display:flex;justify-content:center;min-height:100dvh;fo
     </div>
     <div class="content-section" id="tab-budget">
       <div class="budget-summary">
-        <div class="b-card" style="background:#FBD4DE"><div class="b-label" style="color:#8B3B52">總支出（台幣）</div><div class="b-amt" id="totalOrig" style="color:#2B2620">0</div><div class="b-twd" style="color:#8B3B52" id="totalTwd">—</div></div>
-        <div class="b-card" style="background:#C9E4DE"><div class="b-label" style="color:#2E5C4E">人均費用（台幣）</div><div class="b-amt" id="perPersonOrig" style="color:#2B2620">0</div><div class="b-twd" style="color:#2E5C4E" id="perPersonTwd">—</div></div>
+        <div class="b-card" style="background:#FBD4DE"><div class="b-label" style="color:#8B3B52">總支出（台幣）</div><div class="b-amt" id="totalOrig" style="color:#2B2620">NT$0</div><div class="b-twd" style="color:#8B3B52" id="totalTwd"></div></div>
+        <div class="b-card" style="background:#C9E4DE"><div class="b-label" style="color:#2E5C4E">人均費用（台幣）</div><div class="b-amt" id="perPersonOrig" style="color:#2B2620">NT$0</div><div class="b-twd" style="color:#2E5C4E" id="perPersonTwd"></div></div>
       </div>
-      <div style="margin:0 18px 10px;background:#fff;border-radius:14px;padding:10px 14px;display:flex;justify-content:space-between;align-items:center;">
-        <span style="font-size:12px;color:#A8A296">日幣合計</span>
-        <span style="font-size:15px;font-weight:600;color:#2B2620" id="totalJpy">¥0</span>
-      </div>
+      <div id="currencySummaryBlock"></div>
       <div class="section-row"><div class="section-title">費用明細</div></div>
       <div id="expenseList"></div>
       <div class="section-row" style="margin-top:6px"><div class="section-title">分帳狀況</div><button class="split-add-btn" onclick="App.openAddMember()"><i class="ti ti-user-plus" style="font-size:11px"></i>新增成員</button></div>
@@ -607,11 +604,28 @@ const App = {
     const perP=n?Math.round(tot/n):0;
     document.getElementById('totalOrig').textContent='NT$'+tot.toLocaleString();
     document.getElementById('perPersonOrig').textContent='NT$'+perP.toLocaleString();
-    document.getElementById('totalTwd').textContent=state.expenses.length?'（台幣換算合計）':'';
+    document.getElementById('totalTwd').textContent=state.expenses.length?'台幣換算合計':'';
     document.getElementById('perPersonTwd').textContent='';
-    // JPY total
-    const jpyEl=document.getElementById('totalJpy');
-    if(jpyEl){const jpyTot=state.expenses.reduce((s,e)=>{const rate=state.rates['JPY']||0.2145;const twdAmt=toTWD(e.amount,e.currency);return s+Math.round(twdAmt/rate);},0);jpyEl.textContent='¥'+jpyTot.toLocaleString();}
+    // Dynamic currency summary - group by currency used
+    const block=document.getElementById('currencySummaryBlock');
+    if(block){
+      const usedCurs=[...new Set(state.expenses.map(e=>e.currency))].filter(Boolean);
+      if(usedCurs.length===0){block.innerHTML='';} 
+      else{
+        block.innerHTML=usedCurs.map(cur=>{
+          const info=CURRENCY_DB[cur]||{symbol:cur,name:cur};
+          const curTot=state.expenses.filter(e=>e.currency===cur).reduce((s,e)=>s+e.amount,0);
+          const twdEq=toTWD(curTot,cur);
+          return `<div style="margin:0 18px 8px;background:#fff;border-radius:14px;padding:10px 16px;display:flex;justify-content:space-between;align-items:center;">
+            <span style="font-size:12px;color:#A8A296">${info.name}（${cur}）合計</span>
+            <div style="text-align:right">
+              <div style="font-size:15px;font-weight:600;color:#2B2620">${info.symbol}${Math.round(curTot).toLocaleString()}</div>
+              ${cur!=='TWD'?`<div style="font-size:10px;color:#C97B4A">≈ NT$${twdEq.toLocaleString()}</div>`:''}
+            </div>
+          </div>`;
+        }).join('');
+      }
+    }
     const el=document.getElementById('expenseList');el.innerHTML='';
     state.expenses.forEach((e,i)=>{
       const div=document.createElement('div');div.className='exp-item';
@@ -729,44 +743,44 @@ const App = {
   // ── Modal ──
   buildSpotsOptions(){
     const heroText=(document.getElementById('heroTitle').textContent||'').trim();
-    // Remove trailing 旅行/旅遊/trip etc to get pure destination
-    const dest=heroText.replace(/(旅行|旅遊|trip|travel|之旅)$/i,'').trim().toLowerCase();
-    let spots=state.firestoreSpots;
+    const dest=heroText.replace(/(旅行|旅遊|trip|travel|之旅|Tour|tour)$/i,'').trim().toLowerCase();
+    const spots=state.firestoreSpots;
     let filtered=[];
 
     if(dest&&dest.length>0){
-      // Try to match region or cat field
       filtered=spots.filter(s=>{
-        const region=(s.region||'').toLowerCase();
-        const cat=(s.cat||s.region||s.name||''). toLowerCase();
-        const city=region.split('・')[0]; // e.g. "東京" from "東京・日本"
+        // 1. Match region city part
+        const city=(s.region||'').split('・')[0].toLowerCase();
+        // 2. Match keywords field (comma-separated)
+        const keywords=(s.keywords||'').toLowerCase().split(/[,，、\s]+/).map(k=>k.trim()).filter(Boolean);
+        // 3. Match cat
+        const cat=(s.cat||'').toLowerCase();
         return(
-          city.includes(dest)||
-          dest.includes(city)||
-          region.includes(dest)||
-          dest.includes(region.split('・')[0])||
-          cat.includes(dest)||
-          dest.includes(cat)
+          city===dest||city.includes(dest)||dest.includes(city)||
+          keywords.some(k=>k===dest||k.includes(dest)||dest.includes(k))||
+          cat===dest||cat.includes(dest)||dest.includes(cat)
         );
       });
     }
 
-    // If no match found, show nothing with helpful message
     if(!filtered.length&&dest.length>0){
       return `<option value="">— 找不到「${heroText}」的景點，請手動輸入或至後台新增 —</option>`;
     }
-    // If no destination entered, show all
     if(!filtered.length) filtered=spots;
     if(!filtered.length) return'<option value="">— 尚無推薦景點，可手動輸入 —</option>';
 
-    // Group by region
-    const regions=[...new Set(filtered.map(s=>s.region||s.cat||'其他'))];
+    // Group by city (region first part)
+    const cityGroups={};
+    filtered.forEach(s=>{
+      const city=(s.region||'').split('・')[0]||s.cat||'其他';
+      if(!cityGroups[city])cityGroups[city]=[];
+      cityGroups[city].push(s);
+    });
+
     let h=`<option value="">— 推薦景點（${filtered.length}個）—</option>`;
-    regions.forEach(reg=>{
-      const inReg=filtered.filter(s=>(s.region||s.cat||'其他')===reg);
-      if(!inReg.length)return;
-      h+=`<optgroup label="${reg}">`;
-      inReg.forEach(s=>{h+=`<option value="${s.name}">${s.name}${s.desc?'　'+s.desc:''}</option>`;});
+    Object.entries(cityGroups).forEach(([city,list])=>{
+      h+=`<optgroup label="${city}">`;
+      list.forEach(s=>{h+=`<option value="${s.name}">${s.name}${s.desc?'　'+s.desc:''}</option>`;});
       h+='</optgroup>';
     });
     return h;
