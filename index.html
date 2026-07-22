@@ -477,7 +477,7 @@ const App = {
     document.getElementById('todayDateLabel').textContent=App.fmtDay(state.currentDay);
   },
   switchDay(i){state.currentDay=i;App.renderDayRow();App.renderStations();const row=document.getElementById('dayRow');row.children[i]&&row.children[i].scrollIntoView({behavior:'smooth',inline:'start',block:'nearest'});},
-  addDay(){state.dayCount++;while(state.allStations.length<state.dayCount)state.allStations.push([]);state.currentDay=state.dayCount-1;App.renderDayRow();App.renderStations();showToast('已新增 Day '+state.dayCount);setTimeout(()=>{const r=document.getElementById('dayRow');r.scrollLeft=r.scrollWidth;},50);App.saveAll();},
+  addDay(){state.dayCount++;while(state.allStations.length<state.dayCount)state.allStations.push([]);state.currentDay=state.dayCount-1;App.renderDayRow();App.renderStations();showToast('已新增 Day '+state.dayCount);App.saveAll();setTimeout(()=>{const r=document.getElementById('dayRow');r.scrollLeft=r.scrollWidth;},50);},
   delDay(i){if(state.dayCount<=1){showToast('至少保留一天');return;}state.allStations.splice(i,1);state.dayCount--;if(state.currentDay>=state.dayCount)state.currentDay=state.dayCount-1;App.renderDayRow();App.renderStations();App.saveAll();showToast('已刪除');},
 
   // ── Stations ──
@@ -632,7 +632,7 @@ const App = {
       // Resolve payer display name by uid if available
       let payerDisplay=e.who||'';
       if(e.payerUid){const pm=state.members.find(m=>m.uid===e.payerUid);if(pm)payerDisplay=pm.name+' 付款';}
-      div.innerHTML=`<div class="exp-icon">🧾</div><div class="exp-info"><div class="exp-name">${e.name}</div><div class="exp-who">${payerDisplay} · ${e.split==='均攤'?n+'人均攤':e.split}</div></div><div class="exp-amts"><div class="exp-orig">${fmtAmt(e.amount,e.currency)}</div><div class="exp-twd">${fmtTWD(e.amount,e.currency)}</div></div><button class="exp-del" onclick="App.delExpense(${i})"><i class="ti ti-trash"></i></button>`;
+      div.innerHTML=`<div class="exp-icon">🧾</div><div class="exp-info"><div class="exp-name">${e.name}</div><div class="exp-who">${payerDisplay} · ${e.split==='均攤'?n+'人均攤':e.split}</div></div><div class="exp-amts"><div class="exp-orig">${fmtAmt(e.amount,e.currency)}</div><div class="exp-twd">${fmtTWD(e.amount,e.currency)}</div></div><div style="display:flex;gap:4px;flex-shrink:0"><button class="exp-del" style="background:#E4F0EB;color:#2E5C4E" onclick="App.editExpense(${i})"><i class="ti ti-pencil"></i></button><button class="exp-del" onclick="App.delExpense(${i})"><i class="ti ti-trash"></i></button></div>`;
       el.appendChild(div);
     });
     const splits=App.calcSplits();const sl=document.getElementById('splitList');sl.innerHTML='';
@@ -645,6 +645,26 @@ const App = {
     });
   },
   delExpense(i){state.expenses.splice(i,1);App.renderBudget();App.saveAll();showToast('已刪除');},
+  editExpense(i){
+    const e=state.expenses[i];if(!e)return;
+    const opts=state.members.length?state.members.map(m=>`<option${m.name===e.payer?' selected':''}>` +m.name+'</option>').join(''): '<option>（請先新增成員）</option>';
+    const curOpts=Object.entries(CURRENCY_DB).map(([c,v])=>`<option value="${c}"${c===e.currency?' selected':''}>` +v.symbol+' '+c+' — '+v.name+'</option>').join('');
+    document.getElementById('modalTitle').textContent='修改費用';
+    document.getElementById('modalBody').innerHTML=`<div class="field"><label>項目名稱</label><input id="mExpName" value="${e.name}"/></div><div class="field-row"><div class="field"><label>幣別</label><div class="select-wrap"><select id="mExpCur">${curOpts}</select></div></div><div class="field" style="flex:2"><label>金額</label><input id="mExpAmt" type="number" value="${e.amount}"/></div></div><div class="field-row"><div class="field"><label>付款人</label><div class="select-wrap"><select id="mExpPayer">${opts}</select></div></div><div class="field"><label>分帳方式</label><div class="select-wrap"><select id="mExpSplit"><option value="均攤"${e.split==='均攤'?' selected':''}>` +state.members.length+'人均攤</option><option value="各自"'+( e.split==='各自'?' selected':'')+'>各自付款</option></select></div></div></div><button class="modal-submit" onclick="App.submitEditExpense(${i})">儲存修改</button>\`;
+    document.getElementById('modalBg').classList.add('open');
+  },
+  submitEditExpense(i){
+    const name=document.getElementById('mExpName').value.trim();
+    const amt=parseFloat(document.getElementById('mExpAmt').value);
+    const payer=document.getElementById('mExpPayer')?.value||state.expenses[i].payer||'';
+    const split=document.getElementById('mExpSplit').value;
+    const currency=document.getElementById('mExpCur').value;
+    if(!name||isNaN(amt))return;
+    const payerMember=state.members.find(m=>m.name===payer);
+    const payerUid=payerMember?payerMember.uid||null:null;
+    state.expenses[i]={...state.expenses[i],name,who:payer?payer+' 付款':'',split,amount:amt,currency,payer,payerUid};
+    App.renderBudget();App.closeModal();App.saveAll();showToast('已修改');
+  },
   delMember(i){if(state.members.length<=1){showToast('至少保留一位');return;}state.members.splice(i,1);App.renderBudget();App.saveAll();showToast('已移除');},
   openAddMember(){
     document.getElementById('modalTitle').textContent='新增成員';
@@ -749,15 +769,23 @@ const App = {
 
     if(dest&&dest.length>0){
       filtered=spots.filter(s=>{
-        // 1. Match region city part
-        const city=(s.region||'').split('・')[0].toLowerCase();
-        // 2. Match keywords field (comma-separated)
+        const region=(s.region||'').toLowerCase();
+        const city=region.split('・')[0];
+        const country=region.split('・')[1]||'';
         const keywords=(s.keywords||'').toLowerCase().split(/[,，、\s]+/).map(k=>k.trim()).filter(Boolean);
-        // 3. Match cat
         const cat=(s.cat||'').toLowerCase();
+        // country aliases map
+        const countryAliases={'日本':['japan','日本','jp'],'韓國':['korea','韓國','한국','kr'],'台灣':['taiwan','台灣','tw'],'泰國':['thailand','泰國','thai'],'法國':['france','法國','fr'],'英國':['uk','england','英國','britain'],'美國':['usa','us','america','美國'],'中國':['china','中國','cn'],'香港':['hongkong','hong kong','香港','hk'],'新加坡':['singapore','新加坡','sg'],'馬來西亞':['malaysia','馬來西亞','my'],'越南':['vietnam','越南','vn'],'澳洲':['australia','澳洲','au']};
+        // check country match
+        let countryMatch=false;
+        for(const[cn,aliases]of Object.entries(countryAliases)){
+          if(country.includes(cn)&&aliases.some(a=>dest.includes(a)||a.includes(dest))){countryMatch=true;break;}
+        }
         return(
+          countryMatch||
           city===dest||city.includes(dest)||dest.includes(city)||
-          keywords.some(k=>k===dest||k.includes(dest)||dest.includes(k))||
+          country.toLowerCase().includes(dest)||dest.includes(country.toLowerCase())||
+          keywords.some(k=>k&&(k===dest||k.includes(dest)||dest.includes(k)))||
           cat===dest||cat.includes(dest)||dest.includes(cat)
         );
       });
@@ -790,9 +818,15 @@ const App = {
   openModal(forceTab, prefillName){
     const tab=forceTab||state.currentTab;
     const title=document.getElementById('modalTitle'),body=document.getElementById('modalBody');
+    if(tab==='map'){
+      title.textContent='查詢地點';
+      body.innerHTML=`<div class="field"><label>地點名稱</label><input id="mMapSearch" placeholder="輸入地點名稱" autofocus/></div><button class="modal-submit" onclick="App.submitMapSearch()">開啟地圖查詢</button>`;
+      document.getElementById('modalBg').classList.add('open');
+      return;
+    }
     if(tab==='itinerary'){
       title.textContent='新增行程景點';
-      body.innerHTML=`<div class="field"><label>推薦景點</label><div class="select-wrap"><select id="spotSelect" onchange="App.fillSpot()">${App.buildSpotsOptions()}</select></div></div><div class="divider"><span>或手動輸入</span></div><div class="field-row"><div class="field"><label>時間</label><input id="mTime" placeholder="09:00" oninput="App.fmtTimeInput(this)" maxlength="5"/></div><div class="field" style="flex:2"><label>景點名稱</label><input id="mName" placeholder="輸入名稱"/></div></div><div class="field"><label>備註</label><input id="mNote" placeholder="可留空"/></div><button class="modal-submit" onclick="App.submitStation()">加入 Day ${state.currentDay+1}</button>`;
+      body.innerHTML=`<div class="field"><label>推薦景點</label><div class="select-wrap"><select id="spotSelect" onchange="App.fillSpot()">${App.buildSpotsOptions()}</select></div></div><div class="divider"><span>或手動輸入</span></div><div class="field-row"><div class="field"><label>時間（選填）</label><input id="mTime" placeholder="09:00" oninput="App.fmtTimeInput(this)" maxlength="5"/></div><div class="field" style="flex:2"><label>景點名稱</label><input id="mName" placeholder="輸入名稱"/></div></div><div class="field"><label>備註（選填）</label><input id="mNote" placeholder="可留空"/></div><button class="modal-submit" onclick="App.submitStation()">加入 Day ${state.currentDay+1}</button>`;
     }else if(tab==='budget'){
       const opts=state.members.length?state.members.map(m=>`<option>${m.name}</option>`).join(''):'<option>（請先新增成員）</option>';
       const curOpts=Object.entries(CURRENCY_DB).map(([c,v])=>`<option value="${c}">${v.symbol} ${c} — ${v.name}</option>`).join('');
@@ -808,7 +842,7 @@ const App = {
   closeModal(){document.getElementById('modalBg').classList.remove('open');state.editingStation=null;},
   closeModalBg(e){if(e.target===document.getElementById('modalBg'))App.closeModal();},
   submitStation(){
-    const time=document.getElementById('mTime').value.trim()||'待定';
+    const time=document.getElementById('mTime').value.trim()||'';
     const name=document.getElementById('mName').value.trim();if(!name)return;
     const note=document.getElementById('mNote').value.trim()||'';
     state.allStations[state.currentDay].push({time,name,note});
@@ -832,6 +866,12 @@ const App = {
     const cat=document.getElementById('mShopCat').value;
     const loc=document.getElementById('mShopLoc').value.trim()||'';
     state.shopItems.push({cat,name,loc,checked:false});App.renderShop();App.closeModal();showToast('已加入');
+  },
+  submitMapSearch(){
+    const name=document.getElementById('mMapSearch').value.trim();if(!name)return;
+    const url=App.getMapUrl(name);
+    window.open(url,'_blank');
+    App.closeModal();
   },
 
   // ── Share ──
@@ -977,6 +1017,8 @@ const App = {
       }
     }
 
+    // Ensure at least 1 day exists even without date selection
+    if(state.dayCount===0){state.dayCount=1;state.allStations=[[]]; }
     App.renderDayRow();App.renderStations();App.renderBudget();App.renderShop();
     document.getElementById('heroTitle').addEventListener('blur',()=>App.saveAll());
   }
