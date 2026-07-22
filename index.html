@@ -647,10 +647,20 @@ const App = {
   delExpense(i){state.expenses.splice(i,1);App.renderBudget();App.saveAll();showToast('已刪除');},
   editExpense(i){
     const e=state.expenses[i];if(!e)return;
-    const opts=state.members.length?state.members.map(m=>`<option${m.name===e.payer?' selected':''}>` +m.name+'</option>').join(''): '<option>（請先新增成員）</option>';
-    const curOpts=Object.entries(CURRENCY_DB).map(([c,v])=>`<option value="${c}"${c===e.currency?' selected':''}>` +v.symbol+' '+c+' — '+v.name+'</option>').join('');
+    const opts=state.members.length
+      ?state.members.map(m=>'<option'+(m.name===e.payer?' selected':'')+'>'+m.name+'</option>').join('')
+      :'<option>（請先新增成員）</option>';
+    const curOpts=Object.entries(CURRENCY_DB).map(([c,v])=>'<option value="'+c+'"'+(c===e.currency?' selected':'')+'>'+v.symbol+' '+c+' — '+v.name+'</option>').join('');
+    const splitOpts='<option value="均攤"'+(e.split==='均攤'?' selected':'')+'>'+state.members.length+'人均攤</option>'
+      +'<option value="各自"'+(e.split==='各自'?' selected':'')+'>各自付款</option>';
     document.getElementById('modalTitle').textContent='修改費用';
-    document.getElementById('modalBody').innerHTML=`<div class="field"><label>項目名稱</label><input id="mExpName" value="${e.name}"/></div><div class="field-row"><div class="field"><label>幣別</label><div class="select-wrap"><select id="mExpCur">${curOpts}</select></div></div><div class="field" style="flex:2"><label>金額</label><input id="mExpAmt" type="number" value="${e.amount}"/></div></div><div class="field-row"><div class="field"><label>付款人</label><div class="select-wrap"><select id="mExpPayer">${opts}</select></div></div><div class="field"><label>分帳方式</label><div class="select-wrap"><select id="mExpSplit"><option value="均攤"${e.split==='均攤'?' selected':''}>` +state.members.length+'人均攤</option><option value="各自"'+( e.split==='各自'?' selected':'')+'>各自付款</option></select></div></div></div><button class="modal-submit" onclick="App.submitEditExpense(${i})">儲存修改</button>\`;
+    document.getElementById('modalBody').innerHTML=
+      '<div class="field"><label>項目名稱</label><input id="mExpName" value="'+e.name+'"/></div>'
+      +'<div class="field-row"><div class="field"><label>幣別</label><div class="select-wrap"><select id="mExpCur">'+curOpts+'</select></div></div>'
+      +'<div class="field" style="flex:2"><label>金額</label><input id="mExpAmt" type="number" value="'+e.amount+'"/></div></div>'
+      +'<div class="field-row"><div class="field"><label>付款人</label><div class="select-wrap"><select id="mExpPayer">'+opts+'</select></div></div>'
+      +'<div class="field"><label>分帳方式</label><div class="select-wrap"><select id="mExpSplit">'+splitOpts+'</select></div></div></div>'
+      +'<button class="modal-submit" onclick="App.submitEditExpense('+i+')">儲存修改</button>';
     document.getElementById('modalBg').classList.add('open');
   },
   submitEditExpense(i){
