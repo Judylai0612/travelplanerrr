@@ -1,10 +1,12 @@
-const CACHE_NAME = 'tabiline-v1';
+const CACHE_NAME = 'tabiline-v2';
 const CACHE_URLS = [
   '/travelplanerrr/',
   '/travelplanerrr/index.html',
+  '/travelplanerrr/manifest.json',
+  '/travelplanerrr/icon-192.svg',
+  '/travelplanerrr/icon-512.svg',
 ];
 
-// Install
 self.addEventListener('install', e => {
   e.waitUntil(
     caches.open(CACHE_NAME).then(cache => cache.addAll(CACHE_URLS)).catch(()=>{})
@@ -12,7 +14,6 @@ self.addEventListener('install', e => {
   self.skipWaiting();
 });
 
-// Activate
 self.addEventListener('activate', e => {
   e.waitUntil(
     caches.keys().then(keys =>
@@ -22,7 +23,6 @@ self.addEventListener('activate', e => {
   self.clients.claim();
 });
 
-// Fetch - network first, fallback to cache
 self.addEventListener('fetch', e => {
   if (e.request.method !== 'GET') return;
   e.respondWith(
