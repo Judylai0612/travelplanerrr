@@ -461,7 +461,7 @@ const App = {
       await db.collection('trips').doc(state.tripId).set({
         userName:state.userName, destination:state.destination,
         members:state.members, expenses:state.expenses,
-        allStations:state.allStations, dayCount:state.dayCount,
+        allStations:state.allStations.map(day=>({stations:day})), dayCount:state.dayCount,
         startDate:document.getElementById('startDate').value||'',
         endDate:document.getElementById('endDate').value||'',
         heroTitle:document.getElementById('heroTitle').textContent||'',
@@ -474,7 +474,7 @@ const App = {
   loadTripData(data){
     if(data.members&&data.members.length)state.members=data.members;
     if(data.expenses)state.expenses=data.expenses;
-    if(data.allStations)state.allStations=data.allStations;
+    if(data.allStations)state.allStations=data.allStations.map(day=>Array.isArray(day)?day:(day.stations||[]));
     if(data.dayCount)state.dayCount=data.dayCount;
     if(data.destination)state.destination=data.destination;
     if(data.userName){
