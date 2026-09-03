@@ -794,8 +794,8 @@ const App = {
     document.getElementById('doneCount').textContent=d;document.getElementById('totalCount').textContent=t;
     const pct=t?Math.round(d/t*100):0;document.getElementById('progFill').style.width=pct+'%';document.getElementById('progPct').textContent=pct+'%';
   },
-  toggleShop(i){state.shopItems[i].checked=!state.shopItems[i].checked;App.renderShop();},
-  delShop(i){state.shopItems.splice(i,1);App.renderShop();showToast('已移除');},
+  toggleShop(i){state.shopItems[i].checked=!state.shopItems[i].checked;App.renderShop();App.saveAll();},
+  delShop(i){state.shopItems.splice(i,1);App.renderShop();App.saveAll();showToast('已移除');},
 
   // ── Map ──
   getMapUrl(name){
@@ -925,7 +925,7 @@ const App = {
     const name=document.getElementById('mShopName').value.trim();if(!name)return;
     const cat=document.getElementById('mShopCat').value;
     const loc=document.getElementById('mShopLoc').value.trim()||'';
-    state.shopItems.push({cat,name,loc,checked:false});App.renderShop();App.closeModal();showToast('已加入');
+    state.shopItems.push({cat,name,loc,checked:false});App.renderShop();App.closeModal();App.saveAll();showToast('已加入');
   },
   submitMapSearch(){
     const name=document.getElementById('mMapSearch').value.trim();if(!name)return;
@@ -1050,7 +1050,9 @@ const App = {
             state.members.push({name,isMe:true,uid:myUid});
           }
 
-          // Save back to Firebase so others see new member
+          // Save locally so this trip resumes automatically next time (no URL param needed),
+          // and save back to Firebase so others see new member
+          saveLocal();
           await App.saveFirebase();
 
           // Now start listening for real-time updates
