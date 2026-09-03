@@ -288,6 +288,17 @@ body{background:#EDE7DA;display:flex;justify-content:center;min-height:100dvh;fo
 <div class="toast" id="toast"></div>
 </div>
 
+<script>
+// 清除所有 Service Worker
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.getRegistrations().then(regs=>{
+    regs.forEach(r=>r.unregister());
+  });
+  caches.keys().then(keys=>{
+    keys.forEach(k=>caches.delete(k));
+  });
+}
+</script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script>
@@ -1016,4 +1027,28 @@ const App = {
         if(local.startDate){
           document.getElementById('startDate').value=local.startDate;
           document.getElementById('endDate').value=local.endDate||'';
-          state.tripStartDate=new Date(local.startD
+          state.tripStartDate=new Date(local.startDate);
+          document.getElementById('dateResult').innerHTML=`<i class="ti ti-calendar-check"></i> 共 ${state.dayCount} 天 ${state.dayCount-1} 夜`;
+        }
+        document.getElementById('onboard').style.display='none';
+      }
+      // If local has a tripId, resume Firebase sync
+      if(local&&local.tripId){
+        state.tripId=local.tripId;
+        window.history.replaceState({},'',window.location.pathname+'?trip='+local.tripId);
+        App.listenTrip();
+      }
+    }
+
+    // Ensure at least 1 day exists even without date selection
+    if(state.dayCount===0){state.dayCount=1;state.allStations=[[]]; }
+    App.renderDayRow();App.renderStations();App.renderBudget();App.renderShop();
+    document.getElementById('heroTitle').addEventListener('blur',()=>App.saveAll());
+  }
+};
+
+App.init();
+</script>
+
+</body>
+</html>
