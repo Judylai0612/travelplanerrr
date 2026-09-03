@@ -1,4 +1,4 @@
-const CACHE_NAME = 'tabiline-v3';
+const CACHE_NAME = 'tabiline-v4';
 const CACHE_URLS = [
   '/travelplanerrr/',
   '/travelplanerrr/index.html',
@@ -25,11 +25,12 @@ self.addEventListener('activate', e => {
 
 self.addEventListener('fetch', e => {
   if (e.request.method !== 'GET') return;
+  if (!e.request.url.startsWith('http')) return;
   e.respondWith(
     fetch(e.request)
       .then(res => {
         const clone = res.clone();
-        caches.open(CACHE_NAME).then(cache => cache.put(e.request, clone));
+        caches.open(CACHE_NAME).then(cache => cache.put(e.request, clone)).catch(()=>{});
         return res;
       })
       .catch(() => caches.match(e.request))
