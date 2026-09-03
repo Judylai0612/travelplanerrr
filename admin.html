@@ -77,10 +77,21 @@ body{background:#F2F2F7;min-height:100vh;font-family:-apple-system,BlinkMacSyste
 .spot-row-city{font-size:11px;color:#007AFF;margin-top:2px;font-weight:500;}
 .spot-row-del{width:28px;height:28px;border-radius:7px;background:#FFF0F0;border:none;color:#FF3B30;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
 .spot-row-del:hover{background:#FF3B30;color:#fff;}
+.spot-row-edit{width:28px;height:28px;border-radius:7px;background:#EAF2FF;border:none;color:#007AFF;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.spot-row-edit:hover{background:#007AFF;color:#fff;}
 .empty-list{text-align:center;padding:32px;font-size:13px;color:#8E8E93;background:#fff;border-radius:12px;}
 .list-sub{font-size:12px;color:#8E8E93;margin-bottom:10px;}
 .toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%);background:#1C1C1E;color:#fff;font-size:13px;font-weight:500;padding:10px 20px;border-radius:20px;opacity:0;transition:all .25s;white-space:nowrap;z-index:999;pointer-events:none;}
 .toast.show{opacity:1;}
+.edit-modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:200;align-items:center;justify-content:center;padding:20px;}
+.edit-modal-bg.open{display:flex;}
+.edit-modal{background:#fff;border-radius:16px;padding:22px;width:100%;max-width:380px;max-height:86vh;overflow-y:auto;}
+.edit-modal-title{font-size:16px;font-weight:700;color:#1C1C1E;margin-bottom:16px;}
+.edit-modal-actions{display:flex;gap:8px;margin-top:6px;}
+.edit-modal-actions button{flex:1;padding:11px;border-radius:11px;font-size:14px;font-weight:600;cursor:pointer;border:none;}
+.edit-cancel-btn{background:#F2F2F7;color:#3C3C43;}
+.edit-save-btn{background:#007AFF;color:#fff;}
+.edit-save-btn:disabled{opacity:.4;cursor:not-allowed;}
 </style>
 </head>
 <body>
@@ -182,6 +193,36 @@ body{background:#F2F2F7;min-height:100vh;font-family:-apple-system,BlinkMacSyste
         <input class="search-bar" id="searchBar" placeholder="🔍 搜尋景點名稱或城市…" oninput="renderList()">
         <div class="spot-list" id="spotList"><div class="empty-list">連接中…</div></div>
       </div>
+    </div>
+  </div>
+</div>
+
+<div class="edit-modal-bg" id="editModalBg" onclick="if(event.target===this)closeEditModal()">
+  <div class="edit-modal">
+    <div class="edit-modal-title">編輯景點</div>
+    <div class="a-field">
+      <label>景點名稱</label>
+      <input id="eName" placeholder="例：金森紅磚倉庫"/>
+    </div>
+    <div class="a-field">
+      <label>城市</label>
+      <input id="eCity" placeholder="例：函館"/>
+    </div>
+    <div class="a-field">
+      <label>國家</label>
+      <input id="eCountry" placeholder="例：日本"/>
+    </div>
+    <div class="a-field">
+      <label>簡介（選填）</label>
+      <input id="eDesc" placeholder="例：港口夜景・必訪"/>
+    </div>
+    <div class="a-field">
+      <label>關鍵字（選填，逗號分隔）</label>
+      <input id="eKeywords" placeholder="例：北海道, 日本"/>
+    </div>
+    <div class="edit-modal-actions">
+      <button class="edit-cancel-btn" onclick="closeEditModal()">取消</button>
+      <button class="edit-save-btn" id="editSaveBtn" onclick="saveEditSpot()">儲存</button>
     </div>
   </div>
 </div>
@@ -556,6 +597,7 @@ function renderList(){
       <div class="spot-row-name">${s.name}</div>
       <div class="spot-row-city">${s.city||''}${s.country?' · '+s.country:''}</div>
     </div>
+    <button class="spot-row-edit" onclick="openEditModal('${s.id}')"><i class="ti ti-pencil"></i></button>
     <button class="spot-row-del" onclick="deleteSpot('${s.id}','${(s.name||'').replace(/'/g,"\\'")}')"><i class="ti ti-trash"></i></button>`;
     list.appendChild(row);
   });
@@ -596,6 +638,42 @@ async function deleteSpot(id,name){
   if(!confirm(`確定刪除「${name}」？`))return;
   try{await db.collection('spots').doc(id).delete();showToast(`「${name}」已刪除`);}
   catch(e){showToast('刪除失敗：'+e.message);}
+}
+
+// ── Edit spot ──
+let editingId=null;
+function openEditModal(id){
+  const s=allSpots.find(x=>x.id===id);
+  if(!s)return;
+  editingId=id;
+  document.getElementById('eName').value=s.name||'';
+  document.getElementById('eCity').value=s.city||'';
+  document.getElementById('eCountry').value=s.country||'';
+  document.getElementById('eDesc').value=s.desc||'';
+  document.getElementById('eKeywords').value=s.keywords||'';
+  document.getElementById('editModalBg').classList.add('open');
+}
+function closeEditModal(){
+  editingId=null;
+  document.getElementById('editModalBg').classList.remove('open');
+}
+async function saveEditSpot(){
+  if(!editingId)return;
+  const name=document.getElementById('eName').value.trim();
+  const city=document.getElementById('eCity').value.trim();
+  const country=document.getElementById('eCountry').value.trim();
+  const desc=document.getElementById('eDesc').value.trim();
+  const keywords=document.getElementById('eKeywords').value.trim();
+  if(!name){showToast('請輸入景點名稱');return;}
+  if(!city){showToast('請輸入城市');return;}
+  const btn=document.getElementById('editSaveBtn');btn.disabled=true;btn.textContent='儲存中…';
+  try{
+    const data={name,city,country,desc:desc||firebase.firestore.FieldValue.delete(),keywords:keywords||firebase.firestore.FieldValue.delete()};
+    await db.collection('spots').doc(editingId).update(data);
+    showToast(`「${name}」已更新`);
+    closeEditModal();
+  }catch(e){showToast('更新失敗：'+e.message);}
+  btn.disabled=false;btn.textContent='儲存';
 }
 
 // ── Bulk import ──
