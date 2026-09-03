@@ -522,18 +522,28 @@ const App = {
   openEditStation(idx){
     const s=state.allStations[state.currentDay][idx];
     state.editingStation=idx;
+    // Parse existing time back to start/end
+    let tStart='',tEnd='';
+    if(s.time&&s.time.includes(' → ')){const parts=s.time.split(' → ');tStart=parts[0];tEnd=parts[1]||'';}
+    else tStart=s.time||'';
     document.getElementById('modalTitle').textContent='修改行程景點';
-    document.getElementById('modalBody').innerHTML=`
-      <div class="field-row"><div class="field"><label>時間</label><input id="mTime" value="${s.time||''}" oninput="App.fmtTimeInput(this)" maxlength="5"/></div><div class="field" style="flex:2"><label>景點名稱</label><input id="mName" value="${s.name||''}"/></div></div>
-      <div class="field"><label>備註</label><input id="mNote" value="${s.note||''}"/></div>
-      <button class="modal-submit" onclick="App.submitEditStation()">儲存修改</button>`;
+    document.getElementById('modalBody').innerHTML=
+      '<div class="field"><label>景點名稱</label><input id="mName" value="'+( s.name||'')+'"/></div>'
+      +'<div class="field-row"><div class="field"><label>開始時間（選填）</label><input id="mTimeStart" value="'+tStart+'" oninput="App.fmtTimeInput(this)" maxlength="5"/></div>'
+      +'<div class="field"><label>結束時間（選填）</label><input id="mTimeEnd" value="'+tEnd+'" oninput="App.fmtTimeInput(this)" maxlength="5"/></div></div>'
+      +'<div class="field"><label>備註</label><input id="mNote" value="'+(s.note||'')+'"/></div>'
+      +'<button class="modal-submit" onclick="App.submitEditStation()">儲存修改</button>';
     document.getElementById('modalBg').classList.add('open');
   },
   submitEditStation(){
     const idx=state.editingStation;if(idx===null)return;
-    const time=document.getElementById('mTime').value.trim()||'待定';
+    const timeStart=document.getElementById('mTimeStart').value.trim()||'';
+    const timeEnd=document.getElementById('mTimeEnd').value.trim()||'';
     const name=document.getElementById('mName').value.trim();if(!name)return;
     const note=document.getElementById('mNote').value.trim()||'';
+    let time='';
+    if(timeStart&&timeEnd)time=timeStart+' → '+timeEnd;
+    else if(timeStart)time=timeStart;
     state.allStations[state.currentDay][idx]={...state.allStations[state.currentDay][idx],time,name,note};
     App.renderStations();App.closeModal();App.saveAll();showToast('已修改');
     state.editingStation=null;
@@ -776,49 +786,32 @@ const App = {
     const dest=heroText.replace(/(旅行|旅遊|trip|travel|之旅|Tour|tour)$/i,'').trim().toLowerCase();
     const spots=state.firestoreSpots;
     let filtered=[];
-
     if(dest&&dest.length>0){
       filtered=spots.filter(s=>{
-        const region=(s.region||'').toLowerCase();
-        const city=region.split('・')[0];
-        const country=region.split('・')[1]||'';
-        const keywords=(s.keywords||'').toLowerCase().split(/[,，、\s]+/).map(k=>k.trim()).filter(Boolean);
-        const cat=(s.cat||'').toLowerCase();
-        // country aliases map
-        const countryAliases={'日本':['japan','日本','jp'],'韓國':['korea','韓國','한국','kr'],'台灣':['taiwan','台灣','tw'],'泰國':['thailand','泰國','thai'],'法國':['france','法國','fr'],'英國':['uk','england','英國','britain'],'美國':['usa','us','america','美國'],'中國':['china','中國','cn'],'香港':['hongkong','hong kong','香港','hk'],'新加坡':['singapore','新加坡','sg'],'馬來西亞':['malaysia','馬來西亞','my'],'越南':['vietnam','越南','vn'],'澳洲':['australia','澳洲','au']};
-        // check country match
+        const city=(s.city||s.region||'').split('・')[0].toLowerCase();
+        const country=(s.country||(s.region||'').split('・')[1]||'').toLowerCase();
+        const keywords=(s.keywords||'').toLowerCase().split(/[,，]+/).map(k=>k.trim()).filter(Boolean);
+        const countryAliases={'日本':['japan','jp'],'韓國':['korea','kr'],'台灣':['taiwan','tw'],'泰國':['thailand'],'法國':['france'],'英國':['uk','england'],'美國':['usa','us'],'香港':['hongkong','hk'],'新加坡':['singapore']};
         let countryMatch=false;
         for(const[cn,aliases]of Object.entries(countryAliases)){
-          if(country.includes(cn)&&aliases.some(a=>dest.includes(a)||a.includes(dest))){countryMatch=true;break;}
+          if(country.includes(cn)&&(dest.includes(cn.toLowerCase())||aliases.some(a=>dest.includes(a)))){countryMatch=true;break;}
         }
-        return(
-          countryMatch||
-          city===dest||city.includes(dest)||dest.includes(city)||
-          country.toLowerCase().includes(dest)||dest.includes(country.toLowerCase())||
-          keywords.some(k=>k&&(k===dest||k.includes(dest)||dest.includes(k)))||
-          cat===dest||cat.includes(dest)||dest.includes(cat)
-        );
+        return countryMatch||city===dest||city.includes(dest)||dest.includes(city)||keywords.some(k=>k&&(k===dest||k.includes(dest)||dest.includes(k)));
       });
     }
-
-    if(!filtered.length&&dest.length>0){
-      return `<option value="">— 找不到「${heroText}」的景點，請手動輸入或至後台新增 —</option>`;
-    }
-    if(!filtered.length) filtered=spots;
-    if(!filtered.length) return'<option value="">— 尚無推薦景點，可手動輸入 —</option>';
-
-    // Group by city (region first part)
+    if(!filtered.length&&dest.length>0)return '<option value="">— 找不到「'+heroText+'」的景點，請手動輸入或至後台新增 —</option>';
+    if(!filtered.length)filtered=spots;
+    if(!filtered.length)return'<option value="">— 尚無推薦景點，可手動輸入 —</option>';
     const cityGroups={};
     filtered.forEach(s=>{
-      const city=(s.region||'').split('・')[0]||s.cat||'其他';
+      const city=s.city||(s.region||'').split('・')[0]||'其他';
       if(!cityGroups[city])cityGroups[city]=[];
       cityGroups[city].push(s);
     });
-
-    let h=`<option value="">— 推薦景點（${filtered.length}個）—</option>`;
+    let h='<option value="">— 推薦景點（'+filtered.length+'個）—</option>';
     Object.entries(cityGroups).forEach(([city,list])=>{
-      h+=`<optgroup label="${city}">`;
-      list.forEach(s=>{h+=`<option value="${s.name}">${s.name}${s.desc?'　'+s.desc:''}</option>`;});
+      h+='<optgroup label="'+city+'">';
+      list.forEach(s=>{h+='<option value="'+s.name+'">'+s.name+(s.desc?'　'+s.desc:'')+'</option>';});
       h+='</optgroup>';
     });
     return h;
@@ -836,7 +829,7 @@ const App = {
     }
     if(tab==='itinerary'){
       title.textContent='新增行程景點';
-      body.innerHTML=`<div class="field"><label>推薦景點</label><div class="select-wrap"><select id="spotSelect" onchange="App.fillSpot()">${App.buildSpotsOptions()}</select></div></div><div class="divider"><span>或手動輸入</span></div><div class="field-row"><div class="field"><label>時間（選填）</label><input id="mTime" placeholder="09:00" oninput="App.fmtTimeInput(this)" maxlength="5"/></div><div class="field" style="flex:2"><label>景點名稱</label><input id="mName" placeholder="輸入名稱"/></div></div><div class="field"><label>備註（選填）</label><input id="mNote" placeholder="可留空"/></div><button class="modal-submit" onclick="App.submitStation()">加入 Day ${state.currentDay+1}</button>`;
+      body.innerHTML=`<div class="field"><label>推薦景點</label><div class="select-wrap"><select id="spotSelect" onchange="App.fillSpot()">${App.buildSpotsOptions()}</select></div></div><div class="divider"><span>或手動輸入</span></div><div class="field"><label>景點名稱</label><input id="mName" placeholder="輸入名稱"/></div><div class="field-row"><div class="field"><label>開始時間（選填）</label><input id="mTimeStart" placeholder="09:00" oninput="App.fmtTimeInput(this)" maxlength="5"/></div><div class="field"><label>結束時間（選填）</label><input id="mTimeEnd" placeholder="11:00" oninput="App.fmtTimeInput(this)" maxlength="5"/></div></div><div class="field"><label>備註（選填）</label><input id="mNote" placeholder="可留空"/></div><button class="modal-submit" onclick="App.submitStation()">加入 Day ${state.currentDay+1}</button>`;
     }else if(tab==='budget'){
       const opts=state.members.length?state.members.map(m=>`<option>${m.name}</option>`).join(''):'<option>（請先新增成員）</option>';
       const curOpts=Object.entries(CURRENCY_DB).map(([c,v])=>`<option value="${c}">${v.symbol} ${c} — ${v.name}</option>`).join('');
@@ -852,9 +845,13 @@ const App = {
   closeModal(){document.getElementById('modalBg').classList.remove('open');state.editingStation=null;},
   closeModalBg(e){if(e.target===document.getElementById('modalBg'))App.closeModal();},
   submitStation(){
-    const time=document.getElementById('mTime').value.trim()||'';
+    const timeStart=document.getElementById('mTimeStart').value.trim()||'';
+    const timeEnd=document.getElementById('mTimeEnd').value.trim()||'';
     const name=document.getElementById('mName').value.trim();if(!name)return;
     const note=document.getElementById('mNote').value.trim()||'';
+    let time='';
+    if(timeStart&&timeEnd)time=timeStart+' → '+timeEnd;
+    else if(timeStart)time=timeStart;
     state.allStations[state.currentDay].push({time,name,note});
     App.renderStations();App.closeModal();App.saveAll();showToast('已加入');
   },
