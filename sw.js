@@ -1,10 +1,10 @@
-const CACHE_NAME = 'tabiline-v2';
+const CACHE_NAME = 'tabiline-v3';
 const CACHE_URLS = [
   '/travelplanerrr/',
   '/travelplanerrr/index.html',
   '/travelplanerrr/manifest.json',
-  '/travelplanerrr/icon-192.svg',
-  '/travelplanerrr/icon-512.svg',
+  '/travelplanerrr/icon-192.png',
+  '/travelplanerrr/icon-512.png',
 ];
 
 self.addEventListener('install', e => {
