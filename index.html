@@ -289,13 +289,10 @@ body{background:#EDE7DA;display:flex;justify-content:center;min-height:100dvh;fo
 </div>
 
 <script>
-// 清除所有 Service Worker
+// 註冊 Service Worker
 if('serviceWorker' in navigator){
-  navigator.serviceWorker.getRegistrations().then(regs=>{
-    regs.forEach(r=>r.unregister());
-  });
-  caches.keys().then(keys=>{
-    keys.forEach(k=>caches.delete(k));
+  window.addEventListener('load',()=>{
+    navigator.serviceWorker.register('/travelplanerrr/sw.js').catch(()=>{});
   });
 }
 </script>
