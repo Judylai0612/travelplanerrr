@@ -205,6 +205,12 @@ body{background:#EDE7DA;display:flex;justify-content:center;min-height:100dvh;fo
       <input id="obName" placeholder="輸入你的名字" maxlength="10" onkeydown="if(event.key==='Enter')App.startTrip()">
     </div>
     <button class="onboard-btn" onclick="App.startTrip()">開始規劃旅行 →</button>
+    <button class="onboard-skip" onclick="App.toggleJoinCode()" id="joinCodeToggle">已經有行程代碼？輸入代碼加入</button>
+    <div class="onboard-field" id="joinCodeField" style="display:none;margin-top:10px">
+      <label>行程代碼</label>
+      <input id="obJoinCode" placeholder="例：K3J9QX2A" maxlength="8" style="text-transform:uppercase" onkeydown="if(event.key==='Enter')App.joinByCode()">
+      <button class="onboard-btn" style="margin-top:10px" onclick="App.joinByCode()">加入行程 →</button>
+    </div>
     <button class="onboard-skip" onclick="App.startTrip(true)">略過，直接進入</button>
   </div>
 
@@ -396,6 +402,23 @@ const App = {
     }
     document.getElementById('onboard').style.display='none';
     App.saveAll();
+  },
+
+  toggleJoinCode(){
+    const f=document.getElementById('joinCodeField');
+    const shown=f.style.display!=='none';
+    f.style.display=shown?'none':'block';
+    document.getElementById('joinCodeToggle').style.display=shown?'block':'none';
+    if(!shown)document.getElementById('obJoinCode').focus();
+  },
+  async joinByCode(){
+    const code=document.getElementById('obJoinCode').value.trim().toUpperCase();
+    if(!code){showToast('請輸入行程代碼');return;}
+    try{
+      const snap=await db.collection('trips').doc(code).get();
+      if(!snap.exists){showToast('找不到這個行程代碼，請確認是否輸入正確');return;}
+    }catch(e){showToast('查詢失敗，請稍後再試');return;}
+    window.location.href=window.location.pathname+'?trip='+code;
   },
 
   switchTab(tab){
