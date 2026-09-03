@@ -454,8 +454,9 @@ const App = {
     if(state.tripId)App.saveFirebase();
   },
   async saveFirebase(){
-    if(!state.tripId)return;
+    if(!state.tripId)return false;
     document.getElementById('syncDot').style.display='inline-block';
+    let ok=true;
     try{
       await db.collection('trips').doc(state.tripId).set({
         userName:state.userName, destination:state.destination,
@@ -466,8 +467,9 @@ const App = {
         heroTitle:document.getElementById('heroTitle').textContent||'',
         updatedAt:firebase.firestore.FieldValue.serverTimestamp()
       },{merge:true});
-    }catch(e){console.warn('Firebase save failed',e);}
+    }catch(e){console.warn('Firebase save failed',e);ok=false;}
     setTimeout(()=>document.getElementById('syncDot').style.display='none',800);
+    return ok;
   },
   loadTripData(data){
     if(data.members&&data.members.length)state.members=data.members;
@@ -935,8 +937,14 @@ const App = {
   // ── Share ──
   async doShare(){
     if(!state.tripId){
-      state.tripId=genId();
-      await App.saveFirebase();
+      const newId=genId();
+      state.tripId=newId;
+      const ok=await App.saveFirebase();
+      if(!ok){
+        state.tripId=null;
+        showToast('產生共享連結失敗，請檢查網路後再試一次');
+        return;
+      }
       App.listenTrip();
       window.history.replaceState({},'',window.location.pathname+'?trip='+state.tripId);
     }
@@ -944,6 +952,11 @@ const App = {
     try{await navigator.clipboard.writeText(link);showToast('連結已複製！🎉');}
     catch(e){prompt('複製連結：',link);}
     App.updateShareTab();
+  },
+  async copyTripCode(){
+    if(!state.tripId)return;
+    try{await navigator.clipboard.writeText(state.tripId);showToast('代碼已複製！🎉');}
+    catch(e){prompt('複製代碼：',state.tripId);}
   },
   updateShareTab(){
     const btn=document.getElementById('shareTabBtn');
@@ -954,7 +967,7 @@ const App = {
       btn.textContent='複製共享連結';
       sub.textContent='行程代碼：'+state.tripId+'　傳給同行夥伴即可加入';
       const link=window.location.origin+window.location.pathname+'?trip='+state.tripId;
-      block.innerHTML=`<div class="share-code-block"><div style="font-size:10px;color:#A8A296;margin-bottom:6px;font-weight:500">共享連結</div><div style="font-size:11px;color:#2B2620;word-break:break-all;margin-bottom:10px;line-height:1.5">${link}</div><button onclick="App.doShare()" style="width:100%;padding:9px;background:#2B2620;color:#fff;border:none;border-radius:11px;font-size:12px;font-weight:600;cursor:pointer">再次複製連結</button></div>`;
+      block.innerHTML=`<div class="share-code-block"><div style="font-size:10px;color:#A8A296;margin-bottom:6px;font-weight:500">行程代碼</div><div style="font-size:22px;font-weight:700;letter-spacing:2px;color:#2B2620;margin-bottom:10px">${state.tripId}</div><button onclick="App.copyTripCode()" style="width:100%;padding:9px;background:#6B9080;color:#fff;border:none;border-radius:11px;font-size:12px;font-weight:600;cursor:pointer;margin-bottom:8px">複製代碼</button><div style="font-size:10px;color:#A8A296;margin-bottom:6px;font-weight:500">共享連結</div><div style="font-size:11px;color:#2B2620;word-break:break-all;margin-bottom:10px;line-height:1.5">${link}</div><button onclick="App.doShare()" style="width:100%;padding:9px;background:#2B2620;color:#fff;border:none;border-radius:11px;font-size:12px;font-weight:600;cursor:pointer">再次複製連結</button></div>`;
     }else{
       btn.textContent='產生共享連結';
       sub.textContent='產生連結讓同行夥伴即時同步行程與記帳';
