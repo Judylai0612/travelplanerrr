@@ -811,7 +811,7 @@ const App = {
     let h='<option value="">— 推薦景點（'+filtered.length+'個）—</option>';
     Object.entries(cityGroups).forEach(([city,list])=>{
       h+='<optgroup label="'+city+'">';
-      list.forEach(s=>{h+='<option value="'+s.name+'">'+s.name+(s.desc?'　'+s.desc:'')+'</option>';});
+      list.forEach(s=>{h+='<option value="'+s.name+'">'+s.name+'</option>';});
       h+='</optgroup>';
     });
     return h;
