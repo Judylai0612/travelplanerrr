@@ -268,7 +268,7 @@ body{background:#EDE7DA;display:flex;justify-content:center;min-height:100dvh;fo
         <div style="font-size:20px;margin-bottom:6px">🔗</div>
         <div style="font-size:16px;font-weight:600;color:#2B2620;margin-bottom:4px">共享行程</div>
         <div style="font-size:12px;color:#6B9080;margin-bottom:16px" id="shareTabSub">產生連結讓同行夥伴即時同步行程與記帳</div>
-        <button onclick="App.doShare()" style="width:100%;padding:12px;background:#6B9080;color:#fff;border:none;border-radius:14px;font-size:14px;font-weight:600;cursor:pointer;" id="shareTabBtn">產生共享連結</button>
+        <button onclick="App.doShare()" style="width:100%;padding:12px;background:#6B9080;color:#fff;border:none;border-radius:14px;font-size:14px;font-weight:600;cursor:pointer;" id="shareTabBtn">產生共享連結或代碼</button>
       </div>
       <div id="shareCodeBlock"></div>
       <div class="share-code-block" style="margin:0 18px 10px">
@@ -278,7 +278,7 @@ body{background:#EDE7DA;display:flex;justify-content:center;min-height:100dvh;fo
       </div>
       <div class="share-how">
         <div style="font-size:12px;font-weight:600;color:#2B2620;margin-bottom:8px">使用說明</div>
-        <div style="font-size:11px;color:#A8A296;line-height:1.8">1. 點「產生共享連結」建立行程代碼<br>2. 複製連結傳給同行夥伴，或直接告訴對方代碼<br>3. 夥伴打開連結，或在此頁輸入代碼加入<br>4. 行程和記帳即時同步，必買各自管理</div>
+        <div style="font-size:11px;color:#A8A296;line-height:1.8">1. 點「產生共享連結或代碼」建立行程<br>2. 分別複製代碼或連結傳給同行夥伴<br>3. 夥伴打開連結，或在此頁輸入代碼加入<br>4. 行程和記帳即時同步，必買各自管理</div>
       </div>
     </div>
   </div>
@@ -958,19 +958,26 @@ const App = {
     try{await navigator.clipboard.writeText(state.tripId);showToast('代碼已複製！🎉');}
     catch(e){prompt('複製代碼：',state.tripId);}
   },
+  async copyTripLink(){
+    if(!state.tripId)return;
+    const link=window.location.origin+window.location.pathname+'?trip='+state.tripId;
+    try{await navigator.clipboard.writeText(link);showToast('連結已複製！🎉');}
+    catch(e){prompt('複製連結：',link);}
+  },
   updateShareTab(){
     const btn=document.getElementById('shareTabBtn');
     const sub=document.getElementById('shareTabSub');
     const block=document.getElementById('shareCodeBlock');
     if(!btn)return;
     if(state.tripId){
-      btn.textContent='複製共享連結';
-      sub.textContent='行程代碼：'+state.tripId+'　傳給同行夥伴即可加入';
+      btn.style.display='none';
+      sub.textContent='行程已共享，代碼／連結傳給同行夥伴即可加入';
       const link=window.location.origin+window.location.pathname+'?trip='+state.tripId;
-      block.innerHTML=`<div class="share-code-block"><div style="font-size:10px;color:#A8A296;margin-bottom:6px;font-weight:500">行程代碼</div><div style="font-size:22px;font-weight:700;letter-spacing:2px;color:#2B2620;margin-bottom:10px">${state.tripId}</div><button onclick="App.copyTripCode()" style="width:100%;padding:9px;background:#6B9080;color:#fff;border:none;border-radius:11px;font-size:12px;font-weight:600;cursor:pointer;margin-bottom:8px">複製代碼</button><div style="font-size:10px;color:#A8A296;margin-bottom:6px;font-weight:500">共享連結</div><div style="font-size:11px;color:#2B2620;word-break:break-all;margin-bottom:10px;line-height:1.5">${link}</div><button onclick="App.doShare()" style="width:100%;padding:9px;background:#2B2620;color:#fff;border:none;border-radius:11px;font-size:12px;font-weight:600;cursor:pointer">再次複製連結</button></div>`;
+      block.innerHTML=`<div class="share-code-block"><div style="font-size:10px;color:#A8A296;margin-bottom:6px;font-weight:500">行程代碼</div><div style="font-size:22px;font-weight:700;letter-spacing:2px;color:#2B2620;margin-bottom:10px">${state.tripId}</div><button onclick="App.copyTripCode()" style="width:100%;padding:9px;background:#6B9080;color:#fff;border:none;border-radius:11px;font-size:12px;font-weight:600;cursor:pointer;margin-bottom:14px">複製代碼</button><div style="font-size:10px;color:#A8A296;margin-bottom:6px;font-weight:500">共享連結</div><div style="font-size:11px;color:#2B2620;word-break:break-all;margin-bottom:10px;line-height:1.5">${link}</div><button onclick="App.copyTripLink()" style="width:100%;padding:9px;background:#2B2620;color:#fff;border:none;border-radius:11px;font-size:12px;font-weight:600;cursor:pointer">複製連結</button></div>`;
     }else{
-      btn.textContent='產生共享連結';
-      sub.textContent='產生連結讓同行夥伴即時同步行程與記帳';
+      btn.style.display='';
+      btn.textContent='產生共享連結或代碼';
+      sub.textContent='產生連結或代碼讓同行夥伴即時同步行程與記帳';
       block.innerHTML='';
     }
   },
