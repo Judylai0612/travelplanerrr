@@ -168,6 +168,9 @@ body{background:#F2F2F7;min-height:100vh;font-family:-apple-system,BlinkMacSyste
             <button class="bulk-preset-btn" onclick="importPreset('seoul')">首爾</button>
             <button class="bulk-preset-btn" onclick="importPreset('bangkok')">曼谷</button>
             <button class="bulk-preset-btn" onclick="importPreset('paris')">巴黎</button>
+            <button class="bulk-preset-btn" onclick="importPreset('aomori')">青森</button>
+            <button class="bulk-preset-btn" onclick="importPreset('singapore')">新加坡</button>
+            <button class="bulk-preset-btn" onclick="importPreset('taichung')">台中</button>
           </div>
         </div>
       </div>
@@ -411,6 +414,37 @@ const PRESET_SPOTS = {
     {name:'聖母院',city:'巴黎',country:'法國',desc:'哥德式建築・歷史'},
     {name:'蒙馬特',city:'巴黎',country:'法國',desc:'藝術家聚落・夜景'},
     {name:'香榭麗舍大道',city:'巴黎',country:'法國',desc:'奢侈品・名店林立'},
+  ],
+  aomori:[
+    {name:'奧入瀨溪流',city:'青森',country:'日本',desc:'四季美景・健行步道',keywords:'東北,日本'},
+    {name:'十和田湖',city:'青森',country:'日本',desc:'火山口湖・絕美湖景',keywords:'東北,日本'},
+    {name:'弘前城公園',city:'青森',country:'日本',desc:'賞櫻名所・2600棵櫻花',keywords:'弘前,東北,日本'},
+    {name:'青森睡魔之家 WA・RASSE',city:'青森',country:'日本',desc:'睡魔祭文化・必訪',keywords:'東北,日本'},
+    {name:'八甲田山',city:'青森',country:'日本',desc:'冬季樹冰・溫泉勝地',keywords:'東北,日本'},
+    {name:'十和田市現代美術館',city:'青森',country:'日本',desc:'當代藝術・免費戶外裝置',keywords:'十和田,東北,日本'},
+    {name:'A-FACTORY',city:'青森',country:'日本',desc:'蘋果氣泡酒・伴手禮',keywords:'東北,日本'},
+  ],
+  singapore:[
+    {name:'濱海灣花園',city:'新加坡',country:'新加坡',desc:'花穹・雲霧林・必訪'},
+    {name:'魚尾獅公園',city:'新加坡',country:'新加坡',desc:'新加坡地標・打卡必去'},
+    {name:'濱海灣金沙酒店',city:'新加坡',country:'新加坡',desc:'空中花園・夜景絕佳'},
+    {name:'環球影城',city:'新加坡',country:'新加坡',desc:'聖淘沙・主題樂園'},
+    {name:'牛車水',city:'新加坡',country:'新加坡',desc:'中國城・伴手禮・美食'},
+    {name:'聖淘沙島',city:'新加坡',country:'新加坡',desc:'沙灘・纜車・娛樂'},
+    {name:'小印度',city:'新加坡',country:'新加坡',desc:'多元文化・特色街區'},
+    {name:'克拉碼頭',city:'新加坡',country:'新加坡',desc:'夜生活・河畔餐廳'},
+  ],
+  taichung:[
+    {name:'高美濕地',city:'台中',country:'台灣',desc:'夕陽・木棧道・必拍'},
+    {name:'武陵農場',city:'台中',country:'台灣',desc:'賞櫻聖地・高山農場'},
+    {name:'逢甲夜市',city:'台中',country:'台灣',desc:'台中最大夜市・必吃'},
+    {name:'宮原眼科',city:'台中',country:'台灣',desc:'網紅甜點・冰淇淋'},
+    {name:'谷關溫泉',city:'台中',country:'台灣',desc:'中台灣溫泉勝地'},
+    {name:'彩虹眷村',city:'台中',country:'台灣',desc:'彩繪村落・IG必拍'},
+    {name:'台中國立自然科學博物館',city:'台中',country:'台灣',desc:'親子必訪・恐龍化石'},
+    {name:'台中歌劇院',city:'台中',country:'台灣',desc:'建築地標・文化展演'},
+    {name:'審計新村',city:'台中',country:'台灣',desc:'文青市集・老宿舍改造'},
+    {name:'福壽山農場',city:'台中',country:'台灣',desc:'高山農場・蘋果季必訪'},
   ],
 };
 
