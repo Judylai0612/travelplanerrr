@@ -49,12 +49,12 @@ body{background:#EDE7DA;display:flex;justify-content:center;min-height:100dvh;fo
 .section-title{font-size:14px;font-weight:600;color:#2B2620;}
 .section-date{font-size:13px;color:#A8A296;font-weight:500;}
 .day-row-wrap{flex-shrink:0;}
-.date-picker-card{margin:0 18px 10px;background:#fff;border-radius:14px;padding:10px 12px;}
-.date-row{display:flex;align-items:flex-end;gap:8px;}
-.date-field{flex:1;}
+.date-picker-card{margin:0 18px 10px;background:#fff;border-radius:14px;padding:14px 12px;}
+.date-row{display:flex;align-items:center;gap:8px;}
+.date-field{flex:1;min-width:0;}
 .date-field label{display:block;font-size:9px;color:#A8A296;margin-bottom:3px;font-weight:500;}
-.date-field input{width:100%;font-size:11px;padding:5px 6px;border-radius:9px;border:1.5px solid #ECE5D4;background:#FBF6EA;color:#2B2620;min-width:0;}
-.date-arrow{color:#C9C3B5;font-size:14px;padding-bottom:7px;flex-shrink:0;}
+.date-field input{display:block;width:100%;max-width:100%;box-sizing:border-box;font-size:11px;padding:5px 6px;border-radius:9px;border:1.5px solid #ECE5D4;background:#FBF6EA;color:#2B2620;min-width:0;}
+.date-arrow{color:#C9C3B5;font-size:14px;flex-shrink:0;}
 .date-result{margin-top:8px;padding-top:8px;border-top:1px solid #F0EBDD;font-size:11px;color:#6B9080;font-weight:600;display:flex;align-items:center;gap:5px;}
 .day-row-outer{overflow:hidden;padding:0 18px 4px;}
 .day-row{display:flex;gap:8px;overflow-x:scroll;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;touch-action:pan-x;scrollbar-width:none;padding-bottom:2px;}
