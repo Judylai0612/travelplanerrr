@@ -50,11 +50,12 @@ body{background:#EDE7DA;display:flex;justify-content:center;min-height:100dvh;fo
 .section-date{font-size:13px;color:#A8A296;font-weight:500;}
 .day-row-wrap{flex-shrink:0;}
 .date-picker-card{margin:0 18px 10px;background:#fff;border-radius:14px;padding:14px 12px;}
-.date-row{display:flex;flex-direction:column;gap:10px;}
-.date-field{width:100%;}
+.date-row{display:flex;align-items:center;gap:10px;}
+.date-field{position:relative;flex:1;min-width:0;}
 .date-field label{display:block;font-size:9px;color:#A8A296;margin-bottom:3px;font-weight:500;}
-.date-field input{display:block;width:100%;max-width:100%;box-sizing:border-box;font-size:13px;padding:7px 8px;border-radius:9px;border:1.5px solid #ECE5D4;background:#FBF6EA;color:#2B2620;}
-.date-arrow{display:none;}
+.date-display{display:block;width:100%;box-sizing:border-box;font-size:12px;padding:7px 6px;border-radius:9px;border:1.5px solid #ECE5D4;background:#FBF6EA;color:#2B2620;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:center;cursor:pointer;}
+.date-native-input{position:absolute;top:16px;left:0;width:1px;height:1px;opacity:0;pointer-events:none;}
+.date-arrow{color:#C9C3B5;font-size:13px;flex-shrink:0;}
 .date-result{margin-top:8px;padding-top:8px;border-top:1px solid #F0EBDD;font-size:11px;color:#6B9080;font-weight:600;display:flex;align-items:center;gap:5px;}
 .day-row-outer{overflow:hidden;padding:0 18px 4px;}
 .day-row{display:flex;gap:8px;overflow-x:scroll;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;touch-action:pan-x;scrollbar-width:none;padding-bottom:2px;}
@@ -231,9 +232,17 @@ body{background:#EDE7DA;display:flex;justify-content:center;min-height:100dvh;fo
     <div class="section-row"><div class="section-title">選擇天數</div></div>
     <div class="date-picker-card">
       <div class="date-row">
-        <div class="date-field"><label>出發日期</label><input type="date" id="startDate" onchange="App.onDateChange()"></div>
+        <div class="date-field">
+          <label>出發日期</label>
+          <div class="date-display" id="startDateDisplay" onclick="App.openDatePicker('startDate')">請選擇</div>
+          <input type="date" id="startDate" class="date-native-input" tabindex="-1" onchange="App.onDateChange()">
+        </div>
         <div class="date-arrow">→</div>
-        <div class="date-field"><label>回程日期</label><input type="date" id="endDate" onchange="App.onDateChange()"></div>
+        <div class="date-field">
+          <label>回程日期</label>
+          <div class="date-display" id="endDateDisplay" onclick="App.openDatePicker('endDate')">請選擇</div>
+          <input type="date" id="endDate" class="date-native-input" tabindex="-1" onchange="App.onDateChange()">
+        </div>
       </div>
       <div class="date-result" id="dateResult"><i class="ti ti-calendar-check" style="font-size:13px"></i> 請選擇日期區間</div>
     </div>
@@ -357,6 +366,7 @@ function mi(n){return n?n.charAt(0).toUpperCase():'';}
 function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2000);}
 function genId(){return Math.random().toString(36).substr(2,8).toUpperCase();}
 function fmtAmt(amt,currency){const c=CURRENCY_DB[currency]||{symbol:currency};return c.symbol+Math.round(amt).toLocaleString();}
+function fmtFullDate(v){const d=new Date(v);return d.getFullYear()+'年'+(d.getMonth()+1)+'月'+d.getDate()+'日';}
 function toTWD(amt,cur){return Math.round(amt*(state.rates[cur]||1));}
 function fmtTWD(amt,cur){if(cur==='TWD')return'';return'≈ NT$'+toTWD(amt,cur).toLocaleString();}
 
@@ -486,6 +496,7 @@ const App = {
       document.getElementById('endDate').value=data.endDate||'';
       state.tripStartDate=new Date(data.startDate);
       document.getElementById('dateResult').innerHTML=`<i class="ti ti-calendar-check"></i> 共 ${state.dayCount} 天 ${state.dayCount-1} 夜`;
+      App.refreshDateDisplays();
     }
     App.renderDayRow();App.renderStations();App.renderBudget();App.renderShop();
   },
@@ -498,7 +509,18 @@ const App = {
   },
 
   // ── Date ──
+  openDatePicker(id){
+    const inp=document.getElementById(id);
+    if(inp.showPicker){try{inp.showPicker();return;}catch(e){}}
+    inp.focus();inp.click();
+  },
+  refreshDateDisplays(){
+    const sv=document.getElementById('startDate').value,ev=document.getElementById('endDate').value;
+    document.getElementById('startDateDisplay').textContent=sv?fmtFullDate(sv):'請選擇';
+    document.getElementById('endDateDisplay').textContent=ev?fmtFullDate(ev):'請選擇';
+  },
   onDateChange(){
+    App.refreshDateDisplays();
     const sv=document.getElementById('startDate').value,ev=document.getElementById('endDate').value;
     if(!sv||!ev)return;
     const s=new Date(sv),e=new Date(ev),diff=Math.round((e-s)/86400000)+1;
@@ -1086,6 +1108,7 @@ const App = {
           document.getElementById('endDate').value=local.endDate||'';
           state.tripStartDate=new Date(local.startDate);
           document.getElementById('dateResult').innerHTML=`<i class="ti ti-calendar-check"></i> 共 ${state.dayCount} 天 ${state.dayCount-1} 夜`;
+          App.refreshDateDisplays();
         }
         document.getElementById('onboard').style.display='none';
       }
