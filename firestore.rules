@@ -1,0 +1,29 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // 景點資料庫：App 需要讓所有使用者讀取/搜尋，所以開放讀取；
+    // 寫入（新增／編輯／刪除／批量匯入）只給登入的管理者帳號使用
+    match /spots/{spotId} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+
+    // 行程資料：知道確切代碼的人可以讀取/更新單一行程（沒有帳號系統，
+    // 分享代碼本身就是存取憑證），但禁止「列出整個集合」，避免任何人
+    // 不需代碼就能撈走所有使用者的行程與記帳資料。
+    // App 本身從未呼叫刪除，這裡也一併禁止。
+    match /trips/{tripId} {
+      allow get: if true;
+      allow list: if false;
+      allow create: if true;
+      allow update: if true;
+      allow delete: if false;
+    }
+
+    // 其他任何集合，預設一律拒絕
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
