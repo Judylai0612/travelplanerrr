@@ -100,12 +100,16 @@ body{background:#F2F2F7;min-height:100vh;font-family:-apple-system,BlinkMacSyste
   <div class="login-card">
     <div class="login-logo">✈️</div>
     <div class="login-title">TabiLine 後台</div>
-    <div class="login-sub">請輸入管理者密碼</div>
+    <div class="login-sub">請登入管理者帳號</div>
+    <div class="login-field">
+      <label>Email</label>
+      <input type="email" id="emailInput" placeholder="輸入管理者 Email" autocomplete="username" onkeydown="if(event.key==='Enter')document.getElementById('pwInput').focus()">
+    </div>
     <div class="login-field">
       <label>密碼</label>
-      <input type="password" id="pwInput" placeholder="輸入密碼" onkeydown="if(event.key==='Enter')doLogin()">
+      <input type="password" id="pwInput" placeholder="輸入密碼" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
     </div>
-    <button class="login-btn" onclick="doLogin()">登入</button>
+    <button class="login-btn" id="loginBtn" onclick="doLogin()">登入</button>
     <div class="login-err" id="loginErr"></div>
   </div>
 </div>
@@ -231,6 +235,7 @@ body{background:#F2F2F7;min-height:100vh;font-family:-apple-system,BlinkMacSyste
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script>
 firebase.initializeApp({
   apiKey:"AIzaSyD1ILm1TbCcbh_QGB-f2Me2hnex0T3x2HI",
@@ -241,7 +246,7 @@ firebase.initializeApp({
   appId:"1:1041546695612:web:a015af75f274938e62d1b9"
 });
 const db = firebase.firestore();
-const ADMIN_PASSWORD = "tabiLine2026";
+const auth = firebase.auth();
 
 let allSpots = [];
 let selectedCity = null; // {name, country}
@@ -489,21 +494,35 @@ const PRESET_SPOTS = {
   ],
 };
 
-// ── Login ──
-function doLogin(){
-  const pw=document.getElementById('pwInput').value;
-  if(pw===ADMIN_PASSWORD){
+// ── Login (Firebase Authentication) ──
+auth.onAuthStateChanged(user=>{
+  if(user){
     document.getElementById('loginScreen').style.display='none';
     document.getElementById('adminApp').style.display='block';
     initAdmin();
   }else{
-    document.getElementById('loginErr').textContent='密碼錯誤';
-    document.getElementById('pwInput').value='';
+    document.getElementById('loginScreen').style.display='flex';
+    document.getElementById('adminApp').style.display='none';
   }
+});
+function doLogin(){
+  const email=document.getElementById('emailInput').value.trim();
+  const pw=document.getElementById('pwInput').value;
+  if(!email||!pw){document.getElementById('loginErr').textContent='請輸入 Email 和密碼';return;}
+  const btn=document.getElementById('loginBtn');
+  btn.disabled=true;btn.textContent='登入中…';
+  document.getElementById('loginErr').textContent='';
+  auth.signInWithEmailAndPassword(email,pw)
+    .catch(()=>{
+      document.getElementById('loginErr').textContent='帳號或密碼錯誤';
+      document.getElementById('pwInput').value='';
+    })
+    .finally(()=>{btn.disabled=false;btn.textContent='登入';});
 }
 function doLogout(){
-  document.getElementById('loginScreen').style.display='flex';
-  document.getElementById('adminApp').style.display='none';
+  if(unsubSpots){unsubSpots();unsubSpots=null;}
+  auth.signOut();
+  document.getElementById('emailInput').value='';
   document.getElementById('pwInput').value='';
 }
 
@@ -566,8 +585,10 @@ document.addEventListener('click',e=>{
 });
 
 // ── Init ──
+let unsubSpots=null;
 function initAdmin(){
-  db.collection('spots').onSnapshot(snap=>{
+  if(unsubSpots)return;
+  unsubSpots=db.collection('spots').onSnapshot(snap=>{
     allSpots=snap.docs.map(d=>({id:d.id,...d.data()}));
     allSpots.sort((a,b)=>(a.city||'').localeCompare(b.city||'','zh')||(a.name||'').localeCompare(b.name||'','zh'));
     renderStats();renderList();
