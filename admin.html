@@ -160,8 +160,11 @@ body{background:#F2F2F7;min-height:100vh;font-family:-apple-system,BlinkMacSyste
         </div>
 
         <div class="a-field">
-          <label>圖片網址（選填，探索頁面會顯示）</label>
-          <input id="aImg" placeholder="例：https://..."/>
+          <label>圖片（選填，探索頁面會顯示）</label>
+          <input type="file" id="aImgFile" accept="image/*" onchange="handleImgUpload(this,'aImg','aImgPreview','aImgStatus')">
+          <div id="aImgStatus" style="font-size:11px;color:#8E8E93;margin-top:4px"></div>
+          <img id="aImgPreview" style="display:none;width:100%;max-height:160px;object-fit:cover;border-radius:9px;margin-top:6px"/>
+          <input type="hidden" id="aImg">
         </div>
 
         <div class="a-field-row" style="display:flex;gap:10px;">
@@ -237,8 +240,11 @@ body{background:#F2F2F7;min-height:100vh;font-family:-apple-system,BlinkMacSyste
       <input id="eDesc" placeholder="例：港口夜景・必訪"/>
     </div>
     <div class="a-field">
-      <label>圖片網址（選填）</label>
-      <input id="eImg" placeholder="例：https://..."/>
+      <label>圖片（選填）</label>
+      <input type="file" id="eImgFile" accept="image/*" onchange="handleImgUpload(this,'eImg','eImgPreview','eImgStatus')">
+      <div id="eImgStatus" style="font-size:11px;color:#8E8E93;margin-top:4px"></div>
+      <img id="eImgPreview" style="display:none;width:100%;max-height:160px;object-fit:cover;border-radius:9px;margin-top:6px"/>
+      <input type="hidden" id="eImg">
     </div>
     <div class="a-field-row" style="display:flex;gap:10px;">
       <div class="a-field" style="flex:1">
@@ -266,6 +272,7 @@ body{background:#F2F2F7;min-height:100vh;font-family:-apple-system,BlinkMacSyste
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
 <script>
 firebase.initializeApp({
   apiKey:"AIzaSyD1ILm1TbCcbh_QGB-f2Me2hnex0T3x2HI",
@@ -277,6 +284,7 @@ firebase.initializeApp({
 });
 const db = firebase.firestore();
 const auth = firebase.auth();
+const storage = firebase.storage();
 
 let allSpots = [];
 let selectedCity = null; // {name, country}
@@ -654,6 +662,36 @@ function renderList(){
   });
 }
 
+// ── Image upload ──
+async function handleImgUpload(inputEl,hiddenId,previewId,statusId){
+  const file=inputEl.files[0];
+  if(!file)return;
+  const statusEl=document.getElementById(statusId);
+  const previewEl=document.getElementById(previewId);
+  if(!file.type.startsWith('image/')){statusEl.textContent='請選擇圖片檔案';inputEl.value='';return;}
+  if(file.size>5*1024*1024){statusEl.textContent='檔案太大，請選擇 5MB 以內的圖片';inputEl.value='';return;}
+  statusEl.textContent='上傳中… 0%';
+  try{
+    const ext=(file.name.split('.').pop()||'jpg').toLowerCase();
+    const path='spots/'+Date.now()+'_'+Math.random().toString(36).slice(2,8)+'.'+ext;
+    const ref=storage.ref().child(path);
+    const task=ref.put(file);
+    await new Promise((resolve,reject)=>{
+      task.on('state_changed',
+        snap=>{statusEl.textContent='上傳中… '+Math.round(snap.bytesTransferred/snap.totalBytes*100)+'%';},
+        err=>reject(err),
+        resolve
+      );
+    });
+    const url=await task.snapshot.ref.getDownloadURL();
+    document.getElementById(hiddenId).value=url;
+    previewEl.src=url;previewEl.style.display='block';
+    statusEl.textContent='已上傳 ✓';
+  }catch(e){
+    statusEl.textContent='上傳失敗：'+e.message;
+  }
+}
+
 // ── Add spot ──
 async function addSpot(){
   const name=document.getElementById('aName').value.trim();
@@ -684,6 +722,9 @@ async function addSpot(){
     document.getElementById('aName').value='';
     document.getElementById('aDesc').value='';
     document.getElementById('aImg').value='';
+    document.getElementById('aImgFile').value='';
+    document.getElementById('aImgStatus').textContent='';
+    document.getElementById('aImgPreview').style.display='none';
     document.getElementById('aRating').value='';
     document.getElementById('aDuration').value='';
     document.getElementById('aKeywords').value='';
@@ -711,6 +752,10 @@ function openEditModal(id){
   document.getElementById('eCountry').value=s.country||'';
   document.getElementById('eDesc').value=s.desc||'';
   document.getElementById('eImg').value=s.img||'';
+  document.getElementById('eImgFile').value='';
+  document.getElementById('eImgStatus').textContent='';
+  const eImgPrev=document.getElementById('eImgPreview');
+  if(s.img){eImgPrev.src=s.img;eImgPrev.style.display='block';}else{eImgPrev.style.display='none';}
   document.getElementById('eRating').value=s.rating||'';
   document.getElementById('eDuration').value=s.duration||'';
   document.getElementById('eKeywords').value=s.keywords||'';

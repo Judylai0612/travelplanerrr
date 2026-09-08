@@ -1,0 +1,19 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    // 景點圖片：App 需要讓所有使用者讀取顯示，開放讀取；
+    // 上傳只給登入的管理者帳號，並限制檔案大小與格式，避免濫用
+    match /spots/{fileName} {
+      allow read: if true;
+      allow write: if request.auth != null
+                   && request.resource.size < 5 * 1024 * 1024
+                   && request.resource.contentType.matches('image/.*');
+    }
+
+    // 其他任何路徑，預設一律拒絕
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}
