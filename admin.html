@@ -160,11 +160,10 @@ body{background:#F2F2F7;min-height:100vh;font-family:-apple-system,BlinkMacSyste
         </div>
 
         <div class="a-field">
-          <label>圖片（選填，探索頁面會顯示）</label>
-          <input type="file" id="aImgFile" accept="image/*" onchange="handleImgUpload(this,'aImg','aImgPreview','aImgStatus')">
+          <label>圖片（選填，可上傳多張，探索頁面會顯示）</label>
+          <input type="file" id="aImgFile" accept="image/*" multiple onchange="handleImgUpload(this,'a')">
           <div id="aImgStatus" style="font-size:11px;color:#8E8E93;margin-top:4px"></div>
-          <img id="aImgPreview" style="display:none;width:100%;max-height:160px;object-fit:cover;border-radius:9px;margin-top:6px"/>
-          <input type="hidden" id="aImg">
+          <div id="aImgList" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:8px"></div>
         </div>
 
         <div class="a-field-row" style="display:flex;gap:10px;">
@@ -240,11 +239,10 @@ body{background:#F2F2F7;min-height:100vh;font-family:-apple-system,BlinkMacSyste
       <input id="eDesc" placeholder="例：港口夜景・必訪"/>
     </div>
     <div class="a-field">
-      <label>圖片（選填）</label>
-      <input type="file" id="eImgFile" accept="image/*" onchange="handleImgUpload(this,'eImg','eImgPreview','eImgStatus')">
+      <label>圖片（選填，可上傳多張）</label>
+      <input type="file" id="eImgFile" accept="image/*" multiple onchange="handleImgUpload(this,'e')">
       <div id="eImgStatus" style="font-size:11px;color:#8E8E93;margin-top:4px"></div>
-      <img id="eImgPreview" style="display:none;width:100%;max-height:160px;object-fit:cover;border-radius:9px;margin-top:6px"/>
-      <input type="hidden" id="eImg">
+      <div id="eImgList" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:8px"></div>
     </div>
     <div class="a-field-row" style="display:flex;gap:10px;">
       <div class="a-field" style="flex:1">
@@ -662,41 +660,59 @@ function renderList(){
   });
 }
 
-// ── Image upload ──
-async function handleImgUpload(inputEl,hiddenId,previewId,statusId){
-  const file=inputEl.files[0];
-  if(!file)return;
-  const statusEl=document.getElementById(statusId);
-  const previewEl=document.getElementById(previewId);
-  if(!file.type.startsWith('image/')){statusEl.textContent='請選擇圖片檔案';inputEl.value='';return;}
-  if(file.size>5*1024*1024){statusEl.textContent='檔案太大，請選擇 5MB 以內的圖片';inputEl.value='';return;}
-  statusEl.textContent='上傳中… 0%';
-  try{
-    const ext=(file.name.split('.').pop()||'jpg').toLowerCase();
-    const path='spots/'+Date.now()+'_'+Math.random().toString(36).slice(2,8)+'.'+ext;
-    const ref=storage.ref().child(path);
-    const task=ref.put(file);
-    await new Promise((resolve,reject)=>{
-      task.on('state_changed',
-        snap=>{statusEl.textContent='上傳中… '+Math.round(snap.bytesTransferred/snap.totalBytes*100)+'%';},
-        err=>reject(err),
-        resolve
-      );
-    });
-    const url=await task.snapshot.ref.getDownloadURL();
-    document.getElementById(hiddenId).value=url;
-    previewEl.src=url;previewEl.style.display='block';
-    statusEl.textContent='已上傳 ✓';
-  }catch(e){
-    statusEl.textContent='上傳失敗：'+e.message;
+// ── Image upload (multi) ──
+let aImages=[];
+let eImages=[];
+function renderImgList(prefix){
+  const arr=prefix==='a'?aImages:eImages;
+  const wrap=document.getElementById(prefix+'ImgList');
+  wrap.innerHTML=arr.map((url,i)=>`<div style="position:relative;width:72px;height:72px">
+    <img src="${url}" style="width:100%;height:100%;object-fit:cover;border-radius:8px">
+    <button onclick="removeImgAt('${prefix}',${i})" style="position:absolute;top:-6px;right:-6px;width:20px;height:20px;border-radius:50%;background:#FF3B30;color:#fff;border:none;font-size:11px;cursor:pointer;line-height:1">✕</button>
+  </div>`).join('');
+}
+function removeImgAt(prefix,i){
+  const arr=prefix==='a'?aImages:eImages;
+  arr.splice(i,1);
+  renderImgList(prefix);
+}
+async function handleImgUpload(inputEl,prefix){
+  const files=Array.from(inputEl.files||[]);
+  if(!files.length)return;
+  const statusEl=document.getElementById(prefix+'ImgStatus');
+  const arr=prefix==='a'?aImages:eImages;
+  for(let idx=0;idx<files.length;idx++){
+    const file=files[idx];
+    if(!file.type.startsWith('image/')){statusEl.textContent='「'+file.name+'」不是圖片檔案，已略過';continue;}
+    if(file.size>5*1024*1024){statusEl.textContent='「'+file.name+'」超過 5MB，已略過';continue;}
+    statusEl.textContent=`上傳中（${idx+1}/${files.length}）… 0%`;
+    try{
+      const ext=(file.name.split('.').pop()||'jpg').toLowerCase();
+      const path='spots/'+Date.now()+'_'+Math.random().toString(36).slice(2,8)+'.'+ext;
+      const ref=storage.ref().child(path);
+      const task=ref.put(file);
+      await new Promise((resolve,reject)=>{
+        task.on('state_changed',
+          snap=>{statusEl.textContent=`上傳中（${idx+1}/${files.length}）… `+Math.round(snap.bytesTransferred/snap.totalBytes*100)+'%';},
+          err=>reject(err),
+          resolve
+        );
+      });
+      const url=await task.snapshot.ref.getDownloadURL();
+      arr.push(url);
+      renderImgList(prefix);
+    }catch(e){
+      statusEl.textContent='上傳失敗：'+e.message;
+    }
   }
+  statusEl.textContent=arr.length?`已上傳 ${arr.length} 張 ✓`:'';
+  inputEl.value='';
 }
 
 // ── Add spot ──
 async function addSpot(){
   const name=document.getElementById('aName').value.trim();
   const desc=document.getElementById('aDesc').value.trim();
-  const img=document.getElementById('aImg').value.trim();
   const rating=document.getElementById('aRating').value;
   const duration=document.getElementById('aDuration').value.trim();
   const keywords=document.getElementById('aKeywords').value.trim();
@@ -711,7 +727,7 @@ async function addSpot(){
       createdAt:firebase.firestore.FieldValue.serverTimestamp()
     };
     if(desc)data.desc=desc;
-    if(img)data.img=img;
+    if(aImages.length){data.images=aImages.slice();data.img=aImages[0];}
     if(rating)data.rating=parseInt(rating);
     if(duration)data.duration=duration;
     // merge city keywords with manual keywords
@@ -721,10 +737,10 @@ async function addSpot(){
     await db.collection('spots').add(data);
     document.getElementById('aName').value='';
     document.getElementById('aDesc').value='';
-    document.getElementById('aImg').value='';
+    aImages=[];
     document.getElementById('aImgFile').value='';
     document.getElementById('aImgStatus').textContent='';
-    document.getElementById('aImgPreview').style.display='none';
+    renderImgList('a');
     document.getElementById('aRating').value='';
     document.getElementById('aDuration').value='';
     document.getElementById('aKeywords').value='';
@@ -751,11 +767,10 @@ function openEditModal(id){
   document.getElementById('eCity').value=s.city||'';
   document.getElementById('eCountry').value=s.country||'';
   document.getElementById('eDesc').value=s.desc||'';
-  document.getElementById('eImg').value=s.img||'';
+  eImages=(s.images&&s.images.length)?s.images.slice():(s.img?[s.img]:[]);
   document.getElementById('eImgFile').value='';
   document.getElementById('eImgStatus').textContent='';
-  const eImgPrev=document.getElementById('eImgPreview');
-  if(s.img){eImgPrev.src=s.img;eImgPrev.style.display='block';}else{eImgPrev.style.display='none';}
+  renderImgList('e');
   document.getElementById('eRating').value=s.rating||'';
   document.getElementById('eDuration').value=s.duration||'';
   document.getElementById('eKeywords').value=s.keywords||'';
@@ -771,7 +786,6 @@ async function saveEditSpot(){
   const city=document.getElementById('eCity').value.trim();
   const country=document.getElementById('eCountry').value.trim();
   const desc=document.getElementById('eDesc').value.trim();
-  const img=document.getElementById('eImg').value.trim();
   const rating=document.getElementById('eRating').value;
   const duration=document.getElementById('eDuration').value.trim();
   const keywords=document.getElementById('eKeywords').value.trim();
@@ -781,7 +795,8 @@ async function saveEditSpot(){
   try{
     const data={name,city,country,
       desc:desc||firebase.firestore.FieldValue.delete(),
-      img:img||firebase.firestore.FieldValue.delete(),
+      images:eImages.length?eImages.slice():firebase.firestore.FieldValue.delete(),
+      img:eImages.length?eImages[0]:firebase.firestore.FieldValue.delete(),
       rating:rating?parseInt(rating):firebase.firestore.FieldValue.delete(),
       duration:duration||firebase.firestore.FieldValue.delete(),
       keywords:keywords||firebase.firestore.FieldValue.delete()};
