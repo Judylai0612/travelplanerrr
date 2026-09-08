@@ -811,7 +811,7 @@ const App = {
   splitMembersHtml(selectedKeys){
     return `<div class="split-chip-select" id="mExpSplitMembers">`+state.members.map(m=>{
       const key=m.uid||m.name;
-      const checked=selectedKeys?selectedKeys.includes(key):true;
+      const checked=selectedKeys?selectedKeys.includes(key):false;
       return `<label class="split-chip-opt${checked?' checked':''}"><input type="checkbox" value="${key}" ${checked?'checked':''} onchange="this.parentElement.classList.toggle('checked',this.checked)"/>${m.name}</label>`;
     }).join('')+`</div>`;
   },
