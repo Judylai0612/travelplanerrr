@@ -37,7 +37,7 @@ body{background:#F2F2F7;min-height:100vh;font-family:-apple-system,BlinkMacSyste
 .admin-card-sub{font-size:12px;color:#8E8E93;margin-bottom:18px;}
 .a-field{margin-bottom:12px;}
 .a-field label{display:block;font-size:12px;color:#8E8E93;margin-bottom:4px;font-weight:500;}
-.a-field input{width:100%;padding:9px 12px;border-radius:9px;border:1px solid #D1D1D6;background:#F9F9F9;color:#1C1C1E;font-size:14px;font-family:inherit;}
+.a-field input,.a-field select{width:100%;padding:9px 12px;border-radius:9px;border:1px solid #D1D1D6;background:#F9F9F9;color:#1C1C1E;font-size:14px;font-family:inherit;}
 .a-field input:focus{outline:none;border-color:#007AFF;background:#fff;}
 .a-field input::placeholder{color:#C7C7CC;}
 /* City search */
@@ -155,8 +155,24 @@ body{background:#F2F2F7;min-height:100vh;font-family:-apple-system,BlinkMacSyste
         </div>
 
         <div class="a-field">
-          <label>簡介（選填，顯示在 App 選單旁）</label>
+          <label>簡介（選填，顯示在 App 選單旁與探索頁面）</label>
           <input id="aDesc" placeholder="例：港口夜景・必訪"/>
+        </div>
+
+        <div class="a-field">
+          <label>圖片網址（選填，探索頁面會顯示）</label>
+          <input id="aImg" placeholder="例：https://..."/>
+        </div>
+
+        <div class="a-field-row" style="display:flex;gap:10px;">
+          <div class="a-field" style="flex:1">
+            <label>星等評分（選填）</label>
+            <select id="aRating"><option value="">— 不評分 —</option><option value="5">★★★★★</option><option value="4">★★★★☆</option><option value="3">★★★☆☆</option><option value="2">★★☆☆☆</option><option value="1">★☆☆☆☆</option></select>
+          </div>
+          <div class="a-field" style="flex:1">
+            <label>建議停留時間（選填）</label>
+            <input id="aDuration" placeholder="例：2-3HR"/>
+          </div>
         </div>
 
         <div class="a-field">
@@ -219,6 +235,20 @@ body{background:#F2F2F7;min-height:100vh;font-family:-apple-system,BlinkMacSyste
     <div class="a-field">
       <label>簡介（選填）</label>
       <input id="eDesc" placeholder="例：港口夜景・必訪"/>
+    </div>
+    <div class="a-field">
+      <label>圖片網址（選填）</label>
+      <input id="eImg" placeholder="例：https://..."/>
+    </div>
+    <div class="a-field-row" style="display:flex;gap:10px;">
+      <div class="a-field" style="flex:1">
+        <label>星等評分（選填）</label>
+        <select id="eRating"><option value="">— 不評分 —</option><option value="5">★★★★★</option><option value="4">★★★★☆</option><option value="3">★★★☆☆</option><option value="2">★★☆☆☆</option><option value="1">★☆☆☆☆</option></select>
+      </div>
+      <div class="a-field" style="flex:1">
+        <label>建議停留時間（選填）</label>
+        <input id="eDuration" placeholder="例：2-3HR"/>
+      </div>
     </div>
     <div class="a-field">
       <label>關鍵字（選填，逗號分隔）</label>
@@ -628,6 +658,9 @@ function renderList(){
 async function addSpot(){
   const name=document.getElementById('aName').value.trim();
   const desc=document.getElementById('aDesc').value.trim();
+  const img=document.getElementById('aImg').value.trim();
+  const rating=document.getElementById('aRating').value;
+  const duration=document.getElementById('aDuration').value.trim();
   const keywords=document.getElementById('aKeywords').value.trim();
   if(!name){showToast('請輸入景點名稱');return;}
   if(!selectedCity){showToast('請選擇城市');return;}
@@ -640,6 +673,9 @@ async function addSpot(){
       createdAt:firebase.firestore.FieldValue.serverTimestamp()
     };
     if(desc)data.desc=desc;
+    if(img)data.img=img;
+    if(rating)data.rating=parseInt(rating);
+    if(duration)data.duration=duration;
     // merge city keywords with manual keywords
     const cityKw=selectedCity.keywords||'';
     const allKw=[...new Set([...cityKw.split(','),...keywords.split(',')].map(k=>k.trim()).filter(Boolean))].join(', ');
@@ -647,6 +683,9 @@ async function addSpot(){
     await db.collection('spots').add(data);
     document.getElementById('aName').value='';
     document.getElementById('aDesc').value='';
+    document.getElementById('aImg').value='';
+    document.getElementById('aRating').value='';
+    document.getElementById('aDuration').value='';
     document.getElementById('aKeywords').value='';
     clearCity();
     showToast(`「${name}」已新增`);
@@ -671,6 +710,9 @@ function openEditModal(id){
   document.getElementById('eCity').value=s.city||'';
   document.getElementById('eCountry').value=s.country||'';
   document.getElementById('eDesc').value=s.desc||'';
+  document.getElementById('eImg').value=s.img||'';
+  document.getElementById('eRating').value=s.rating||'';
+  document.getElementById('eDuration').value=s.duration||'';
   document.getElementById('eKeywords').value=s.keywords||'';
   document.getElementById('editModalBg').classList.add('open');
 }
@@ -684,12 +726,20 @@ async function saveEditSpot(){
   const city=document.getElementById('eCity').value.trim();
   const country=document.getElementById('eCountry').value.trim();
   const desc=document.getElementById('eDesc').value.trim();
+  const img=document.getElementById('eImg').value.trim();
+  const rating=document.getElementById('eRating').value;
+  const duration=document.getElementById('eDuration').value.trim();
   const keywords=document.getElementById('eKeywords').value.trim();
   if(!name){showToast('請輸入景點名稱');return;}
   if(!city){showToast('請輸入城市');return;}
   const btn=document.getElementById('editSaveBtn');btn.disabled=true;btn.textContent='儲存中…';
   try{
-    const data={name,city,country,desc:desc||firebase.firestore.FieldValue.delete(),keywords:keywords||firebase.firestore.FieldValue.delete()};
+    const data={name,city,country,
+      desc:desc||firebase.firestore.FieldValue.delete(),
+      img:img||firebase.firestore.FieldValue.delete(),
+      rating:rating?parseInt(rating):firebase.firestore.FieldValue.delete(),
+      duration:duration||firebase.firestore.FieldValue.delete(),
+      keywords:keywords||firebase.firestore.FieldValue.delete()};
     await db.collection('spots').doc(editingId).update(data);
     showToast(`「${name}」已更新`);
     closeEditModal();

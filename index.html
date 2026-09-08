@@ -187,6 +187,49 @@ body{background:#EDE7DA;display:flex;justify-content:center;min-height:100dvh;fo
 .toast.show{opacity:1;}
 .sync-dot{width:7px;height:7px;border-radius:50%;background:#6B9080;display:inline-block;margin-left:6px;animation:pulse 1.5s infinite;}
 @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.3;}}
+
+/* ── Explore & Favorites ── */
+.explore-screen{position:absolute;inset:0;background:#FFF9F0;z-index:200;display:none;flex-direction:column;}
+.explore-screen.open{display:flex;}
+.explore-head{display:flex;align-items:center;gap:10px;padding:18px 18px 12px;flex-shrink:0;}
+.explore-back{width:32px;height:32px;border-radius:50%;background:#F2ECE0;border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;color:#2B2620;flex-shrink:0;}
+.explore-title{font-size:18px;font-weight:800;color:#2B2620;}
+.explore-body{flex:1;overflow-y:auto;padding:0 18px 90px;}
+.explore-search{display:flex;align-items:center;gap:8px;border:1.5px solid #F6C453;border-radius:14px;padding:11px 14px;margin-bottom:20px;}
+.explore-search input{border:none;background:none;outline:none;flex:1;font-size:14px;color:#2B2620;font-family:inherit;}
+.explore-go{width:30px;height:30px;border-radius:50%;background:#2B2620;color:#fff;border:none;font-size:10px;font-weight:700;cursor:pointer;flex-shrink:0;}
+.city-tile-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.city-tile{aspect-ratio:1;border-radius:16px;background:linear-gradient(160deg,#DCD3BC,#C9BFA3);display:flex;align-items:flex-end;padding:12px;font-weight:700;font-size:14px;color:#fff;text-shadow:0 1px 4px rgba(0,0,0,.4);cursor:pointer;border:none;position:relative;overflow:hidden;background-size:cover;background-position:center;}
+.spot-explore-card{display:flex;gap:12px;padding:14px 0;border-bottom:1px solid #F0EBDD;}
+.spot-explore-thumb{width:76px;height:76px;border-radius:12px;background:linear-gradient(160deg,#C9BFA3,#A9BFC7);flex-shrink:0;background-size:cover;background-position:center;}
+.spot-explore-body{flex:1;min-width:0;}
+.spot-explore-name{font-size:14.5px;font-weight:700;color:#2B2620;margin-bottom:2px;}
+.spot-explore-stars{color:#F6C453;font-size:11px;margin-bottom:4px;letter-spacing:1px;}
+.spot-explore-desc{font-size:11.5px;color:#A8A296;line-height:1.5;margin-bottom:6px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.spot-explore-foot{display:flex;justify-content:space-between;align-items:center;gap:8px;}
+.spot-explore-dur{font-size:10.5px;color:#6B9080;font-weight:600;flex-shrink:0;}
+.fav-add-btn{font-size:11px;font-weight:700;padding:6px 12px;border-radius:10px;border:none;background:#2B2620;color:#fff;cursor:pointer;flex-shrink:0;white-space:nowrap;}
+.fav-add-btn.added{background:#6B9080;}
+.fav-fab{position:absolute;top:16px;right:16px;width:38px;height:38px;border-radius:50%;background:#FFF9F0;border:1.5px solid #F0EBDD;display:flex;align-items:center;justify-content:center;font-size:16px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.1);z-index:5;color:#E0674F;}
+.fav-badge{position:absolute;top:-4px;right:-4px;background:#E0674F;color:#fff;font-size:9px;font-weight:700;width:16px;height:16px;border-radius:50%;display:flex;align-items:center;justify-content:center;}
+.fav-status-tag{display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:8px;margin-top:2px;}
+.fav-status-tag.pending{background:#F2ECE0;color:#A8A296;}
+.fav-status-tag.scheduled{background:#E4F0EB;color:#6B9080;}
+.fav-item{display:flex;gap:12px;padding:14px 0;border-bottom:1px solid #F0EBDD;align-items:center;}
+.fav-item .spot-explore-thumb{width:56px;height:56px;}
+.fav-actions{display:flex;gap:6px;flex-shrink:0;}
+.fav-schedule-btn{font-size:11px;font-weight:700;padding:6px 10px;border-radius:9px;border:none;background:#F6C453;color:#2B2620;cursor:pointer;}
+.fav-remove-btn{width:26px;height:26px;border-radius:50%;border:none;background:#F2ECE0;color:#A8A296;font-size:12px;cursor:pointer;}
+.fav-empty{text-align:center;color:#A8A296;font-size:12.5px;padding:60px 20px;line-height:1.7;}
+.fav-quick-btn{width:100%;display:flex;align-items:center;justify-content:center;gap:6px;padding:10px;border-radius:11px;border:1.5px dashed #6B9080;background:#E4F0EB;color:#6B9080;font-weight:700;font-size:13px;cursor:pointer;margin-bottom:14px;}
+.sched-sheet-bg{position:absolute;inset:0;background:rgba(0,0,0,.35);display:none;align-items:flex-end;z-index:300;}
+.sched-sheet-bg.open{display:flex;}
+.sched-sheet{background:#FFF9F0;width:100%;border-radius:20px 20px 0 0;padding:20px;}
+.sched-sheet-title{font-size:14px;font-weight:700;margin-bottom:14px;color:#2B2620;}
+.sched-sheet-row{display:flex;align-items:center;gap:14px;margin-bottom:12px;}
+.sched-sheet-row .sched-sep{flex-shrink:0;font-size:12px;color:#A8A296;}
+.sched-sheet select,.sched-sheet input{flex:1;padding:9px;border-radius:9px;border:1.5px solid #ECE5D4;background:#F9F9F9;color:#2B2620;font-size:13px;font-family:inherit;text-align:center;}
+.sched-sheet-submit{width:100%;padding:11px;border-radius:11px;border:none;background:#2B2620;color:#fff;font-weight:700;font-size:13px;cursor:pointer;margin-top:4px;}
 </style>
 </head>
 <body>
@@ -224,7 +267,7 @@ body{background:#EDE7DA;display:flex;justify-content:center;min-height:100dvh;fo
     <div class="hero-emoji">⛩</div>
   </div>
   <div id="exploreWrap" style="display:flex;gap:8px;padding:0 18px 10px;flex-shrink:0;">
-    <button style="flex:1;min-width:0;padding:9px 12px;background:#2B2620;color:#fff;border:none;border-radius:13px;font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px;white-space:nowrap;" onclick="App.openModal('itinerary')"><i class="ti ti-sparkles" style="font-size:13px;flex-shrink:0"></i>探索景點</button>
+    <button style="flex:1;min-width:0;padding:9px 12px;background:#2B2620;color:#fff;border:none;border-radius:13px;font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px;white-space:nowrap;" onclick="App.openExplore()"><i class="ti ti-sparkles" style="font-size:13px;flex-shrink:0"></i>探索景點</button>
     <button style="flex:0 0 80px;padding:9px 12px;background:#6B9080;color:#fff;border:none;border-radius:13px;font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px;white-space:nowrap;" onclick="App.switchTab('share')"><i class="ti ti-users" style="font-size:13px;flex-shrink:0"></i>共享</button>
   </div>
 
@@ -305,6 +348,40 @@ body{background:#EDE7DA;display:flex;justify-content:center;min-height:100dvh;fo
   <div class="modal-bg" id="modalBg" onclick="App.closeModalBg(event)">
     <div class="modal"><div class="modal-title"><span id="modalTitle"></span><button class="modal-close" onclick="App.closeModal()"><i class="ti ti-x"></i></button></div><div id="modalBody"></div></div>
   </div>
+
+  <!-- Explore spots -->
+  <div class="explore-screen" id="exploreCityScreen">
+    <div class="explore-head"><button class="explore-back" onclick="App.closeExplore()"><i class="ti ti-x"></i></button><div class="explore-title">你要去哪裡？</div></div>
+    <div class="explore-body">
+      <div class="explore-search">
+        <input id="exploreSearch" placeholder="輸入城市名稱" oninput="App.renderExploreCities()" onkeydown="if(event.key==='Enter')App.exploreSearchGo()">
+        <button class="explore-go" onclick="App.exploreSearchGo()">GO</button>
+      </div>
+      <div class="city-tile-grid" id="exploreCityGrid"></div>
+    </div>
+    <button class="fav-fab" onclick="App.openFavorites()"><i class="ti ti-heart"></i><span class="fav-badge" id="favBadge1" style="display:none">0</span></button>
+  </div>
+
+  <div class="explore-screen" id="exploreListScreen">
+    <div class="explore-head"><button class="explore-back" onclick="App.backToExploreCities()"><i class="ti ti-arrow-left"></i></button><div class="explore-title" id="exploreListTitle">推薦景點</div></div>
+    <div class="explore-body" id="exploreListBody"></div>
+    <button class="fav-fab" onclick="App.openFavorites()"><i class="ti ti-heart"></i><span class="fav-badge" id="favBadge2" style="display:none">0</span></button>
+  </div>
+
+  <div class="explore-screen" id="favoritesScreen">
+    <div class="explore-head"><button class="explore-back" onclick="App.closeFavorites()"><i class="ti ti-arrow-left"></i></button><div class="explore-title">我的收藏</div></div>
+    <div class="explore-body" id="favoritesBody"></div>
+  </div>
+
+  <div class="sched-sheet-bg" id="schedSheetBg" onclick="if(event.target===this)App.closeSchedSheet()">
+    <div class="sched-sheet">
+      <div class="sched-sheet-title" id="schedSheetTitle">排入行程</div>
+      <div class="sched-sheet-row"><select id="schedDay"></select></div>
+      <div class="sched-sheet-row"><input id="schedStart" placeholder="09:00" oninput="App.fmtTimeInput(this)" maxlength="5"><span class="sched-sep">至</span><input id="schedEnd" placeholder="11:00" oninput="App.fmtTimeInput(this)" maxlength="5"></div>
+      <button class="sched-sheet-submit" onclick="App.confirmSchedule()">確認排入</button>
+    </div>
+  </div>
+
 <div class="toast" id="toast"></div>
 </div>
 
@@ -355,8 +432,8 @@ let state = {
   tripId:null, currentTab:'itinerary', currentDay:0, mapMode:'day',
   dayCount:0, tripStartDate:null,
   userName:'旅人', destination:'', userId:null,
-  members:[], allStations:[], expenses:[], shopItems:[],
-  firestoreSpots:[], dragSrc:null, unsubTrip:null,
+  members:[], allStations:[], expenses:[], shopItems:[], favorites:[],
+  firestoreSpots:[], dragSrc:null, unsubTrip:null, exploreCity:null,
   rates:{...Object.fromEntries(Object.entries(CURRENCY_DB).map(([k,v])=>[k,v.rate]))},
   editingStation:null,
 };
@@ -386,7 +463,7 @@ function saveLocal(){
     userName:state.userName, destination:state.destination,
     members:state.members, expenses:state.expenses,
     allStations:state.allStations, dayCount:state.dayCount,
-    shopItems:state.shopItems, tripId:state.tripId||null,
+    shopItems:state.shopItems, favorites:state.favorites||[], tripId:state.tripId||null,
     userId:state.userId||null,
     startDate:document.getElementById('startDate').value||'',
     endDate:document.getElementById('endDate').value||'',
@@ -472,6 +549,7 @@ const App = {
         userName:state.userName, destination:state.destination,
         members:state.members, expenses:state.expenses,
         allStations:state.allStations.map(day=>({stations:day})), dayCount:state.dayCount,
+        favorites:state.favorites||[],
         startDate:document.getElementById('startDate').value||'',
         endDate:document.getElementById('endDate').value||'',
         heroTitle:document.getElementById('heroTitle').textContent||'',
@@ -486,6 +564,7 @@ const App = {
     if(data.expenses)state.expenses=data.expenses;
     if(data.allStations)state.allStations=data.allStations.map(day=>Array.isArray(day)?day:(day.stations||[]));
     if(data.dayCount)state.dayCount=data.dayCount;
+    if(data.favorites)state.favorites=data.favorites;
     if(data.destination)state.destination=data.destination;
     if(data.userName){
       // Only update own member name from local, don't overwrite
@@ -855,6 +934,150 @@ const App = {
     }
   },
 
+  // ── Explore spots ──
+  openExplore(){
+    document.getElementById('exploreSearch').value='';
+    App.renderExploreCities();
+    document.getElementById('exploreCityScreen').classList.add('open');
+    App.updateFavBadges();
+  },
+  closeExplore(){
+    document.getElementById('exploreCityScreen').classList.remove('open');
+  },
+  exploreCities(){
+    const set=new Set();
+    state.firestoreSpots.forEach(s=>{if(s.city)set.add(s.city);});
+    return[...set].sort((a,b)=>a.localeCompare(b,'zh'));
+  },
+  renderExploreCities(){
+    const q=(document.getElementById('exploreSearch').value||'').trim().toLowerCase();
+    const grid=document.getElementById('exploreCityGrid');
+    let cities=App.exploreCities();
+    if(q)cities=cities.filter(c=>c.toLowerCase().includes(q));
+    if(!cities.length){grid.innerHTML='<div style="grid-column:1/3;text-align:center;color:#A8A296;font-size:13px;padding:30px 0">找不到符合的城市</div>';return;}
+    grid.innerHTML=cities.map(c=>`<button class="city-tile" onclick="App.openCitySpots('${c.replace(/'/g,"\\'")}')">${c}</button>`).join('');
+  },
+  exploreSearchGo(){
+    const q=(document.getElementById('exploreSearch').value||'').trim();
+    if(!q)return;
+    const cities=App.exploreCities();
+    const match=cities.find(c=>c.toLowerCase()===q.toLowerCase())||cities.find(c=>c.toLowerCase().includes(q.toLowerCase()));
+    if(match)App.openCitySpots(match);
+    else showToast('找不到「'+q+'」的景點，可以在下方搜尋其他城市');
+  },
+  openCitySpots(city){
+    state.exploreCity=city;
+    document.getElementById('exploreListTitle').textContent=city+'推薦景點';
+    App.renderExploreList();
+    document.getElementById('exploreCityScreen').classList.remove('open');
+    document.getElementById('exploreListScreen').classList.add('open');
+  },
+  backToExploreCities(){
+    document.getElementById('exploreListScreen').classList.remove('open');
+    document.getElementById('exploreCityScreen').classList.add('open');
+  },
+  renderExploreList(){
+    const body=document.getElementById('exploreListBody');
+    const spots=state.firestoreSpots.filter(s=>s.city===state.exploreCity);
+    if(!spots.length){body.innerHTML='<div class="fav-empty">這個城市還沒有推薦景點</div>';return;}
+    body.innerHTML=spots.map(s=>{
+      const rating=Math.max(0,Math.min(5,parseInt(s.rating)||0));
+      const stars='★'.repeat(rating)+'☆'.repeat(5-rating);
+      const isFav=(state.favorites||[]).some(f=>f.name===s.name);
+      const imgStyle=s.img?`background-image:url('${s.img.replace(/'/g,"\\'")}')`:'';
+      return`<div class="spot-explore-card">
+        <div class="spot-explore-thumb" style="${imgStyle}"></div>
+        <div class="spot-explore-body">
+          <div class="spot-explore-name">${s.name}</div>
+          ${rating?`<div class="spot-explore-stars">${stars}</div>`:''}
+          <div class="spot-explore-desc">${s.desc||''}</div>
+          <div class="spot-explore-foot">
+            <span class="spot-explore-dur">${s.duration?'建議停留 '+s.duration:''}</span>
+            <button class="fav-add-btn${isFav?' added':''}" ${isFav?'disabled':''} onclick="App.addFavorite('${s.name.replace(/'/g,"\\'")}')">${isFav?'已收藏 ✓':'加入收藏'}</button>
+          </div>
+        </div>
+      </div>`;
+    }).join('');
+  },
+  addFavorite(name){
+    if(!state.favorites)state.favorites=[];
+    if(state.favorites.some(f=>f.name===name))return;
+    const spot=state.firestoreSpots.find(s=>s.name===name);
+    state.favorites.push({name,city:spot?spot.city:state.exploreCity,desc:spot?spot.desc||'':'',img:spot?spot.img||'':'',scheduled:null});
+    App.renderExploreList();
+    App.updateFavBadges();
+    App.saveAll();
+    showToast('「'+name+'」已加入收藏 🎉');
+  },
+  removeFavorite(i){
+    state.favorites.splice(i,1);
+    App.updateFavBadges();
+    App.renderFavorites();
+    App.saveAll();
+  },
+  updateFavBadges(){
+    const n=(state.favorites||[]).length;
+    ['favBadge1','favBadge2'].forEach(id=>{
+      const b=document.getElementById(id);if(!b)return;
+      b.textContent=n;b.style.display=n?'flex':'none';
+    });
+  },
+  openFavorites(){
+    App.renderFavorites();
+    document.getElementById('favoritesScreen').classList.add('open');
+  },
+  closeFavorites(){
+    document.getElementById('favoritesScreen').classList.remove('open');
+  },
+  renderFavorites(){
+    const body=document.getElementById('favoritesBody');
+    const favs=state.favorites||[];
+    if(!favs.length){body.innerHTML='<div class="fav-empty">還沒有收藏的景點<br>去「探索景點」逛逛，喜歡的按加入收藏</div>';return;}
+    body.innerHTML=favs.map((f,i)=>{
+      const imgStyle=f.img?`background-image:url('${f.img.replace(/'/g,"\\'")}')`:'';
+      const status=f.scheduled?`<span class="fav-status-tag scheduled">已排入 Day${f.scheduled.day+1}・${f.scheduled.start}-${f.scheduled.end}</span>`:'<span class="fav-status-tag pending">尚未排入行程</span>';
+      return`<div class="fav-item">
+        <div class="spot-explore-thumb" style="${imgStyle}"></div>
+        <div class="spot-explore-body"><div class="spot-explore-name">${f.name}</div>${status}</div>
+        <div class="fav-actions">
+          <button class="fav-schedule-btn" onclick="App.openSchedSheet(${i})">${f.scheduled?'調整':'排入行程'}</button>
+          <button class="fav-remove-btn" onclick="App.removeFavorite(${i})"><i class="ti ti-x"></i></button>
+        </div>
+      </div>`;
+    }).join('');
+  },
+  schedulingIdx:null,
+  openSchedSheet(i){
+    App.schedulingIdx=i;
+    const f=state.favorites[i];
+    document.getElementById('schedSheetTitle').textContent=(f.scheduled?'調整時間：':'排入行程：')+f.name;
+    const daySel=document.getElementById('schedDay');
+    daySel.innerHTML=Array.from({length:state.dayCount||1},(_,d)=>`<option value="${d}">Day ${d+1}</option>`).join('');
+    daySel.value=f.scheduled?f.scheduled.day:state.currentDay;
+    document.getElementById('schedStart').value=f.scheduled?f.scheduled.start:'';
+    document.getElementById('schedEnd').value=f.scheduled?f.scheduled.end:'';
+    document.getElementById('schedSheetBg').classList.add('open');
+  },
+  closeSchedSheet(){
+    document.getElementById('schedSheetBg').classList.remove('open');
+  },
+  confirmSchedule(){
+    const i=App.schedulingIdx;
+    const f=state.favorites[i];
+    const day=parseInt(document.getElementById('schedDay').value)||0;
+    const start=document.getElementById('schedStart').value.trim();
+    const end=document.getElementById('schedEnd').value.trim();
+    while(state.allStations.length<=day)state.allStations.push([]);
+    state.allStations[day].push({time:start&&end?start+' - '+end:'',name:f.name,note:''});
+    f.scheduled={day,start:start||'--:--',end:end||'--:--'};
+    App.closeSchedSheet();
+    App.renderFavorites();
+    if(state.currentDay===day){App.renderStations();}
+    App.renderDayRow();
+    App.saveAll();
+    showToast('「'+f.name+'」已排入行程表 ✓');
+  },
+
   // ── Modal ──
   buildSpotsOptions(){
     const heroText=(document.getElementById('heroTitle').textContent||'').trim();
@@ -904,7 +1127,7 @@ const App = {
     }
     if(tab==='itinerary'){
       title.textContent='新增行程景點';
-      body.innerHTML=`<div class="field"><label>推薦景點</label><div class="select-wrap"><select id="spotSelect" onchange="App.fillSpot()">${App.buildSpotsOptions()}</select></div></div><div class="divider"><span>或手動輸入</span></div><div class="field"><label>景點名稱</label><input id="mName" placeholder="輸入名稱"/></div><div class="field-row"><div class="field"><label>開始時間（選填）</label><input id="mTimeStart" placeholder="09:00" oninput="App.fmtTimeInput(this)" maxlength="5"/></div><div class="field"><label>結束時間（選填）</label><input id="mTimeEnd" placeholder="11:00" oninput="App.fmtTimeInput(this)" maxlength="5"/></div></div><div class="field"><label>備註（選填）</label><input id="mNote" placeholder="可留空"/></div><button class="modal-submit" onclick="App.submitStation()">加入 Day ${state.currentDay+1}</button>`;
+      body.innerHTML=(state.favorites&&state.favorites.length?`<button class="fav-quick-btn" onclick="App.closeModal();App.openFavorites()"><i class="ti ti-heart"></i> 從我的收藏挑選（${state.favorites.length}）</button>`:'')+`<div class="field"><label>推薦景點</label><div class="select-wrap"><select id="spotSelect" onchange="App.fillSpot()">${App.buildSpotsOptions()}</select></div></div><div class="divider"><span>或手動輸入</span></div><div class="field"><label>景點名稱</label><input id="mName" placeholder="輸入名稱"/></div><div class="field-row"><div class="field"><label>開始時間（選填）</label><input id="mTimeStart" placeholder="09:00" oninput="App.fmtTimeInput(this)" maxlength="5"/></div><div class="field"><label>結束時間（選填）</label><input id="mTimeEnd" placeholder="11:00" oninput="App.fmtTimeInput(this)" maxlength="5"/></div></div><div class="field"><label>備註（選填）</label><input id="mNote" placeholder="可留空"/></div><button class="modal-submit" onclick="App.submitStation()">加入 Day ${state.currentDay+1}</button>`;
     }else if(tab==='budget'){
       const opts=state.members.length?state.members.map(m=>`<option>${m.name}</option>`).join(''):'<option>（請先新增成員）</option>';
       const curOpts=Object.entries(CURRENCY_DB).map(([c,v])=>`<option value="${c}">${v.symbol} ${c} — ${v.name}</option>`).join('');
@@ -1101,6 +1324,7 @@ const App = {
         state.allStations=local.allStations||[];
         state.dayCount=local.dayCount||0;
         state.shopItems=local.shopItems||[];
+        state.favorites=local.favorites||[];
         document.getElementById('greetName').textContent=state.userName;
         if(local.heroTitle)document.getElementById('heroTitle').textContent=local.heroTitle;
         if(local.startDate){
