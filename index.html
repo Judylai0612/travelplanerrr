@@ -201,7 +201,7 @@ body{background:#EDE7DA;display:flex;justify-content:center;min-height:100dvh;fo
 .city-tile-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
 .city-tile{aspect-ratio:1;border-radius:16px;background:linear-gradient(160deg,#DCD3BC,#C9BFA3);display:flex;align-items:flex-end;padding:12px;font-weight:700;font-size:14px;color:#fff;text-shadow:0 1px 4px rgba(0,0,0,.4);cursor:pointer;border:none;position:relative;overflow:hidden;background-size:cover;background-position:center;}
 .spot-explore-card{display:flex;gap:12px;padding:14px 0;border-bottom:1px solid #F0EBDD;}
-.spot-explore-thumb{width:76px;height:76px;border-radius:12px;background:linear-gradient(160deg,#C9BFA3,#A9BFC7);flex-shrink:0;background-size:cover;background-position:center;}
+.spot-explore-thumb{position:relative;width:76px;height:76px;border-radius:12px;background:linear-gradient(160deg,#C9BFA3,#A9BFC7);flex-shrink:0;background-size:cover;background-position:center;}
 .spot-explore-body{flex:1;min-width:0;}
 .spot-explore-name{font-size:14.5px;font-weight:700;color:#2B2620;margin-bottom:2px;}
 .spot-explore-stars{color:#F6C453;font-size:11px;margin-bottom:4px;letter-spacing:1px;}
@@ -230,6 +230,15 @@ body{background:#EDE7DA;display:flex;justify-content:center;min-height:100dvh;fo
 .sched-sheet-row .sched-sep{flex-shrink:0;font-size:12px;color:#A8A296;}
 .sched-sheet select,.sched-sheet input{flex:1;padding:9px;border-radius:9px;border:1.5px solid #ECE5D4;background:#F9F9F9;color:#2B2620;font-size:13px;font-family:inherit;text-align:center;}
 .sched-sheet-submit{width:100%;padding:11px;border-radius:11px;border:none;background:#2B2620;color:#fff;font-weight:700;font-size:13px;cursor:pointer;margin-top:4px;}
+.spot-thumb-count{position:absolute;bottom:4px;right:4px;background:rgba(0,0,0,.55);color:#fff;font-size:9px;font-weight:700;padding:2px 6px;border-radius:8px;}
+.lightbox-bg{position:absolute;inset:0;background:rgba(0,0,0,.9);z-index:400;display:none;align-items:center;justify-content:center;}
+.lightbox-bg.open{display:flex;}
+.lightbox-img{max-width:92%;max-height:78%;object-fit:contain;border-radius:8px;touch-action:pan-y;}
+.lightbox-close{position:absolute;top:18px;right:18px;width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.15);border:none;color:#fff;font-size:16px;display:flex;align-items:center;justify-content:center;cursor:pointer;}
+.lightbox-nav{position:absolute;top:50%;transform:translateY(-50%);width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.15);border:none;color:#fff;font-size:18px;display:flex;align-items:center;justify-content:center;cursor:pointer;}
+.lightbox-prev{left:14px;}
+.lightbox-next{right:14px;}
+.lightbox-counter{position:absolute;bottom:24px;left:50%;transform:translateX(-50%);color:#fff;font-size:12px;font-weight:600;background:rgba(255,255,255,.15);padding:5px 12px;border-radius:12px;}
 </style>
 </head>
 <body>
@@ -382,6 +391,14 @@ body{background:#EDE7DA;display:flex;justify-content:center;min-height:100dvh;fo
     </div>
   </div>
 
+  <div class="lightbox-bg" id="lightboxBg" onclick="if(event.target===this)App.closeLightbox()" ontouchstart="App.onLightboxTouchStart(event)" ontouchend="App.onLightboxTouchEnd(event)">
+    <button class="lightbox-close" onclick="App.closeLightbox()"><i class="ti ti-x"></i></button>
+    <button class="lightbox-nav lightbox-prev" id="lightboxPrev" onclick="App.lightboxPrev()"><i class="ti ti-arrow-left"></i></button>
+    <img class="lightbox-img" id="lightboxImg" src="">
+    <button class="lightbox-nav lightbox-next" id="lightboxNext" onclick="App.lightboxNext()"><i class="ti ti-arrow-left" style="transform:scaleX(-1)"></i></button>
+    <div class="lightbox-counter" id="lightboxCounter"></div>
+  </div>
+
 <div class="toast" id="toast"></div>
 </div>
 
@@ -434,6 +451,7 @@ let state = {
   userName:'旅人', destination:'', userId:null,
   members:[], allStations:[], expenses:[], shopItems:[], favorites:[],
   firestoreSpots:[], dragSrc:null, unsubTrip:null, exploreCity:null,
+  exploreListImages:[], lightboxImages:[], lightboxIndex:0,
   rates:{...Object.fromEntries(Object.entries(CURRENCY_DB).map(([k,v])=>[k,v.rate]))},
   editingStation:null,
 };
@@ -976,17 +994,25 @@ const App = {
     document.getElementById('exploreListScreen').classList.remove('open');
     document.getElementById('exploreCityScreen').classList.add('open');
   },
+  spotImages(s){
+    if(s.images&&s.images.length)return s.images;
+    if(s.img)return[s.img];
+    return[];
+  },
   renderExploreList(){
     const body=document.getElementById('exploreListBody');
     const spots=state.firestoreSpots.filter(s=>s.city===state.exploreCity);
     if(!spots.length){body.innerHTML='<div class="fav-empty">這個城市還沒有推薦景點</div>';return;}
-    body.innerHTML=spots.map(s=>{
+    state.exploreListImages=spots.map(s=>App.spotImages(s));
+    body.innerHTML=spots.map((s,idx)=>{
       const rating=Math.max(0,Math.min(5,parseInt(s.rating)||0));
       const stars='★'.repeat(rating)+'☆'.repeat(5-rating);
       const isFav=(state.favorites||[]).some(f=>f.name===s.name);
-      const imgStyle=s.img?`background-image:url('${s.img.replace(/'/g,"\\'")}')`:'';
+      const images=state.exploreListImages[idx];
+      const imgStyle=images[0]?`background-image:url('${images[0].replace(/'/g,"\\'")}')`:'';
+      const thumbClick=images.length?`onclick="App.openLightbox(state.exploreListImages[${idx}],0)"`:'';
       return`<div class="spot-explore-card">
-        <div class="spot-explore-thumb" style="${imgStyle}"></div>
+        <div class="spot-explore-thumb" style="${imgStyle}${images.length?';cursor:pointer':''}" ${thumbClick}>${images.length>1?`<span class="spot-thumb-count">${images.length}</span>`:''}</div>
         <div class="spot-explore-body">
           <div class="spot-explore-name">${s.name}</div>
           ${rating?`<div class="spot-explore-stars">${stars}</div>`:''}
@@ -998,6 +1024,46 @@ const App = {
         </div>
       </div>`;
     }).join('');
+  },
+  openLightbox(images,startIndex){
+    if(!images||!images.length)return;
+    state.lightboxImages=images;
+    state.lightboxIndex=startIndex||0;
+    App.renderLightbox();
+    document.getElementById('lightboxBg').classList.add('open');
+  },
+  closeLightbox(){
+    document.getElementById('lightboxBg').classList.remove('open');
+  },
+  renderLightbox(){
+    const imgs=state.lightboxImages||[];
+    const i=state.lightboxIndex;
+    document.getElementById('lightboxImg').src=imgs[i]||'';
+    document.getElementById('lightboxCounter').textContent=imgs.length>1?(i+1)+' / '+imgs.length:'';
+    const multi=imgs.length>1;
+    document.getElementById('lightboxPrev').style.display=multi?'flex':'none';
+    document.getElementById('lightboxNext').style.display=multi?'flex':'none';
+  },
+  lightboxPrev(){
+    const n=state.lightboxImages.length;
+    state.lightboxIndex=(state.lightboxIndex-1+n)%n;
+    App.renderLightbox();
+  },
+  lightboxNext(){
+    const n=state.lightboxImages.length;
+    state.lightboxIndex=(state.lightboxIndex+1)%n;
+    App.renderLightbox();
+  },
+  lightboxTouchStartX:null,
+  onLightboxTouchStart(e){
+    App.lightboxTouchStartX=e.changedTouches[0].clientX;
+  },
+  onLightboxTouchEnd(e){
+    if(App.lightboxTouchStartX===null)return;
+    const dx=e.changedTouches[0].clientX-App.lightboxTouchStartX;
+    App.lightboxTouchStartX=null;
+    if(Math.abs(dx)<40||state.lightboxImages.length<2)return;
+    if(dx<0)App.lightboxNext();else App.lightboxPrev();
   },
   addFavorite(name){
     if(!state.favorites)state.favorites=[];
