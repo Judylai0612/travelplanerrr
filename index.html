@@ -1221,7 +1221,7 @@ const App = {
   // 跟日期欄位用同一招（date-field/date-display/date-native-input），確保手機上點一定開得起來
   timeFieldHtml(id,val){
     val=val||'';
-    return `<div class="date-field"><div class="date-display" id="${id}_disp">${val||'請選擇'}</div><input type="time" class="date-native-input" id="${id}" value="${val}" oninput="App.syncTimeDisplay('${id}')"/></div>`;
+    return `<div class="date-field"><div class="date-display" id="${id}_disp">${val||'請選擇'}</div><input type="time" class="date-native-input" id="${id}" value="${val}" oninput="App.syncTimeDisplay('${id}')" onclick="try{this.showPicker&&this.showPicker()}catch(e){}"/></div>`;
   },
   syncTimeDisplay(id){
     const v=document.getElementById(id).value;
