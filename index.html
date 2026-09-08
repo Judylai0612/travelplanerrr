@@ -56,6 +56,13 @@ body{background:#EDE7DA;display:flex;justify-content:center;min-height:100dvh;fo
 .date-display{display:block;width:100%;box-sizing:border-box;font-size:12px;padding:7px 6px;border-radius:9px;border:1.5px solid #ECE5D4;background:#FBF6EA;color:#2B2620;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:center;cursor:pointer;}
 .date-native-input{position:absolute;inset:0;width:100%;height:100%;opacity:0;margin:0;cursor:pointer;}
 .date-arrow{color:#C9C3B5;font-size:13px;flex-shrink:0;}
+.time-select-wrap{display:flex;align-items:center;gap:4px;}
+.time-select{flex:1;min-width:0;font-size:13px;padding:7px 4px;border-radius:9px;border:1.5px solid #ECE5D4;background:#FBF6EA;color:#2B2620;text-align:center;}
+.time-colon{color:#A8A296;font-weight:600;}
+.split-chip-select{display:flex;flex-wrap:wrap;gap:6px;}
+.split-chip-opt{display:flex;align-items:center;gap:5px;font-size:12px;padding:6px 12px;border-radius:16px;border:1.5px solid #ECE5D4;background:#FBF6EA;color:#A8A296;cursor:pointer;}
+.split-chip-opt.checked{background:#FFF4E0;border-color:#F6C453;color:#2B2620;font-weight:600;}
+.split-chip-opt input{margin:0;}
 .date-result{margin-top:8px;padding-top:8px;border-top:1px solid #F0EBDD;font-size:11px;color:#6B9080;font-weight:600;display:flex;align-items:center;gap:5px;}
 .day-row-outer{overflow:hidden;padding:0 18px 4px;}
 .day-row{display:flex;gap:8px;overflow-x:scroll;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;touch-action:pan-x;scrollbar-width:none;padding-bottom:2px;}
@@ -386,7 +393,7 @@ body{background:#EDE7DA;display:flex;justify-content:center;min-height:100dvh;fo
     <div class="sched-sheet">
       <div class="sched-sheet-title" id="schedSheetTitle">排入行程</div>
       <div class="sched-sheet-row"><select id="schedDay"></select></div>
-      <div class="sched-sheet-row"><input id="schedStart" placeholder="09:00" oninput="App.fmtTimeInput(this)" maxlength="5"><span class="sched-sep">至</span><input id="schedEnd" placeholder="11:00" oninput="App.fmtTimeInput(this)" maxlength="5"></div>
+      <div class="sched-sheet-row" id="schedTimeRow"></div>
       <button class="sched-sheet-submit" onclick="App.confirmSchedule()">確認排入</button>
     </div>
   </div>
@@ -638,10 +645,22 @@ const App = {
       c.style.background=i===state.currentDay?'#FBD4DE':'#FCE3B8';
       c.dataset.day=i;
       c.innerHTML=`<div class="day-num">Day ${i+1}</div><div class="day-del" onclick="event.stopPropagation();App.delDay(${i})"><i class="ti ti-x"></i></div>`;
-      c.onclick=()=>App.switchDay(i);row.appendChild(c);
+      App.bindTap(c,()=>App.switchDay(i));row.appendChild(c);
     }
-    const a=document.createElement('div');a.className='day-add';a.innerHTML='<i class="ti ti-plus"></i>';a.onclick=()=>App.addDay();row.appendChild(a);
+    const a=document.createElement('div');a.className='day-add';a.innerHTML='<i class="ti ti-plus"></i>';App.bindTap(a,()=>App.addDay());row.appendChild(a);
     document.getElementById('todayDateLabel').textContent=App.fmtDay(state.currentDay);
+  },
+  // 在有 scroll-snap 的容器裡，手機上第一下點擊常被瀏覽器當成滑動吸附手勢吃掉，
+  // 需要改用 touchend + 位移門檻自行判斷「這是點擊」，並 preventDefault 擋掉隨後的合成 click
+  bindTap(el,fn){
+    let sx=0,sy=0,moved=false;
+    el.addEventListener('touchstart',e=>{const t=e.touches[0];sx=t.clientX;sy=t.clientY;moved=false;},{passive:true});
+    el.addEventListener('touchmove',e=>{const t=e.touches[0];if(Math.abs(t.clientX-sx)>8||Math.abs(t.clientY-sy)>8)moved=true;},{passive:true});
+    el.addEventListener('touchend',e=>{
+      if(e.target.closest('.day-del'))return;
+      if(!moved){e.preventDefault();fn();}
+    });
+    el.onclick=()=>fn();
   },
   switchDay(i){state.currentDay=i;App.renderDayRow();App.renderStations();const row=document.getElementById('dayRow');row.children[i]&&row.children[i].scrollIntoView({behavior:'smooth',inline:'start',block:'nearest'});},
   addDay(){state.dayCount++;while(state.allStations.length<state.dayCount)state.allStations.push([]);state.currentDay=state.dayCount-1;App.renderDayRow();App.renderStations();showToast('已新增 Day '+state.dayCount);App.saveAll();setTimeout(()=>{const r=document.getElementById('dayRow');r.scrollLeft=r.scrollWidth;},50);},
@@ -696,16 +715,16 @@ const App = {
     document.getElementById('modalTitle').textContent='修改行程景點';
     document.getElementById('modalBody').innerHTML=
       '<div class="field"><label>景點名稱</label><input id="mName" value="'+( s.name||'')+'"/></div>'
-      +'<div class="field-row"><div class="field"><label>開始時間（選填）</label><input id="mTimeStart" value="'+tStart+'" oninput="App.fmtTimeInput(this)" maxlength="5"/></div>'
-      +'<div class="field"><label>結束時間（選填）</label><input id="mTimeEnd" value="'+tEnd+'" oninput="App.fmtTimeInput(this)" maxlength="5"/></div></div>'
+      +'<div class="field-row"><div class="field"><label>開始時間（選填）</label>'+App.timeSelectHtml('mTimeStart',tStart)+'</div>'
+      +'<div class="field"><label>結束時間（選填）</label>'+App.timeSelectHtml('mTimeEnd',tEnd)+'</div></div>'
       +'<div class="field"><label>備註</label><input id="mNote" value="'+(s.note||'')+'"/></div>'
       +'<button class="modal-submit" onclick="App.submitEditStation()">儲存修改</button>';
     document.getElementById('modalBg').classList.add('open');
   },
   submitEditStation(){
     const idx=state.editingStation;if(idx===null)return;
-    const timeStart=document.getElementById('mTimeStart').value.trim()||'';
-    const timeEnd=document.getElementById('mTimeEnd').value.trim()||'';
+    const timeStart=App.getTimeValue('mTimeStart');
+    const timeEnd=App.getTimeValue('mTimeEnd');
     const name=document.getElementById('mName').value.trim();if(!name)return;
     const note=document.getElementById('mNote').value.trim()||'';
     let time='';
@@ -764,16 +783,39 @@ const App = {
     }catch(e){}
     App.renderBudget();
   },
+  // 依費用回傳實際分攤的成員清單：新資料用 splitMembers（勾選的人）；
+  // 舊資料沒有 splitMembers 時，用舊的 split 欄位相容（均攤=全部人，各自=沒有人分攤）
+  expenseParticipants(e){
+    if(e.splitMembers&&e.splitMembers.length){
+      return state.members.filter(m=>e.splitMembers.includes(m.uid||m.name));
+    }
+    if(e.split==='各自')return[];
+    return state.members;
+  },
   calcSplits(){
     const n=state.members.length;if(!n)return[];
-    const tot=state.expenses.filter(e=>e.split==='均攤').reduce((s,e)=>s+toTWD(e.amount,e.currency),0);
-    const pp=Math.round(tot/n);
+    const shareMap={};
+    state.expenses.forEach(e=>{
+      const participants=App.expenseParticipants(e);
+      if(!participants.length)return;
+      const share=toTWD(e.amount,e.currency)/participants.length;
+      participants.forEach(m=>{const key=m.uid||('n:'+m.name);shareMap[key]=(shareMap[key]||0)+share;});
+    });
     return state.members.map((m,i)=>{
+      const key=m.uid||('n:'+m.name);
+      const pp=Math.round(shareMap[key]||0);
       // Match by uid if available, fallback to name for backward compat
       const paid=state.expenses.filter(e=>(m.uid&&e.payerUid===m.uid)||(e.payer===m.name&&!e.payerUid)).reduce((s,e)=>s+toTWD(e.amount,e.currency),0);
       const net=paid-pp;const c=mc(i);
       return{...m,paid,pp,net,bg:c.bg,color:c.color,sign:net>=0?'+':'-',amt:Math.abs(net),amtColor:net>=0?'#2E5C4E':'#A33B3B',badge:net>=0?'待收款':'欠款',badgeBg:net>=0?'#C9E4DE':'#FBD4DE',badgeColor:net>=0?'#2E5C4E':'#8B3B52'};
     });
+  },
+  splitMembersHtml(selectedKeys){
+    return `<div class="split-chip-select" id="mExpSplitMembers">`+state.members.map(m=>{
+      const key=m.uid||m.name;
+      const checked=selectedKeys?selectedKeys.includes(key):true;
+      return `<label class="split-chip-opt${checked?' checked':''}"><input type="checkbox" value="${key}" ${checked?'checked':''} onchange="this.parentElement.classList.toggle('checked',this.checked)"/>${m.name}</label>`;
+    }).join('')+`</div>`;
   },
   renderBudget(){
     const n=state.members.length;
@@ -809,7 +851,9 @@ const App = {
       // Resolve payer display name by uid if available
       let payerDisplay=e.who||'';
       if(e.payerUid){const pm=state.members.find(m=>m.uid===e.payerUid);if(pm)payerDisplay=pm.name+' 付款';}
-      div.innerHTML=`<div class="exp-icon">🧾</div><div class="exp-info"><div class="exp-name">${e.name}</div><div class="exp-who">${payerDisplay} · ${e.split==='均攤'?n+'人均攤':e.split}</div></div><div class="exp-amts"><div class="exp-orig">${fmtAmt(e.amount,e.currency)}</div><div class="exp-twd">${fmtTWD(e.amount,e.currency)}</div></div><div style="display:flex;gap:4px;flex-shrink:0"><button class="exp-del" style="background:#E4F0EB;color:#2E5C4E" onclick="App.editExpense(${i})"><i class="ti ti-pencil"></i></button><button class="exp-del" onclick="App.delExpense(${i})"><i class="ti ti-trash"></i></button></div>`;
+      const participants=App.expenseParticipants(e);
+      const splitLabel=participants.length===0?'各自付款':(participants.length===n?n+'人均攤':participants.map(m=>m.name).join('、')+' 分攤');
+      div.innerHTML=`<div class="exp-icon">🧾</div><div class="exp-info"><div class="exp-name">${e.name}</div><div class="exp-who">${payerDisplay} · ${splitLabel}</div></div><div class="exp-amts"><div class="exp-orig">${fmtAmt(e.amount,e.currency)}</div><div class="exp-twd">${fmtTWD(e.amount,e.currency)}</div></div><div style="display:flex;gap:4px;flex-shrink:0"><button class="exp-del" style="background:#E4F0EB;color:#2E5C4E" onclick="App.editExpense(${i})"><i class="ti ti-pencil"></i></button><button class="exp-del" onclick="App.delExpense(${i})"><i class="ti ti-trash"></i></button></div>`;
       el.appendChild(div);
     });
     const splits=App.calcSplits();const sl=document.getElementById('splitList');sl.innerHTML='';
@@ -828,15 +872,14 @@ const App = {
       ?state.members.map(m=>'<option'+(m.name===e.payer?' selected':'')+'>'+m.name+'</option>').join('')
       :'<option>（請先新增成員）</option>';
     const curOpts=Object.entries(CURRENCY_DB).map(([c,v])=>'<option value="'+c+'"'+(c===e.currency?' selected':'')+'>'+v.symbol+' '+c+' — '+v.name+'</option>').join('');
-    const splitOpts='<option value="均攤"'+(e.split==='均攤'?' selected':'')+'>'+state.members.length+'人均攤</option>'
-      +'<option value="各自"'+(e.split==='各自'?' selected':'')+'>各自付款</option>';
+    const selectedKeys=App.expenseParticipants(e).map(m=>m.uid||m.name);
     document.getElementById('modalTitle').textContent='修改費用';
     document.getElementById('modalBody').innerHTML=
       '<div class="field"><label>項目名稱</label><input id="mExpName" value="'+e.name+'"/></div>'
       +'<div class="field-row"><div class="field"><label>幣別</label><div class="select-wrap"><select id="mExpCur">'+curOpts+'</select></div></div>'
       +'<div class="field" style="flex:2"><label>金額</label><input id="mExpAmt" type="number" value="'+e.amount+'"/></div></div>'
-      +'<div class="field-row"><div class="field"><label>付款人</label><div class="select-wrap"><select id="mExpPayer">'+opts+'</select></div></div>'
-      +'<div class="field"><label>分帳方式</label><div class="select-wrap"><select id="mExpSplit">'+splitOpts+'</select></div></div></div>'
+      +'<div class="field"><label>付款人</label><div class="select-wrap"><select id="mExpPayer">'+opts+'</select></div></div>'
+      +'<div class="field"><label>分帳方式（勾選要分攤的人）</label>'+App.splitMembersHtml(selectedKeys)+'</div>'
       +'<button class="modal-submit" onclick="App.submitEditExpense('+i+')">儲存修改</button>';
     document.getElementById('modalBg').classList.add('open');
   },
@@ -844,12 +887,12 @@ const App = {
     const name=document.getElementById('mExpName').value.trim();
     const amt=parseFloat(document.getElementById('mExpAmt').value);
     const payer=document.getElementById('mExpPayer')?.value||state.expenses[i].payer||'';
-    const split=document.getElementById('mExpSplit').value;
+    const splitMembers=Array.from(document.querySelectorAll('#mExpSplitMembers input:checked')).map(el=>el.value);
     const currency=document.getElementById('mExpCur').value;
     if(!name||isNaN(amt))return;
     const payerMember=state.members.find(m=>m.name===payer);
     const payerUid=payerMember?payerMember.uid||null:null;
-    state.expenses[i]={...state.expenses[i],name,who:payer?payer+' 付款':'',split,amount:amt,currency,payer,payerUid};
+    state.expenses[i]={...state.expenses[i],name,who:payer?payer+' 付款':'',splitMembers,amount:amt,currency,payer,payerUid};
     App.renderBudget();App.closeModal();App.saveAll();showToast('已修改');
   },
   delMember(i){if(state.members.length<=1){showToast('至少保留一位');return;}state.members.splice(i,1);App.renderBudget();App.saveAll();showToast('已移除');},
@@ -881,10 +924,13 @@ const App = {
     else{sc.style.background='#FBD4DE';const cr=splits.filter(x=>x.net>0);sc.innerHTML=`<div style="font-size:24px">💸</div><div><div style="font-size:10px;color:#8B3B52">應付款對象</div><div style="font-size:13px;font-weight:600;color:#2B2620;margin-top:2px">還給 ${cr.length?cr.map(c=>c.name).join('、'):'對方'}</div><div style="font-size:12px;color:#8B3B52;margin-top:4px">-NT$${p.amt.toLocaleString()}</div></div>`;}
     body.appendChild(sc);
     const sec=document.createElement('div');sec.className='detail-sec';sec.textContent='參與費用明細';body.appendChild(sec);
-    state.expenses.filter(e=>e.payer===p.name||e.split==='均攤').forEach(e=>{
-      const ip=e.payer===p.name;const sh=Math.round(toTWD(e.amount,e.currency)/state.members.length);
+    const isParticipant=(e,m)=>App.expenseParticipants(e).some(pm=>(m.uid&&pm.uid===m.uid)||(!m.uid&&pm.name===m.name));
+    state.expenses.filter(e=>e.payer===p.name||isParticipant(e,p)).forEach(e=>{
+      const ip=e.payer===p.name;
+      const participants=App.expenseParticipants(e);
+      const sh=Math.round(toTWD(e.amount,e.currency)/(participants.length||1));
       const row=document.createElement('div');row.className='detail-exp-row';
-      row.innerHTML=`<div class="exp-icon">🧾</div><div style="flex:1"><div class="exp-name">${e.name}</div><div class="exp-who">${ip?'由你付款':'參與均攤'}</div></div><div style="text-align:right"><div class="exp-orig" style="color:${ip?'#2E5C4E':'#2B2620'}">${ip?'+':'-'}${ip?fmtAmt(e.amount,e.currency):'NT$'+sh.toLocaleString()}</div></div>`;
+      row.innerHTML=`<div class="exp-icon">🧾</div><div style="flex:1"><div class="exp-name">${e.name}</div><div class="exp-who">${ip?'由你付款':'參與分攤'}</div></div><div style="text-align:right"><div class="exp-orig" style="color:${ip?'#2E5C4E':'#2B2620'}">${ip?'+':'-'}${ip?fmtAmt(e.amount,e.currency):'NT$'+sh.toLocaleString()}</div></div>`;
       body.appendChild(row);
     });
     document.getElementById('detailSheet').classList.add('open');
@@ -1115,8 +1161,7 @@ const App = {
     const daySel=document.getElementById('schedDay');
     daySel.innerHTML=Array.from({length:state.dayCount||1},(_,d)=>`<option value="${d}">Day ${d+1}</option>`).join('');
     daySel.value=f.scheduled?f.scheduled.day:state.currentDay;
-    document.getElementById('schedStart').value=f.scheduled?f.scheduled.start:'';
-    document.getElementById('schedEnd').value=f.scheduled?f.scheduled.end:'';
+    document.getElementById('schedTimeRow').innerHTML=App.timeSelectHtml('schedStart',f.scheduled?f.scheduled.start:'')+'<span class="sched-sep">至</span>'+App.timeSelectHtml('schedEnd',f.scheduled?f.scheduled.end:'');
     document.getElementById('schedSheetBg').classList.add('open');
   },
   closeSchedSheet(){
@@ -1126,8 +1171,8 @@ const App = {
     const i=App.schedulingIdx;
     const f=state.favorites[i];
     const day=parseInt(document.getElementById('schedDay').value)||0;
-    const start=document.getElementById('schedStart').value.trim();
-    const end=document.getElementById('schedEnd').value.trim();
+    const start=App.getTimeValue('schedStart');
+    const end=App.getTimeValue('schedEnd');
     while(state.allStations.length<=day)state.allStations.push([]);
     state.allStations[day].push({time:start&&end?start+' - '+end:'',name:f.name,note:''});
     f.scheduled={day,start:start||'--:--',end:end||'--:--'};
@@ -1175,7 +1220,18 @@ const App = {
     });
     return h;
   },
-  fmtTimeInput(el){let v=el.value.replace(/[^0-9]/g,'');if(v.length>=3)v=v.slice(0,2)+':'+v.slice(2,4);el.value=v;},
+  timeSelectHtml(id,val){
+    val=val||'';
+    const parts=val.split(':');const vh=parts[0]||'',vm=parts[1]||'';
+    const pad2=n=>String(n).padStart(2,'0');
+    const hOpts='<option value="">--</option>'+Array.from({length:24},(_,h)=>pad2(h)).map(h=>`<option ${h===vh?'selected':''}>${h}</option>`).join('');
+    const mOpts='<option value="">--</option>'+Array.from({length:60},(_,m)=>pad2(m)).map(m=>`<option ${m===vm?'selected':''}>${m}</option>`).join('');
+    return `<div class="time-select-wrap"><select id="${id}_h" class="time-select">${hOpts}</select><span class="time-colon">:</span><select id="${id}_m" class="time-select">${mOpts}</select></div>`;
+  },
+  getTimeValue(id){
+    const h=document.getElementById(id+'_h').value,m=document.getElementById(id+'_m').value;
+    return (h&&m)?h+':'+m:'';
+  },
   fillSpot(){const sel=document.getElementById('spotSelect');if(sel&&sel.value)document.getElementById('mName').value=sel.value;},
   openModal(forceTab, prefillName){
     const tab=forceTab||state.currentTab;
@@ -1188,13 +1244,15 @@ const App = {
     }
     if(tab==='itinerary'){
       title.textContent='新增行程景點';
-      body.innerHTML=(state.favorites&&state.favorites.length?`<button class="fav-quick-btn" onclick="App.closeModal();App.openFavorites()"><i class="ti ti-heart"></i> 從我的收藏挑選（${state.favorites.length}）</button>`:'')+`<div class="field"><label>推薦景點</label><div class="select-wrap"><select id="spotSelect" onchange="App.fillSpot()">${App.buildSpotsOptions()}</select></div></div><div class="divider"><span>或手動輸入</span></div><div class="field"><label>景點名稱</label><input id="mName" placeholder="輸入名稱"/></div><div class="field-row"><div class="field"><label>開始時間（選填）</label><input id="mTimeStart" placeholder="09:00" oninput="App.fmtTimeInput(this)" maxlength="5"/></div><div class="field"><label>結束時間（選填）</label><input id="mTimeEnd" placeholder="11:00" oninput="App.fmtTimeInput(this)" maxlength="5"/></div></div><div class="field"><label>備註（選填）</label><input id="mNote" placeholder="可留空"/></div><button class="modal-submit" onclick="App.submitStation()">加入 Day ${state.currentDay+1}</button>`;
+      const dayOpts=Array.from({length:state.dayCount||1},(_,d)=>`<option value="${d}" ${d===state.currentDay?'selected':''}>Day ${d+1}</option>`).join('');
+      body.innerHTML=(state.favorites&&state.favorites.length?`<button class="fav-quick-btn" onclick="App.closeModal();App.openFavorites()"><i class="ti ti-heart"></i> 從我的收藏挑選（${state.favorites.length}）</button>`:'')+`<div class="field"><label>推薦景點</label><div class="select-wrap"><select id="spotSelect" onchange="App.fillSpot()">${App.buildSpotsOptions()}</select></div></div><div class="divider"><span>或手動輸入</span></div><div class="field"><label>景點名稱</label><input id="mName" placeholder="輸入名稱"/></div><div class="field"><label>排入天數</label><div class="select-wrap"><select id="mDay">${dayOpts}</select></div></div><div class="field-row"><div class="field"><label>開始時間（選填）</label>${App.timeSelectHtml('mTimeStart')}</div><div class="field"><label>結束時間（選填）</label>${App.timeSelectHtml('mTimeEnd')}</div></div><div class="field"><label>備註（選填）</label><input id="mNote" placeholder="可留空"/></div><button class="modal-submit" onclick="App.submitStation()">加入行程</button>`;
+
     }else if(tab==='budget'){
       const opts=state.members.length?state.members.map(m=>`<option>${m.name}</option>`).join(''):'<option>（請先新增成員）</option>';
       const curOpts=Object.entries(CURRENCY_DB).map(([c,v])=>`<option value="${c}">${v.symbol} ${c} — ${v.name}</option>`).join('');
       title.textContent='新增費用';
       const nameVal=prefillName?`value="${prefillName}"`:'';
-      body.innerHTML=`<div class="field"><label>項目名稱</label><input id="mExpName" placeholder="例：晚餐、門票" ${nameVal}/></div><div class="field-row"><div class="field"><label>幣別</label><div class="select-wrap"><select id="mExpCur">${curOpts}</select></div></div><div class="field" style="flex:2"><label>金額</label><input id="mExpAmt" type="number" placeholder="0"/></div></div><div class="field-row"><div class="field"><label>付款人</label><div class="select-wrap"><select id="mExpPayer">${opts}</select></div></div><div class="field"><label>分帳方式</label><div class="select-wrap"><select id="mExpSplit"><option value="均攤">${state.members.length}人均攤</option><option value="各自">各自付款</option></select></div></div></div><button class="modal-submit" onclick="App.submitExpense()">新增費用</button>`;
+      body.innerHTML=`<div class="field"><label>項目名稱</label><input id="mExpName" placeholder="例：晚餐、門票" ${nameVal}/></div><div class="field-row"><div class="field"><label>幣別</label><div class="select-wrap"><select id="mExpCur">${curOpts}</select></div></div><div class="field" style="flex:2"><label>金額</label><input id="mExpAmt" type="number" placeholder="0"/></div></div><div class="field"><label>付款人</label><div class="select-wrap"><select id="mExpPayer">${opts}</select></div></div><div class="field"><label>分帳方式（勾選要分攤的人）</label>${App.splitMembersHtml()}</div><button class="modal-submit" onclick="App.submitExpense()">新增費用</button>`;
     }else{
       title.textContent='新增必買項目';
       body.innerHTML=`<div class="field"><label>品項名稱</label><input id="mShopName" placeholder="例：抹茶巧克力"/></div><div class="field"><label>分類</label><div class="select-wrap"><select id="mShopCat"><option>食品伴手禮</option><option>生活雜貨</option><option>藥妝</option><option>其他</option></select></div></div><div class="field"><label>購買地點</label><input id="mShopLoc" placeholder="可留空"/></div><button class="modal-submit" onclick="App.submitShop()">加入清單</button>`;
@@ -1204,27 +1262,30 @@ const App = {
   closeModal(){document.getElementById('modalBg').classList.remove('open');state.editingStation=null;},
   closeModalBg(e){if(e.target===document.getElementById('modalBg'))App.closeModal();},
   submitStation(){
-    const timeStart=document.getElementById('mTimeStart').value.trim()||'';
-    const timeEnd=document.getElementById('mTimeEnd').value.trim()||'';
+    const timeStart=App.getTimeValue('mTimeStart');
+    const timeEnd=App.getTimeValue('mTimeEnd');
     const name=document.getElementById('mName').value.trim();if(!name)return;
     const note=document.getElementById('mNote').value.trim()||'';
+    const day=parseInt(document.getElementById('mDay').value)||0;
     let time='';
     if(timeStart&&timeEnd)time=timeStart+' → '+timeEnd;
     else if(timeStart)time=timeStart;
-    state.allStations[state.currentDay].push({time,name,note});
-    App.renderStations();App.closeModal();App.saveAll();showToast('已加入');
+    while(state.allStations.length<=day)state.allStations.push([]);
+    state.allStations[day].push({time,name,note});
+    if(state.currentDay===day)App.renderStations();
+    App.closeModal();App.saveAll();showToast('已加入 Day '+(day+1));
   },
   submitExpense(){
     const name=document.getElementById('mExpName').value.trim();
     const amt=parseFloat(document.getElementById('mExpAmt').value);
     const payer=document.getElementById('mExpPayer')?.value||'';
-    const split=document.getElementById('mExpSplit').value;
+    const splitMembers=Array.from(document.querySelectorAll('#mExpSplitMembers input:checked')).map(el=>el.value);
     const currency=document.getElementById('mExpCur').value;
     if(!name||isNaN(amt))return;
     // Find payer uid from members list
     const payerMember=state.members.find(m=>m.name===payer);
     const payerUid=payerMember?payerMember.uid||null:null;
-    state.expenses.push({name,who:payer?payer+' 付款':'',split,amount:amt,currency,payer,payerUid});
+    state.expenses.push({name,who:payer?payer+' 付款':'',splitMembers,amount:amt,currency,payer,payerUid});
     App.renderBudget();App.closeModal();App.saveAll();showToast('已新增');
   },
   submitShop(){
