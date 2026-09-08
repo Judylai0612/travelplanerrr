@@ -56,9 +56,6 @@ body{background:#EDE7DA;display:flex;justify-content:center;min-height:100dvh;fo
 .date-display{display:block;width:100%;box-sizing:border-box;font-size:12px;padding:7px 6px;border-radius:9px;border:1.5px solid #ECE5D4;background:#FBF6EA;color:#2B2620;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:center;cursor:pointer;}
 .date-native-input{position:absolute;inset:0;width:100%;height:100%;opacity:0;margin:0;cursor:pointer;}
 .date-arrow{color:#C9C3B5;font-size:13px;flex-shrink:0;}
-.time-select-wrap{display:flex;align-items:center;gap:4px;}
-.time-select{flex:1;min-width:0;font-size:13px;padding:7px 4px;border-radius:9px;border:1.5px solid #ECE5D4;background:#FBF6EA;color:#2B2620;text-align:center;}
-.time-colon{color:#A8A296;font-weight:600;}
 .split-chip-select{display:flex;flex-wrap:wrap;gap:6px;}
 .split-chip-opt{display:flex;align-items:center;gap:5px;font-size:12px;padding:6px 12px;border-radius:16px;border:1.5px solid #ECE5D4;background:#FBF6EA;color:#A8A296;cursor:pointer;}
 .split-chip-opt.checked{background:#FFF4E0;border-color:#F6C453;color:#2B2620;font-weight:600;}
@@ -715,8 +712,8 @@ const App = {
     document.getElementById('modalTitle').textContent='修改行程景點';
     document.getElementById('modalBody').innerHTML=
       '<div class="field"><label>景點名稱</label><input id="mName" value="'+( s.name||'')+'"/></div>'
-      +'<div class="field-row"><div class="field"><label>開始時間（選填）</label>'+App.timeSelectHtml('mTimeStart',tStart)+'</div>'
-      +'<div class="field"><label>結束時間（選填）</label>'+App.timeSelectHtml('mTimeEnd',tEnd)+'</div></div>'
+      +'<div class="field-row"><div class="field"><label>開始時間（選填）</label>'+App.timeFieldHtml('mTimeStart',tStart)+'</div>'
+      +'<div class="field"><label>結束時間（選填）</label>'+App.timeFieldHtml('mTimeEnd',tEnd)+'</div></div>'
       +'<div class="field"><label>備註</label><input id="mNote" value="'+(s.note||'')+'"/></div>'
       +'<button class="modal-submit" onclick="App.submitEditStation()">儲存修改</button>';
     document.getElementById('modalBg').classList.add('open');
@@ -1161,7 +1158,7 @@ const App = {
     const daySel=document.getElementById('schedDay');
     daySel.innerHTML=Array.from({length:state.dayCount||1},(_,d)=>`<option value="${d}">Day ${d+1}</option>`).join('');
     daySel.value=f.scheduled?f.scheduled.day:state.currentDay;
-    document.getElementById('schedTimeRow').innerHTML=App.timeSelectHtml('schedStart',f.scheduled?f.scheduled.start:'')+'<span class="sched-sep">至</span>'+App.timeSelectHtml('schedEnd',f.scheduled?f.scheduled.end:'');
+    document.getElementById('schedTimeRow').innerHTML=App.timeFieldHtml('schedStart',f.scheduled?f.scheduled.start:'')+'<span class="sched-sep">至</span>'+App.timeFieldHtml('schedEnd',f.scheduled?f.scheduled.end:'');
     document.getElementById('schedSheetBg').classList.add('open');
   },
   closeSchedSheet(){
@@ -1220,17 +1217,18 @@ const App = {
     });
     return h;
   },
-  timeSelectHtml(id,val){
+  // 手機原生時間選擇器：真正的 <input type="time"> 隱形疊在自訂樣式的方框上，
+  // 跟日期欄位用同一招（date-field/date-display/date-native-input），確保手機上點一定開得起來
+  timeFieldHtml(id,val){
     val=val||'';
-    const parts=val.split(':');const vh=parts[0]||'',vm=parts[1]||'';
-    const pad2=n=>String(n).padStart(2,'0');
-    const hOpts='<option value="">--</option>'+Array.from({length:24},(_,h)=>pad2(h)).map(h=>`<option ${h===vh?'selected':''}>${h}</option>`).join('');
-    const mOpts='<option value="">--</option>'+Array.from({length:60},(_,m)=>pad2(m)).map(m=>`<option ${m===vm?'selected':''}>${m}</option>`).join('');
-    return `<div class="time-select-wrap"><select id="${id}_h" class="time-select">${hOpts}</select><span class="time-colon">:</span><select id="${id}_m" class="time-select">${mOpts}</select></div>`;
+    return `<div class="date-field"><div class="date-display" id="${id}_disp">${val||'請選擇'}</div><input type="time" class="date-native-input" id="${id}" value="${val}" oninput="App.syncTimeDisplay('${id}')"/></div>`;
+  },
+  syncTimeDisplay(id){
+    const v=document.getElementById(id).value;
+    document.getElementById(id+'_disp').textContent=v||'請選擇';
   },
   getTimeValue(id){
-    const h=document.getElementById(id+'_h').value,m=document.getElementById(id+'_m').value;
-    return (h&&m)?h+':'+m:'';
+    return document.getElementById(id).value||'';
   },
   fillSpot(){const sel=document.getElementById('spotSelect');if(sel&&sel.value)document.getElementById('mName').value=sel.value;},
   openModal(forceTab, prefillName){
@@ -1245,7 +1243,7 @@ const App = {
     if(tab==='itinerary'){
       title.textContent='新增行程景點';
       const dayOpts=Array.from({length:state.dayCount||1},(_,d)=>`<option value="${d}" ${d===state.currentDay?'selected':''}>Day ${d+1}</option>`).join('');
-      body.innerHTML=(state.favorites&&state.favorites.length?`<button class="fav-quick-btn" onclick="App.closeModal();App.openFavorites()"><i class="ti ti-heart"></i> 從我的收藏挑選（${state.favorites.length}）</button>`:'')+`<div class="field"><label>推薦景點</label><div class="select-wrap"><select id="spotSelect" onchange="App.fillSpot()">${App.buildSpotsOptions()}</select></div></div><div class="divider"><span>或手動輸入</span></div><div class="field"><label>景點名稱</label><input id="mName" placeholder="輸入名稱"/></div><div class="field"><label>排入天數</label><div class="select-wrap"><select id="mDay">${dayOpts}</select></div></div><div class="field-row"><div class="field"><label>開始時間（選填）</label>${App.timeSelectHtml('mTimeStart')}</div><div class="field"><label>結束時間（選填）</label>${App.timeSelectHtml('mTimeEnd')}</div></div><div class="field"><label>備註（選填）</label><input id="mNote" placeholder="可留空"/></div><button class="modal-submit" onclick="App.submitStation()">加入行程</button>`;
+      body.innerHTML=(state.favorites&&state.favorites.length?`<button class="fav-quick-btn" onclick="App.closeModal();App.openFavorites()"><i class="ti ti-heart"></i> 從我的收藏挑選（${state.favorites.length}）</button>`:'')+`<div class="field"><label>推薦景點</label><div class="select-wrap"><select id="spotSelect" onchange="App.fillSpot()">${App.buildSpotsOptions()}</select></div></div><div class="divider"><span>或手動輸入</span></div><div class="field"><label>景點名稱</label><input id="mName" placeholder="輸入名稱"/></div><div class="field"><label>排入天數</label><div class="select-wrap"><select id="mDay">${dayOpts}</select></div></div><div class="field-row"><div class="field"><label>開始時間（選填）</label>${App.timeFieldHtml('mTimeStart')}</div><div class="field"><label>結束時間（選填）</label>${App.timeFieldHtml('mTimeEnd')}</div></div><div class="field"><label>備註（選填）</label><input id="mNote" placeholder="可留空"/></div><button class="modal-submit" onclick="App.submitStation()">加入行程</button>`;
 
     }else if(tab==='budget'){
       const opts=state.members.length?state.members.map(m=>`<option>${m.name}</option>`).join(''):'<option>（請先新增成員）</option>';
