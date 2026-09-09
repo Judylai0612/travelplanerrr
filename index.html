@@ -235,6 +235,15 @@ input[type="time"].date-native-input::-webkit-calendar-picker-indicator{position
 .sched-sheet-row .sched-sep{flex-shrink:0;font-size:12px;color:#A8A296;}
 .sched-sheet select,.sched-sheet input{flex:1;padding:9px;border-radius:9px;border:1.5px solid #ECE5D4;background:#F9F9F9;color:#2B2620;font-size:13px;font-family:inherit;text-align:center;}
 .sched-sheet-submit{width:100%;padding:11px;border-radius:11px;border:none;background:#2B2620;color:#fff;font-weight:700;font-size:13px;cursor:pointer;margin-top:4px;}
+.day-picker-opt{display:flex;align-items:center;justify-content:space-between;padding:13px 16px;border-radius:12px;background:#FBF6EA;margin-bottom:8px;font-size:14px;font-weight:600;color:#2B2620;cursor:pointer;}
+.day-picker-opt:active{background:#FFF4E0;}
+.day-picker-opt.new{background:transparent;border:1.5px dashed #D9D2C2;color:#A8A296;}
+.ac-list{position:absolute;left:0;right:0;top:100%;margin-top:4px;background:#fff;border-radius:12px;border:1px solid #ECE5D4;box-shadow:0 6px 18px rgba(43,38,32,.12);overflow:hidden;z-index:5;max-height:220px;overflow-y:auto;}
+.ac-item{padding:10px 14px;font-size:13px;cursor:pointer;display:flex;justify-content:space-between;gap:8px;color:#2B2620;}
+.ac-item:not(:last-child){border-bottom:1px solid #F5F1E6;}
+.ac-item:active{background:#FBF6EA;}
+.ac-item .ac-city{color:#A8A296;font-size:11.5px;flex-shrink:0;}
+.ac-empty{padding:12px 14px;font-size:12px;color:#A8A296;text-align:center;}
 .spot-thumb-count{position:absolute;bottom:4px;right:4px;background:rgba(0,0,0,.55);color:#fff;font-size:9px;font-weight:700;padding:2px 6px;border-radius:8px;}
 .lightbox-bg{position:absolute;inset:0;background:rgba(0,0,0,.9);z-index:400;display:none;align-items:center;justify-content:center;}
 .lightbox-bg.open{display:flex;}
@@ -393,6 +402,13 @@ input[type="time"].date-native-input::-webkit-calendar-picker-indicator{position
       <div class="sched-sheet-row"><select id="schedDay"></select></div>
       <div class="sched-sheet-row" id="schedTimeRow"></div>
       <button class="sched-sheet-submit" onclick="App.confirmSchedule()">確認排入</button>
+    </div>
+  </div>
+
+  <div class="sched-sheet-bg" id="dayPickerBg" onclick="if(event.target===this)App.closeDayPicker()">
+    <div class="sched-sheet">
+      <div class="sched-sheet-title" id="dayPickerTitle">選擇天數</div>
+      <div id="dayPickerList"></div>
     </div>
   </div>
 
@@ -700,6 +716,10 @@ const App = {
       <button class="action-sheet-option" onclick="App.closeModal();App.openEditStation(${idx})">
         <div class="action-sheet-icon" style="background:#C9E4DE">✏️</div>
         <div><div class="action-sheet-label">修改行程</div><div class="action-sheet-sub">修改時間、名稱或備註</div></div>
+      </button>
+      <button class="action-sheet-option" onclick="App.closeModal();App.openMoveStation(${idx})">
+        <div class="action-sheet-icon" style="background:#FFF4E0">📅</div>
+        <div><div class="action-sheet-label">移到其他天</div><div class="action-sheet-sub">把景點移到別天，原本這天保留</div></div>
       </button>`;
     document.getElementById('modalBg').classList.add('open');
   },
@@ -1046,7 +1066,6 @@ const App = {
     body.innerHTML=spots.map((s,idx)=>{
       const rating=Math.max(0,Math.min(5,parseInt(s.rating)||0));
       const stars='★'.repeat(rating)+'☆'.repeat(5-rating);
-      const isFav=(state.favorites||[]).some(f=>f.name===s.name);
       const images=state.exploreListImages[idx];
       const imgStyle=images[0]?`background-image:url('${images[0].replace(/'/g,"\\'")}')`:'';
       const thumbClick=images.length?`onclick="App.openLightbox(state.exploreListImages[${idx}],0)"`:'';
@@ -1058,7 +1077,7 @@ const App = {
           <div class="spot-explore-desc">${s.desc||''}</div>
           <div class="spot-explore-foot">
             <span class="spot-explore-dur">${s.duration?'建議停留 '+s.duration:''}</span>
-            <button class="fav-add-btn${isFav?' added':''}" ${isFav?'disabled':''} onclick="App.addFavorite('${s.name.replace(/'/g,"\\'")}')">${isFav?'已收藏 ✓':'加入收藏'}</button>
+            <button class="fav-add-btn" onclick="App.exploreAddToTrip('${s.name.replace(/'/g,"\\'")}')">加入行程</button>
           </div>
         </div>
       </div>`;
@@ -1182,41 +1201,116 @@ const App = {
     showToast('「'+f.name+'」已排入行程表 ✓');
   },
 
-  // ── Modal ──
-  buildSpotsOptions(){
-    const heroText=(document.getElementById('heroTitle').textContent||'').trim();
-    const dest=heroText.replace(/(旅行|旅遊|trip|travel|之旅|Tour|tour)$/i,'').trim().toLowerCase();
-    const spots=state.firestoreSpots;
-    let filtered=[];
-    if(dest&&dest.length>0){
-      filtered=spots.filter(s=>{
-        const city=(s.city||s.region||'').split('・')[0].toLowerCase();
-        const country=(s.country||(s.region||'').split('・')[1]||'').toLowerCase();
-        const keywords=(s.keywords||'').toLowerCase().split(/[,，]+/).map(k=>k.trim()).filter(Boolean);
-        const countryAliases={'日本':['japan','jp'],'韓國':['korea','kr'],'台灣':['taiwan','tw'],'泰國':['thailand'],'法國':['france'],'英國':['uk','england'],'美國':['usa','us'],'香港':['hongkong','hk'],'新加坡':['singapore']};
-        let countryMatch=false;
-        for(const[cn,aliases]of Object.entries(countryAliases)){
-          if(country.includes(cn)&&(dest.includes(cn.toLowerCase())||aliases.some(a=>dest.includes(a)))){countryMatch=true;break;}
-        }
-        return countryMatch||city===dest||city.includes(dest)||dest.includes(city)||keywords.some(k=>k&&(k===dest||k.includes(dest)||dest.includes(k)));
-      });
+  // 通用天數選擇彈出選單，探索景點加入行程、行程景點移到其他天都共用
+  dayPickerCallback:null,
+  openDayPicker(title,opts,cb){
+    document.getElementById('dayPickerTitle').textContent=title;
+    document.getElementById('dayPickerList').innerHTML=opts.map(o=>`<div class="day-picker-opt${o.dashed?' new':''}" onclick="App.dayPickerSelect('${o.value}')">${o.label}</div>`).join('');
+    App.dayPickerCallback=cb;
+    document.getElementById('dayPickerBg').classList.add('open');
+  },
+  closeDayPicker(){
+    document.getElementById('dayPickerBg').classList.remove('open');
+    App.dayPickerCallback=null;
+  },
+  dayPickerSelect(value){
+    const cb=App.dayPickerCallback;
+    document.getElementById('dayPickerBg').classList.remove('open');
+    App.dayPickerCallback=null;
+    if(cb)cb(value);
+  },
+  // 探索景點「加入行程」：還沒有任何天數就自動建立 Day 1，否則跳出天數選單
+  exploreAddToTrip(name){
+    if(!state.dayCount){
+      state.dayCount=1;state.allStations=[[]];
+      state.allStations[0].push({time:'',name,note:''});
+      state.currentDay=0;
+      App.renderDayRow();App.renderStations();App.saveAll();
+      showToast('已加入 Day 1');
+      return;
     }
-    if(!filtered.length&&dest.length>0)return '<option value="">— 找不到「'+heroText+'」的景點，請手動輸入或至後台新增 —</option>';
-    if(!filtered.length)filtered=spots;
-    if(!filtered.length)return'<option value="">— 尚無推薦景點，可手動輸入 —</option>';
-    const cityGroups={};
-    filtered.forEach(s=>{
-      const city=s.city||(s.region||'').split('・')[0]||'其他';
-      if(!cityGroups[city])cityGroups[city]=[];
-      cityGroups[city].push(s);
+    const opts=Array.from({length:state.dayCount},(_,d)=>({label:'Day '+(d+1),value:String(d)}));
+    App.openDayPicker('加入行程：'+name,opts,val=>{
+      const day=parseInt(val);
+      state.allStations[day].push({time:'',name,note:''});
+      if(state.currentDay===day)App.renderStations();
+      App.renderDayRow();App.saveAll();
+      showToast('已加入 Day '+(day+1));
     });
-    let h='<option value="">— 推薦景點（'+filtered.length+'個）—</option>';
-    Object.entries(cityGroups).forEach(([city,list])=>{
-      h+='<optgroup label="'+city+'">';
-      list.forEach(s=>{h+='<option value="'+s.name+'">'+s.name+'</option>';});
-      h+='</optgroup>';
+  },
+  // 行程景點「移到其他天」：現有天數 + 新增一天，移動後原本那天不刪除
+  openMoveStation(idx){
+    const fromDay=state.currentDay;
+    const opts=[];
+    for(let d=0;d<state.dayCount;d++){
+      if(d===fromDay)continue;
+      opts.push({label:'Day '+(d+1),value:String(d)});
+    }
+    opts.push({label:'＋ 新增一天',value:'new',dashed:true});
+    App.openDayPicker('移到哪一天？',opts,val=>{
+      const item=state.allStations[fromDay].splice(idx,1)[0];
+      let toDay,msg;
+      if(val==='new'){
+        state.dayCount++;
+        while(state.allStations.length<state.dayCount)state.allStations.push([]);
+        toDay=state.dayCount-1;
+        msg='已新增 Day '+(toDay+1)+'，景點已移入';
+      }else{
+        toDay=parseInt(val);
+        msg='已移到 Day '+(toDay+1);
+      }
+      state.allStations[toDay].push(item);
+      App.renderDayRow();App.renderStations();App.saveAll();
+      showToast(msg);
     });
-    return h;
+  },
+
+  // ── Modal ──
+  // 目前行程目的地（取自 Hero 標題），用來讓 autocomplete 優先顯示相關城市的景點
+  spotDestCity(){
+    const heroText=(document.getElementById('heroTitle').textContent||'').trim();
+    return heroText.replace(/(旅行|旅遊|trip|travel|之旅|Tour|tour)$/i,'').trim().toLowerCase();
+  },
+  spotMatchesDest(s,dest){
+    if(!dest)return false;
+    const city=(s.city||s.region||'').split('・')[0].toLowerCase();
+    const country=(s.country||(s.region||'').split('・')[1]||'').toLowerCase();
+    const keywords=(s.keywords||'').toLowerCase().split(/[,，]+/).map(k=>k.trim()).filter(Boolean);
+    const countryAliases={'日本':['japan','jp'],'韓國':['korea','kr'],'台灣':['taiwan','tw'],'泰國':['thailand'],'法國':['france'],'英國':['uk','england'],'美國':['usa','us'],'香港':['hongkong','hk'],'新加坡':['singapore']};
+    for(const[cn,aliases]of Object.entries(countryAliases)){
+      if(country.includes(cn)&&(dest.includes(cn.toLowerCase())||aliases.some(a=>dest.includes(a))))return true;
+    }
+    return city===dest||city.includes(dest)||dest.includes(city)||keywords.some(k=>k&&(k===dest||k.includes(dest)||dest.includes(k)));
+  },
+  // 新增行程景點：即時比對名稱、城市、關鍵字，目的地相關城市優先，最多顯示 8 筆
+  spotAutocomplete(query){
+    const list=document.getElementById('mNameAcList');
+    query=query.trim();
+    if(!query){list.style.display='none';list.innerHTML='';return;}
+    const q=query.toLowerCase();
+    const dest=App.spotDestCity();
+    const matched=state.firestoreSpots.filter(s=>{
+      const name=(s.name||'').toLowerCase();
+      const city=(s.city||s.region||'').split('・')[0].toLowerCase();
+      const keywords=(s.keywords||'').toLowerCase();
+      return name.includes(q)||city.includes(q)||keywords.includes(q);
+    });
+    matched.sort((a,b)=>{
+      const am=App.spotMatchesDest(a,dest)?0:1,bm=App.spotMatchesDest(b,dest)?0:1;
+      return am-bm;
+    });
+    const top=matched.slice(0,8);
+    list.style.display='block';
+    if(!top.length){list.innerHTML='<div class="ac-empty">找不到相關景點，可直接手動輸入</div>';return;}
+    list.innerHTML=top.map(s=>{
+      const city=s.city||(s.region||'').split('・')[0]||'';
+      return `<div class="ac-item" onclick="App.pickAutocompleteSpot('${s.name.replace(/'/g,"\\'")}')"><span>${s.name}</span>${city?`<span class="ac-city">${city}</span>`:''}</div>`;
+    }).join('');
+  },
+  pickAutocompleteSpot(name){
+    document.getElementById('mName').value=name;
+    const list=document.getElementById('mNameAcList');
+    list.style.display='none';list.innerHTML='';
   },
   // 手機原生時間選擇器：真正的 <input type="time"> 隱形疊在自訂樣式的方框上，
   // 跟日期欄位用同一招（date-field/date-display/date-native-input），確保手機上點一定開得起來
@@ -1231,7 +1325,6 @@ const App = {
   getTimeValue(id){
     return document.getElementById(id).value||'';
   },
-  fillSpot(){const sel=document.getElementById('spotSelect');if(sel&&sel.value)document.getElementById('mName').value=sel.value;},
   openModal(forceTab, prefillName){
     const tab=forceTab||state.currentTab;
     const title=document.getElementById('modalTitle'),body=document.getElementById('modalBody');
@@ -1244,7 +1337,7 @@ const App = {
     if(tab==='itinerary'){
       title.textContent='新增行程景點';
       const dayOpts=Array.from({length:state.dayCount||1},(_,d)=>`<option value="${d}" ${d===state.currentDay?'selected':''}>Day ${d+1}</option>`).join('');
-      body.innerHTML=(state.favorites&&state.favorites.length?`<button class="fav-quick-btn" onclick="App.closeModal();App.openFavorites()"><i class="ti ti-heart"></i> 從我的收藏挑選（${state.favorites.length}）</button>`:'')+`<div class="field"><label>推薦景點</label><div class="select-wrap"><select id="spotSelect" onchange="App.fillSpot()">${App.buildSpotsOptions()}</select></div></div><div class="divider"><span>或手動輸入</span></div><div class="field"><label>景點名稱</label><input id="mName" placeholder="輸入名稱"/></div><div class="field"><label>排入天數</label><div class="select-wrap"><select id="mDay">${dayOpts}</select></div></div><div class="field-row"><div class="field"><label>開始時間（選填）</label>${App.timeFieldHtml('mTimeStart')}</div><div class="field"><label>結束時間（選填）</label>${App.timeFieldHtml('mTimeEnd')}</div></div><div class="field"><label>備註（選填）</label><input id="mNote" placeholder="可留空"/></div><button class="modal-submit" onclick="App.submitStation()">加入行程</button>`;
+      body.innerHTML=(state.favorites&&state.favorites.length?`<button class="fav-quick-btn" onclick="App.closeModal();App.openFavorites()"><i class="ti ti-heart"></i> 從我的收藏挑選（${state.favorites.length}）</button>`:'')+`<div class="field" style="position:relative"><label>景點名稱</label><input id="mName" placeholder="輸入景點名稱" autocomplete="off" oninput="App.spotAutocomplete(this.value)"/><div class="ac-list" id="mNameAcList" style="display:none"></div></div><div class="field"><label>排入天數</label><div class="select-wrap"><select id="mDay">${dayOpts}</select></div></div><div class="field-row"><div class="field"><label>開始時間（選填）</label>${App.timeFieldHtml('mTimeStart')}</div><div class="field"><label>結束時間（選填）</label>${App.timeFieldHtml('mTimeEnd')}</div></div><div class="field"><label>備註（選填）</label><input id="mNote" placeholder="可留空"/></div><button class="modal-submit" onclick="App.submitStation()">加入行程</button>`;
 
     }else if(tab==='budget'){
       const opts=state.members.length?state.members.map(m=>`<option>${m.name}</option>`).join(''):'<option>（請先新增成員）</option>';
