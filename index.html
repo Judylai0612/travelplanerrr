@@ -278,7 +278,6 @@ input[type="time"].date-native-input::-webkit-calendar-picker-indicator{position
       <input id="obJoinCode" placeholder="例：K3J9QX2A" maxlength="8" style="text-transform:uppercase" onkeydown="if(event.key==='Enter')App.joinByCode()">
       <button class="onboard-btn" style="margin-top:10px" onclick="App.joinByCode()">加入行程 →</button>
     </div>
-    <button class="onboard-skip" onclick="App.startTrip(true)">略過，直接進入</button>
   </div>
 
   <div class="top-bar">
@@ -346,14 +345,9 @@ input[type="time"].date-native-input::-webkit-calendar-picker-indicator{position
         <button onclick="App.doShare()" style="width:100%;padding:12px;background:#6B9080;color:#fff;border:none;border-radius:14px;font-size:14px;font-weight:600;cursor:pointer;" id="shareTabBtn">產生共享連結或代碼</button>
       </div>
       <div id="shareCodeBlock"></div>
-      <div class="share-code-block" style="margin:0 18px 10px">
-        <div style="font-size:10px;color:#A8A296;margin-bottom:6px;font-weight:500">或輸入代碼加入別人的行程</div>
-        <input id="shareJoinCode" placeholder="例：K3J9QX2A" maxlength="8" style="width:100%;padding:9px 12px;border-radius:10px;border:1.5px solid #ECE5D4;background:#FFF9F0;color:#2B2620;font-size:14px;text-transform:uppercase;margin-bottom:8px" onkeydown="if(event.key==='Enter')App.joinOtherTrip()">
-        <button onclick="App.joinOtherTrip()" style="width:100%;padding:9px;background:#2B2620;color:#fff;border:none;border-radius:11px;font-size:12px;font-weight:600;cursor:pointer">加入該行程</button>
-      </div>
       <div class="share-how">
         <div style="font-size:12px;font-weight:600;color:#2B2620;margin-bottom:8px">使用說明</div>
-        <div style="font-size:11px;color:#A8A296;line-height:1.8">1. 點「產生共享連結或代碼」建立行程<br>2. 分別複製代碼或連結傳給同行夥伴<br>3. 夥伴打開連結，或在此頁輸入代碼加入<br>4. 行程和記帳即時同步，必買各自管理</div>
+        <div style="font-size:11px;color:#A8A296;line-height:1.8">1. 點「產生共享連結或代碼」建立行程<br>2. 分別複製代碼或連結傳給同行夥伴<br>3. 夥伴打開連結，或在一開始的入口輸入代碼加入<br>4. 行程和記帳即時同步，必買各自管理</div>
       </div>
     </div>
   </div>
@@ -520,9 +514,9 @@ function loadLocal(){
 
 const App = {
   // ── Onboarding ──
-  startTrip(skip){
-    const dest=skip?'':document.getElementById('obDest').value.trim();
-    const name=skip?'旅人':document.getElementById('obName').value.trim()||'旅人';
+  startTrip(){
+    const dest=document.getElementById('obDest').value.trim();
+    const name=document.getElementById('obName').value.trim()||'旅人';
     state.userName=name;
     state.destination=dest;
     state.members=[{name,isMe:true}];
@@ -551,17 +545,6 @@ const App = {
     }catch(e){showToast('查詢失敗，請稍後再試');return;}
     window.location.href=window.location.pathname+'?trip='+code;
   },
-  async joinOtherTrip(){
-    const code=document.getElementById('shareJoinCode').value.trim().toUpperCase();
-    if(!code){showToast('請輸入行程代碼');return;}
-    try{
-      const snap=await db.collection('trips').doc(code).get();
-      if(!snap.exists){showToast('找不到這個行程代碼，請確認是否輸入正確');return;}
-    }catch(e){showToast('查詢失敗，請稍後再試');return;}
-    if(!confirm('加入後將離開目前的行程，改為加入這個代碼的行程，確定嗎？'))return;
-    window.location.href=window.location.pathname+'?trip='+code;
-  },
-
   switchTab(tab){
     state.currentTab=tab;
     document.querySelectorAll('.content-section').forEach(s=>s.classList.remove('active'));
@@ -1487,8 +1470,8 @@ const App = {
         document.querySelector('.onboard-sub').textContent=(tripData.heroTitle||'旅行')+'・輸入你的名字加入';
         document.querySelector('.onboard-btn').textContent='加入行程 →';
 
-        App.startTrip=async function(skip){
-          const name=skip?'旅人':(document.getElementById('obName').value.trim()||'旅人');
+        App.startTrip=async function(){
+          const name=document.getElementById('obName').value.trim()||'旅人';
           state.userName=name;
           document.getElementById('greetName').textContent=name;
           document.getElementById('onboard').style.display='none';
