@@ -170,6 +170,7 @@ input[type="time"].date-native-input::-webkit-calendar-picker-indicator{position
 .field-row{display:flex;gap:8px;}
 .field-row .field{flex:1;}
 .modal-submit{width:100%;padding:12px;background:#2B2620;color:#fff;border:none;border-radius:15px;font-size:13px;font-weight:600;cursor:pointer;margin-top:4px;}
+.modal-submit:disabled{opacity:.4;cursor:not-allowed;}
 .modal-submit.secondary{background:#F4EFE4;color:#2B2620;}
 .divider{display:flex;align-items:center;gap:8px;margin:4px 0 11px;}
 .divider::before,.divider::after{content:'';flex:1;height:1px;background:#F0EBDD;}
@@ -1439,7 +1440,24 @@ const App = {
 
   // ── Delete trip ──
   deleteTrip(){
-    if(!confirm('確定刪除此行程？所有資料將清除，回到首頁。'))return;
+    const shared=!!state.tripId;
+    document.getElementById('modalTitle').textContent=shared?'離開這台裝置的行程':'刪除行程';
+    if(shared){
+      document.getElementById('modalBody').innerHTML=`
+        <div style="font-size:13px;color:#2B2620;line-height:1.75;margin-bottom:16px">這只會把行程從<b>這台裝置</b>移除，雲端資料跟其他成員都不會受影響。之後可以用行程代碼或共享連結重新加入。</div>
+        <button class="modal-submit" style="background:#A33B3B" onclick="App.confirmDeleteTrip()">確定從這台裝置移除</button>
+        <button class="modal-submit" style="background:#F2ECE0;color:#2B2620" onclick="App.closeModal()">取消</button>`;
+    }else{
+      document.getElementById('modalBody').innerHTML=`
+        <div style="font-size:13px;color:#A33B3B;font-weight:600;line-height:1.75;margin-bottom:14px">這個行程還沒有共享備份。刪除後所有行程、記帳、必買清單都會永久消失，無法復原。</div>
+        <div class="field"><label>請輸入「刪除」以確認</label><input id="deleteConfirmInput" placeholder="刪除" oninput="document.getElementById('deleteConfirmBtn').disabled=(this.value.trim()!=='刪除')"/></div>
+        <button class="modal-submit" id="deleteConfirmBtn" style="background:#A33B3B" disabled onclick="App.confirmDeleteTrip()">確定永久刪除</button>
+        <button class="modal-submit" style="background:#F2ECE0;color:#2B2620" onclick="App.closeModal()">取消</button>`;
+    }
+    document.getElementById('modalBg').classList.add('open');
+  },
+  confirmDeleteTrip(){
+    App.closeModal();
     // Clear localStorage
     try{localStorage.removeItem(LS_KEY);}catch(e){}
     // Unsubscribe firebase listener
